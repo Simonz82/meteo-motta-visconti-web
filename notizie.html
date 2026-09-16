@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <title>Notizie - Motta Visconti e dintorni</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: var(--bg-card-2);
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px var(--shadow-soft);
+        }
+
+        h1 { font-size: 1.5rem; margin: 0 0 4px; color: var(--accent-primary); font-weight: 800; }
+        .subtitle { color: var(--text-faint); font-size: 0.85rem; margin-bottom: 20px; font-weight: 500; }
+
+        .crumb {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            margin-bottom: 18px; font-size: 0.8rem; color: var(--text-muted);
+        }
+        .crumb button {
+            background: var(--bg-card-2); color: var(--text-secondary); border: none;
+            padding: 7px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer;
+        }
+        .crumb span.sep { color: var(--text-faint-3); }
+        .crumb span.current { color: var(--accent-primary); font-weight: 700; }
+
+        .grid-towns {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px;
+        }
+        .town-card, .storico-card {
+            background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3));
+            border: 1px solid var(--border-color-3);
+            border-radius: 15px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--shadow-soft);
+        }
+        .town-card .icon, .storico-card .icon { font-size: 1.8rem; display: block; margin-bottom: 6px; }
+        .town-card .name { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
+        .town-card .hint { font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; font-weight: 600; margin-top: 3px; }
+        .storico-card { grid-column: 1 / -1; }
+        .storico-card .name { font-weight: 700; font-size: 1rem; color: var(--accent-secondary); }
+        .storico-card .hint { font-size: 0.7rem; color: var(--text-faint); margin-top: 3px; }
+
+        .year-grid, .month-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+        }
+        .pill-btn {
+            background: var(--bg-card-2); border: 1px solid var(--border-color-2);
+            color: var(--text-primary); border-radius: 12px; padding: 14px 8px;
+            text-align: center; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+        }
+
+        .day-header {
+            font-size: 0.78rem; font-weight: 800; color: var(--accent-primary);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin: 22px 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--border-color-2);
+        }
+        .day-header:first-of-type { margin-top: 4px; }
+
+        .item-card {
+            background: var(--bg-card-3); border-radius: 14px; padding: 14px;
+            margin-bottom: 10px; box-shadow: 0 2px 8px var(--shadow-soft);
+        }
+        .item-title { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); margin-bottom: 6px; }
+        .item-excerpt { font-size: 0.85rem; color: var(--text-body); line-height: 1.5; margin-bottom: 10px; }
+        .item-sources { display: flex; flex-wrap: wrap; gap: 6px; }
+        .source-chip {
+            font-size: 0.68rem; font-weight: 700; color: var(--accent-primary);
+            background: var(--bg-card-2); border: 1px solid var(--border-color-2);
+            border-radius: 999px; padding: 4px 10px; text-decoration: none;
+        }
+        .video-row { display: flex; gap: 10px; align-items: center; }
+        .video-thumb { width: 90px; height: 68px; object-fit: cover; border-radius: 10px; flex: 0 0 auto; }
+        .video-info { min-width: 0; }
+        .video-channel { font-size: 0.72rem; color: var(--text-faint); margin-top: 3px; }
+        .video-link {
+            display: inline-block; margin-top: 8px; font-size: 0.75rem; font-weight: 700;
+            color: #fff; background: linear-gradient(145deg,#c00,#e53935); padding: 6px 12px; border-radius: 999px; text-decoration: none;
+        }
+
+        .empty-state, .loading-state {
+            text-align: center; color: var(--text-faint); font-size: 0.85rem; padding: 40px 10px;
+        }
+    </style>
+<style id="theme-vars">
+  :root, :root[data-theme="scuro"] {
+    --bg-page: #111111;
+    --bg-card: #1c1c1c;
+    --bg-card-hover: #252525;
+    --bg-card-2: #2a2a2a;
+    --bg-card-3: #1e1e1e;
+    --bg-card-4: #232323;
+    --bg-elevated: #1a1a1a;
+    --bg-deep: #131313;
+
+    --border-color: #333333;
+    --border-color-2: #444444;
+    --border-color-3: #555555;
+
+    --text-primary: #ffffff;
+    --text-secondary: #e1e1e1;
+    --text-secondary-2: #aaaaaa;
+    --icon-muted: #757575;
+    --text-body: #cccccc;
+    --text-muted: #9e9e9e;
+    --text-muted-2: #999999;
+    --text-faint: #888888;
+    --text-faint-2: #777777;
+    --text-faint-3: #666666;
+    --gauge-track: #222222;
+
+    --accent-primary: #00d4ff;
+    --accent-primary-rgb: 0,212,255;
+    --accent-secondary: #4caf50;
+    --accent-secondary-rgb: 76,175,80;
+
+    --shadow-card: rgba(0,0,0,0.4);
+    --shadow-soft: rgba(0,0,0,0.5);
+    --shadow-strong: rgba(0,0,0,0.6);
+    --shadow-modal: rgba(0,0,0,0.8);
+    --overlay-bg: rgba(0,0,0,0.85);
+
+    --card-blur: 0px;
+    --card-border-glass: transparent;
+  }
+
+  :root[data-theme="chiaro"] {
+    --bg-page: #eef1f5;
+    --bg-card: rgba(255,255,255,0.70);
+    --bg-card-hover: rgba(255,255,255,0.92);
+    --bg-card-2: rgba(15,23,42,0.045);
+    --bg-card-3: rgba(255,255,255,0.85);
+    --bg-card-4: rgba(15,23,42,0.035);
+    --bg-elevated: rgba(255,255,255,0.85);
+    --bg-deep: #dfe4ea;
+
+    --border-color: rgba(15,23,42,0.10);
+    --border-color-2: rgba(15,23,42,0.14);
+    --border-color-3: rgba(15,23,42,0.20);
+
+    --text-primary: #171a1f;
+    --text-secondary: #2f343c;
+    --text-secondary-2: #4a505a;
+    --icon-muted: #7d838c;
+    --text-body: #454b54;
+    --text-muted: #656b74;
+    --text-muted-2: #6f7580;
+    --text-faint: #7d838c;
+    --text-faint-2: #8b919a;
+    --text-faint-3: #9aa0a8;
+    --gauge-track: #c7cbd1;
+
+    --accent-primary: #0090c8;
+    --accent-primary-rgb: 0,144,200;
+    --accent-secondary: #2e9e46;
+    --accent-secondary-rgb: 46,158,70;
+
+    --shadow-card: rgba(30,41,59,0.10);
+    --shadow-soft: rgba(30,41,59,0.14);
+    --shadow-strong: rgba(30,41,59,0.18);
+    --shadow-modal: rgba(30,41,59,0.30);
+    --overlay-bg: rgba(15,23,42,0.45);
+
+    --card-blur: 18px;
+    --card-border-glass: rgba(255,255,255,0.5);
+  }
+
+  :root[data-theme="black"] {
+    --bg-page: #000000;
+    --bg-card: rgba(255,255,255,0.045);
+    --bg-card-hover: rgba(255,255,255,0.085);
+    --bg-card-2: rgba(255,255,255,0.07);
+    --bg-card-3: rgba(255,255,255,0.05);
+    --bg-card-4: rgba(255,255,255,0.06);
+    --bg-elevated: rgba(255,255,255,0.04);
+    --bg-deep: #000000;
+
+    --border-color: rgba(255,255,255,0.08);
+    --border-color-2: rgba(255,255,255,0.12);
+    --border-color-3: rgba(255,255,255,0.16);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e6e6e6;
+    --text-secondary-2: #b0b0b0;
+    --icon-muted: #7d7d7d;
+    --text-body: #cfcfcf;
+    --text-muted: #9a9a9a;
+    --text-muted-2: #8f8f8f;
+    --text-faint: #7d7d7d;
+    --text-faint-2: #6c6c6c;
+    --text-faint-3: #5a5a5a;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #00e5ff;
+    --accent-primary-rgb: 0,229,255;
+    --accent-secondary: #00e676;
+    --accent-secondary-rgb: 0,230,118;
+
+    --shadow-card: rgba(0,0,0,0.6);
+    --shadow-soft: rgba(0,0,0,0.6);
+    --shadow-strong: rgba(0,0,0,0.7);
+    --shadow-modal: rgba(0,0,0,0.9);
+    --overlay-bg: rgba(0,0,0,0.92);
+
+    --card-blur: 16px;
+    --card-border-glass: rgba(255,255,255,0.10);
+  }
+
+  :root[data-theme="blu"] {
+    --bg-page: #0a1626;
+    --bg-card: rgba(90,150,220,0.14);
+    --bg-card-hover: rgba(90,150,220,0.22);
+    --bg-card-2: rgba(255,255,255,0.06);
+    --bg-card-3: rgba(90,150,220,0.18);
+    --bg-card-4: rgba(90,150,220,0.12);
+    --bg-elevated: rgba(90,150,220,0.16);
+    --bg-deep: #071021;
+
+    --border-color: rgba(140,190,240,0.18);
+    --border-color-2: rgba(140,190,240,0.25);
+    --border-color-3: rgba(140,190,240,0.32);
+
+    --text-primary: #f0f6ff;
+    --text-secondary: #cfe0f5;
+    --text-secondary-2: #a8c2e0;
+    --icon-muted: #7695b8;
+    --text-body: #b7cbe3;
+    --text-muted: #8fa8c7;
+    --text-muted-2: #84a0c0;
+    --text-faint: #7695b8;
+    --text-faint-2: #6788ab;
+    --text-faint-3: #587a9d;
+    --gauge-track: #23384f;
+
+    --accent-primary: #3fa9ff;
+    --accent-primary-rgb: 63,169,255;
+    --accent-secondary: #64d8c6;
+    --accent-secondary-rgb: 100,216,198;
+
+    --shadow-card: rgba(0,5,20,0.45);
+    --shadow-soft: rgba(0,5,20,0.5);
+    --shadow-strong: rgba(0,5,20,0.6);
+    --shadow-modal: rgba(0,5,20,0.75);
+    --overlay-bg: rgba(3,10,25,0.85);
+
+    --card-blur: 16px;
+    --card-border-glass: rgba(150,200,255,0.14);
+  }
+
+  :root[data-theme="green"] {
+    --bg-page: #0a1c14;
+    --bg-card: rgba(110,200,150,0.14);
+    --bg-card-hover: rgba(110,200,150,0.22);
+    --bg-card-2: rgba(255,255,255,0.06);
+    --bg-card-3: rgba(110,200,150,0.18);
+    --bg-card-4: rgba(110,200,150,0.12);
+    --bg-elevated: rgba(110,200,150,0.16);
+    --bg-deep: #071510;
+
+    --border-color: rgba(150,220,180,0.18);
+    --border-color-2: rgba(150,220,180,0.25);
+    --border-color-3: rgba(150,220,180,0.32);
+
+    --text-primary: #eefff4;
+    --text-secondary: #cdeed9;
+    --text-secondary-2: #a8d6bd;
+    --icon-muted: #76a889;
+    --text-body: #b7ddc6;
+    --text-muted: #8fbfa2;
+    --text-muted-2: #84b697;
+    --text-faint: #76a889;
+    --text-faint-2: #679a7a;
+    --text-faint-3: #588c6c;
+    --gauge-track: #234a37;
+
+    --accent-primary: #2fdb85;
+    --accent-primary-rgb: 47,219,133;
+    --accent-secondary: #9ccc65;
+    --accent-secondary-rgb: 156,204,101;
+
+    --shadow-card: rgba(0,15,8,0.45);
+    --shadow-soft: rgba(0,15,8,0.5);
+    --shadow-strong: rgba(0,15,8,0.6);
+    --shadow-modal: rgba(0,15,8,0.75);
+    --overlay-bg: rgba(3,18,12,0.85);
+
+    --card-blur: 16px;
+    --card-border-glass: rgba(160,230,190,0.14);
+  }
+
+  :root[data-theme="pink"] {
+    --bg-page: #1e0a17;
+    --bg-card: rgba(230,110,180,0.14);
+    --bg-card-hover: rgba(230,110,180,0.22);
+    --bg-card-2: rgba(255,255,255,0.06);
+    --bg-card-3: rgba(230,110,180,0.18);
+    --bg-card-4: rgba(230,110,180,0.12);
+    --bg-elevated: rgba(230,110,180,0.16);
+    --bg-deep: #170714;
+
+    --border-color: rgba(240,160,210,0.18);
+    --border-color-2: rgba(240,160,210,0.25);
+    --border-color-3: rgba(240,160,210,0.32);
+
+    --text-primary: #fff0f8;
+    --text-secondary: #f0d3e5;
+    --text-secondary-2: #d9a8c8;
+    --icon-muted: #ac789e;
+    --text-body: #e3bdd6;
+    --text-muted: #c791b6;
+    --text-muted-2: #bd86ac;
+    --text-faint: #ac789e;
+    --text-faint-2: #9c6a8f;
+    --text-faint-3: #8b5c7f;
+    --gauge-track: #4a2340;
+
+    --accent-primary: #ff5cad;
+    --accent-primary-rgb: 255,92,173;
+    --accent-secondary: #ffb86b;
+    --accent-secondary-rgb: 255,184,107;
+
+    --shadow-card: rgba(20,0,15,0.45);
+    --shadow-soft: rgba(20,0,15,0.5);
+    --shadow-strong: rgba(20,0,15,0.6);
+    --shadow-modal: rgba(20,0,15,0.75);
+    --overlay-bg: rgba(20,3,17,0.85);
+
+    --card-blur: 16px;
+    --card-border-glass: rgba(255,190,225,0.14);
+  }
+
+  :root[data-theme="red"] {
+    --bg-page: #1c0b0b;
+    --bg-card: rgba(230,110,110,0.14);
+    --bg-card-hover: rgba(230,110,110,0.22);
+    --bg-card-2: rgba(255,255,255,0.06);
+    --bg-card-3: rgba(230,110,110,0.18);
+    --bg-card-4: rgba(230,110,110,0.12);
+    --bg-elevated: rgba(230,110,110,0.16);
+    --bg-deep: #150707;
+
+    --border-color: rgba(240,160,160,0.18);
+    --border-color-2: rgba(240,160,160,0.25);
+    --border-color-3: rgba(240,160,160,0.32);
+
+    --text-primary: #fff2f0;
+    --text-secondary: #f0d6d3;
+    --text-secondary-2: #d9a8a4;
+    --icon-muted: #ac7c78;
+    --text-body: #e3c0bc;
+    --text-muted: #c79591;
+    --text-muted-2: #bd8a86;
+    --text-faint: #ac7c78;
+    --text-faint-2: #9c6e6a;
+    --text-faint-3: #8b605c;
+    --gauge-track: #4a2624;
+
+    --accent-primary: #ff5252;
+    --accent-primary-rgb: 255,82,82;
+    --accent-secondary: #ffb74d;
+    --accent-secondary-rgb: 255,183,77;
+
+    --shadow-card: rgba(20,0,0,0.45);
+    --shadow-soft: rgba(20,0,0,0.5);
+    --shadow-strong: rgba(20,0,0,0.6);
+    --shadow-modal: rgba(20,0,0,0.75);
+    --overlay-bg: rgba(20,3,3,0.85);
+
+    --card-blur: 16px;
+    --card-border-glass: rgba(255,190,190,0.14);
+  }
+</style>
+
+<script id="theme-switcher">
+(function() {
+  var VALID_THEMES = ['scuro', 'chiaro', 'black', 'blu', 'green', 'pink', 'red'];
+  function applyTheme(name, persist) {
+    if (VALID_THEMES.indexOf(name) === -1) return false;
+    if (name === 'scuro') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', name);
+    }
+    if (persist) {
+      try { localStorage.setItem('siteTheme', name); } catch (e) {}
+    }
+    return true;
+  }
+  window.setAppTheme = function(name) { applyTheme(name, true); };
+  var params = new URLSearchParams(window.location.search);
+  var fromUrl = params.get('theme');
+  if (fromUrl) {
+    applyTheme(fromUrl, true);
+  } else {
+    var stored = null;
+    try { stored = localStorage.getItem('siteTheme'); } catch (e) {}
+    if (stored) applyTheme(stored, false);
+  }
+})();
+</script>
+</head>
+<body>
+
+<a href="index.html" class="back-btn">⬅ Torna al Meteo</a>
+<h1>📰 Notizie Motta Visconti e dintorni</h1>
+<div class="subtitle">Articoli di giornale e video, raccolti da più testate</div>
+
+<div id="crumb" class="crumb"></div>
+<div id="app"></div>
+
+<script>
+var TOWNS = [
+  { name: 'Motta Visconti', icon: '🏘️' },
+  { name: 'Besate', icon: '🌳' },
+  { name: 'Casorate Primo', icon: '🏛️' },
+  { name: 'Bereguardo', icon: '🌉' }
+];
+var MESI = ['', 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+var GIORNI = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+
+// ===== Gate login (preparato 2026-09-16, spento di default) =====
+// Quando REQUIRE_LOGIN_FOR_NEWS sara' messo a true, la sezione Notizie
+// mostrera' un invito a registrarsi/accedere a chi non e' loggato, invece
+// del contenuto vero. Sul web controlla lo stesso account gia' usato dal
+// resto del sito (localStorage.webAccountToken); nell'app Android serve
+// prima un piccolo bridge nativo (AndroidBridge.isLoggedIn(), da aggiungere
+// in MainActivity.kt) che imposti window.__appLoggedIn - senza quello,
+// finche' e' spento questo controllo non blocca nessuno.
+var REQUIRE_LOGIN_FOR_NEWS = false;
+var isAndroidApp = navigator.userAgent.indexOf('MeteoMottaAndroidApp') !== -1;
+
+function isLoggedIn() {
+  if (isAndroidApp) {
+    try { return typeof AndroidBridge !== 'undefined' && AndroidBridge.isLoggedIn(); } catch (e) { return false; }
+  }
+  try { return !!localStorage.getItem('webAccountToken'); } catch (e) { return false; }
+}
+
+function renderLoginGate() {
+  crumbEl.innerHTML = '';
+  var azione = isAndroidApp
+    ? 'Apri il menu dell\'app e accedi o registrati.'
+    : 'Torna alla <a href="index.html" style="color:var(--accent-primary);">home del sito</a> e clicca sull\'icona 👤 in alto a sinistra per accedere o registrarti.';
+  app.innerHTML = '<div class="empty-state" style="text-align:left; background:var(--bg-card-3); border-radius:14px; padding:20px;">' +
+    '<div style="font-size:1.5rem; margin-bottom:10px;">🔒</div>' +
+    '<div style="color:var(--text-primary); font-weight:700; margin-bottom:8px;">Accedi per leggere le notizie</div>' +
+    '<div style="font-size:0.85rem; line-height:1.5;">' + azione + '</div>' +
+    '</div>';
+}
+
+var state = { view: 'home' };
+var app = document.getElementById('app');
+var crumbEl = document.getElementById('crumb');
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.innerText = s == null ? '' : s;
+  return d.innerHTML;
+}
+
+// Ogni passaggio di livello va nella cronologia del browser, cosi' il
+// tasto Indietro (fisico su Android, gesture su iOS) risale la gerarchia
+// un passo alla volta invece di uscire subito dalla pagina.
+function pushView(newState) {
+  state = newState;
+  history.pushState(state, '', location.pathname);
+  render();
+}
+
+function goHome() { pushView({ view: 'home' }); }
+function goRecent(town) { pushView({ view: 'recent', town: town }); }
+function goStoricoTowns() { pushView({ view: 'storicoTowns' }); }
+function goStoricoYears(town) { pushView({ view: 'storicoYears', town: town }); }
+function goStoricoMonths(town, year) { pushView({ view: 'storicoMonths', town: town, year: year }); }
+function goStoricoItems(town, year, month) { pushView({ view: 'storicoItems', town: town, year: year, month: month }); }
+
+window.addEventListener('popstate', function(e) {
+  state = e.state || { view: 'home' };
+  render();
+});
+
+function renderCrumb() {
+  var parts = [];
+  parts.push('<button onclick="goHome()">📰 Notizie</button>');
+  if (state.view === 'recent') {
+    parts.push('<span class="sep">›</span><span class="current">' + esc(state.town) + ' · Ultimi 30 giorni</span>');
+  } else if (state.view !== 'home') {
+    parts.push('<span class="sep">›</span><button onclick="goStoricoTowns()">Storico</button>');
+    if (state.town) {
+      if (state.view === 'storicoYears') {
+        parts.push('<span class="sep">›</span><span class="current">' + esc(state.town) + '</span>');
+      } else {
+        parts.push('<span class="sep">›</span><button onclick="goStoricoYears(\'' + esc(state.town) + '\')">' + esc(state.town) + '</button>');
+      }
+    }
+    if (state.year) {
+      if (state.view === 'storicoMonths') {
+        parts.push('<span class="sep">›</span><span class="current">' + state.year + '</span>');
+      } else {
+        parts.push('<span class="sep">›</span><button onclick="goStoricoMonths(\'' + esc(state.town) + '\',' + state.year + ')">' + state.year + '</button>');
+      }
+    }
+    if (state.month) {
+      parts.push('<span class="sep">›</span><span class="current">' + MESI[state.month] + '</span>');
+    }
+  }
+  crumbEl.innerHTML = parts.join('');
+}
+
+function townCardsHtml(onClickFn) {
+  return '<div class="grid-towns">' + TOWNS.map(function(t) {
+    return '<div class="town-card" onclick="' + onClickFn + '(\'' + t.name + '\')">' +
+      '<span class="icon">' + t.icon + '</span>' +
+      '<div class="name">' + t.name + '</div>' +
+      (onClickFn === 'goRecent' ? '<div class="hint">Ultimi 30 giorni</div>' : '') +
+      '</div>';
+  }).join('') + '</div>';
+}
+
+function render() {
+  if (REQUIRE_LOGIN_FOR_NEWS && !isLoggedIn()) {
+    renderLoginGate();
+    return;
+  }
+  renderCrumb();
+  if (state.view === 'home') {
+    app.innerHTML = townCardsHtml('goRecent') +
+      '<div class="storico-card" onclick="goStoricoTowns()"><span class="icon">🗂️</span><div class="name">Storico Notizie</div><div class="hint">Sfoglia per anno e mese</div></div>';
+    return;
+  }
+  if (state.view === 'storicoTowns') {
+    app.innerHTML = townCardsHtml('goStoricoYears');
+    return;
+  }
+  if (state.view === 'recent') {
+    app.innerHTML = '<div class="loading-state">Caricamento...</div>';
+    fetch('/news.php?town=' + encodeURIComponent(state.town) + '&action=recent')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (!d.success) { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; return; }
+        renderTimeline(d.items);
+      })
+      .catch(function() { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; });
+    return;
+  }
+  if (state.view === 'storicoYears') {
+    app.innerHTML = '<div class="loading-state">Caricamento...</div>';
+    fetch('/news.php?town=' + encodeURIComponent(state.town) + '&action=meta')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (!d.success || !d.years.length) { app.innerHTML = '<div class="empty-state">Nessuna notizia in archivio per ora.</div>'; return; }
+        app.innerHTML = '<div class="year-grid">' + d.years.map(function(y) {
+          return '<div class="pill-btn" onclick="goStoricoMonths(\'' + esc(state.town) + '\',' + y.year + ')">' + y.year + '</div>';
+        }).join('') + '</div>';
+      })
+      .catch(function() { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; });
+    return;
+  }
+  if (state.view === 'storicoMonths') {
+    app.innerHTML = '<div class="loading-state">Caricamento...</div>';
+    fetch('/news.php?town=' + encodeURIComponent(state.town) + '&action=meta')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var yearEntry = (d.years || []).find(function(y) { return y.year === state.year; });
+        if (!d.success || !yearEntry) { app.innerHTML = '<div class="empty-state">Nessuna notizia per questo anno.</div>'; return; }
+        app.innerHTML = '<div class="month-grid">' + yearEntry.months.map(function(m) {
+          return '<div class="pill-btn" onclick="goStoricoItems(\'' + esc(state.town) + '\',' + state.year + ',' + m + ')">' + MESI[m] + '</div>';
+        }).join('') + '</div>';
+      })
+      .catch(function() { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; });
+    return;
+  }
+  if (state.view === 'storicoItems') {
+    app.innerHTML = '<div class="loading-state">Caricamento...</div>';
+    fetch('/news.php?town=' + encodeURIComponent(state.town) + '&action=month&year=' + state.year + '&month=' + state.month)
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (!d.success) { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; return; }
+        renderTimeline(d.items);
+      })
+      .catch(function() { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; });
+    return;
+  }
+}
+
+function ytThumb(url) {
+  var m = url.match(/(?:v=|youtu\.be\/|\/shorts\/)([A-Za-z0-9_-]{6,})/);
+  return m ? 'https://i.ytimg.com/vi/' + m[1] + '/mqdefault.jpg' : '';
+}
+
+function formatDayHeader(dateStr) {
+  var d = new Date(dateStr);
+  return GIORNI[d.getDay()] + ' ' + d.getDate() + ' ' + MESI[d.getMonth() + 1] + ' ' + d.getFullYear();
+}
+
+function renderTimeline(items) {
+  if (!items || !items.length) {
+    app.innerHTML = '<div class="empty-state">Nessuna notizia trovata per questo periodo.</div>';
+    return;
+  }
+  var html = '';
+  var lastDay = null;
+  items.forEach(function(it) {
+    var day = it.date.slice(0, 10);
+    if (day !== lastDay) {
+      html += '<div class="day-header">' + formatDayHeader(day) + '</div>';
+      lastDay = day;
+    }
+    if (it.type === 'video') {
+      var thumb = ytThumb(it.url);
+      html += '<div class="item-card video-row">' +
+        (thumb ? '<img class="video-thumb" src="' + thumb + '" alt="">' : '') +
+        '<div class="video-info">' +
+        '<div class="item-title">🎥 ' + esc(it.title) + '</div>' +
+        (it.channel_name ? '<div class="video-channel">' + esc(it.channel_name) + '</div>' : '') +
+        '<a class="video-link" href="' + esc(it.url) + '" target="_blank" rel="noopener">▶ Guarda il video</a>' +
+        '</div></div>';
+    } else {
+      html += '<div class="item-card">' +
+        '<div class="item-title">🗞 ' + esc(it.title) + '</div>' +
+        '<div class="item-excerpt">' + esc(it.excerpt) + '</div>' +
+        '<div class="item-sources">' + (it.sources || []).map(function(s) {
+          return '<a class="source-chip" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.outlet) + '</a>';
+        }).join('') + '</div>' +
+        '</div>';
+    }
+  });
+  app.innerHTML = html;
+}
+
+// Sostituisce (non aggiunge) la voce iniziale nella cronologia: cosi' il
+// tasto Indietro da qui esce subito dalla pagina Notizie, invece di
+// restare bloccato su un'altra voce "home" della cronologia.
+history.replaceState(state, '', location.pathname);
+render();
+</script>
+
+</body>
+</html>

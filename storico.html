@@ -411,15 +411,15 @@
         </div>
 
         <div class="minmax-grid">
-            <div class="minmax-card" id="cardMax">
-                <h4>Massima</h4>
-                <div class="val-main" id="valMax">--</div>
-                <div class="val-time" id="timeMax">ore --:--</div>
-            </div>
             <div class="minmax-card" id="cardMin">
                 <h4>Minima</h4>
                 <div class="val-main" id="valMin">--</div>
                 <div class="val-time" id="timeMin">ore --:--</div>
+            </div>
+            <div class="minmax-card" id="cardMax">
+                <h4>Massima</h4>
+                <div class="val-main" id="valMax">--</div>
+                <div class="val-time" id="timeMax">ore --:--</div>
             </div>
         </div>
 
@@ -442,9 +442,9 @@
             <div class="canvas-wrapper"><canvas id="chartDay"></canvas></div>
         </div>
 
-        <div class="chart-container">
-            <h3 id="chart30dTitle">Trend Storico (Ultimi 30 giorni)</h3>
-            <div class="canvas-wrapper"><canvas id="chart30d"></canvas></div>
+        <div class="chart-container" style="padding-left: 5px; padding-right: 5px;">
+            <h3 id="chart30dTitle" style="padding-left: 10px; padding-right: 10px;">Trend Storico (Ultimi 30 giorni)</h3>
+            <div class="canvas-wrapper" style="height: 260px;"><canvas id="chart30d"></canvas></div>
         </div>
     </div>
 
@@ -460,15 +460,15 @@
         </div>
 
         <div class="minmax-grid" id="rainMinMaxGrid">
-            <div class="minmax-card" style="border-top-color: #ff5252;">
-                <h4>Max mm/h</h4>
-                <div class="val-main" id="valRainMax">--</div>
-                <div class="val-time" id="timeRainMax">ore --:--</div>
-            </div>
             <div class="minmax-card" style="border-top-color: #00d4ff;">
                 <h4>Min mm/h</h4>
                 <div class="val-main" id="valRainMin">--</div>
                 <div class="val-time" id="timeRainMin">ore --:--</div>
+            </div>
+            <div class="minmax-card" style="border-top-color: #ff5252;">
+                <h4>Max mm/h</h4>
+                <div class="val-main" id="valRainMax">--</div>
+                <div class="val-time" id="timeRainMax">ore --:--</div>
             </div>
         </div>
 
@@ -477,14 +477,14 @@
             <div class="canvas-wrapper"><canvas id="chartRain24h"></canvas></div>
         </div>
 
-        <div class="chart-container">
-            <h3>Pioggia Giornaliera (Ultimo Mese)</h3>
-            <div class="canvas-wrapper"><canvas id="chartRain30d"></canvas></div>
+        <div class="chart-container" style="padding-left: 5px; padding-right: 5px;">
+            <h3 style="padding-left: 10px; padding-right: 10px;">Pioggia Giornaliera (Ultimo Mese)</h3>
+            <div class="canvas-wrapper" style="height: 260px;"><canvas id="chartRain30d"></canvas></div>
         </div>
 
-        <div class="chart-container">
-            <h3>Accumulo Mensile (Anno Corrente)</h3>
-            <div class="canvas-wrapper"><canvas id="chartRainMonthly"></canvas></div>
+        <div class="chart-container" style="padding-left: 5px; padding-right: 5px;">
+            <h3 style="padding-left: 10px; padding-right: 10px;">Accumulo Mensile (Anno Corrente)</h3>
+            <div class="canvas-wrapper" style="height: 260px;"><canvas id="chartRainMonthly"></canvas></div>
         </div>
     </div>
 
@@ -503,6 +503,7 @@
             press: { NOME: 'Pressione',   UNITA: 'hPa', COLORE: '#9c27b0', ID: 'ecowitt_absolute_pressure', FILE: 'storico_pressione.csv' },
             wind:  { NOME: 'Vento',       UNITA: 'km/h', COLORE: '#ff5252', ID: 'ecowitt_wind_speed', FILE: 'storico_vento.csv' },
             uv:    { NOME: 'Raggi UV',    UNITA: 'UV', COLORE: '#ffeb3b', ID: 'ecowitt_uv_index', FILE: 'storico_sole.csv' },
+            watt:  { NOME: 'Watt Solari', UNITA: 'W/m²', COLORE: '#ff9800', ID: 'ecowitt_solar_radiation', FILE: 'storico_sole.csv' },
             lightning: { NOME: 'Distanza Fulmini', UNITA: 'km', COLORE: '#ffeb3b', ID: 'ecowitt_lightning_strike_distance', FILE: 'storico_fulmini.csv' },
             rain:  { NOME: 'Pioggia',     UNITA: 'mm', COLORE: '#00d4ff', ID: 'ecowitt_rain_rate', FILE: 'storico_pioggia_rate.csv' },
 
@@ -670,8 +671,10 @@
                     let pts = dataByDay.get(dayStr);
                     let sum = pts.reduce((acc, p) => acc + p.y, 0);
                     let avg = sum / pts.length;
+                    let maxVal = Math.max(...pts.map(p => p.y));
+                    let minVal = Math.min(...pts.map(p => p.y));
                     let parts = dayStr.split('-');
-                    dailyAverages.push({ dateStr: `${parts[2]}/${parts[1]}`, val: avg, rawDate: dayStr });
+                    dailyAverages.push({ dateStr: `${parts[2]}/${parts[1]}`, val: avg, maxVal: maxVal, minVal: minVal, rawDate: dayStr });
                 });
 
                 if (CONFIG.ID === 'ecowitt_lightning_strike_distance' && window.globalStoreData['ecowitt_lightning_strikes']) {
@@ -842,21 +845,64 @@
             if(dailyAverages.length === 0) return;
             const ctx = document.getElementById('chart30d').getContext('2d');
             if (chart30dInstance) chart30dInstance.destroy();
-            const maxVal30d = Math.max(...dailyAverages.map(d => d.val), 0);
+
+            // Per la temperatura la media giornaliera non dice nulla di utile
+            // (appiattisce giorni caldi di giorno e freddi di notte): mostriamo
+            // invece due barre sottili affiancate, massima e minima del giorno.
+            const isTemp = (CONFIG.ID === 'ecowitt_outdoor_temperature');
+            const isHum = (CONFIG.ID === 'ecowitt_humidity');
+            const isLightningCount = (CONFIG.ID === 'ecowitt_lightning_strike_distance');
+            const isPressure = (CONFIG.ID === 'ecowitt_absolute_pressure');
+
+            const maxVal30d = isTemp
+                ? Math.max(...dailyAverages.map(d => d.maxVal), 0)
+                : Math.max(...dailyAverages.map(d => d.val), 0);
+
+            // Il moltiplicatore *1.5 usato per tutte le altre misure lasciava
+            // troppo vuoto sopra i dati reali per queste 3 (umidita' non supera
+            // mai 100 comunque, pressione e fulmini raramente si avvicinano ai
+            // loro estremi teorici) - margine piu' realistico caso per caso.
+            let ySuggestedMax;
+            if (isTemp) ySuggestedMax = maxVal30d + 6;
+            else if (isHum) ySuggestedMax = Math.min(maxVal30d + 8, 100);
+            else if (isLightningCount) ySuggestedMax = maxVal30d * 1.2;
+            else ySuggestedMax = maxVal30d * 1.5;
+
+            const datasets = isTemp ? [
+                {
+                    label: `Minima (${CONFIG.UNITA})`,
+                    data: dailyAverages.map(d => d.minVal),
+                    backgroundColor: '#00d4ff', borderRadius: 3,
+                    barPercentage: 0.55, categoryPercentage: 0.6,
+                    datalabels: { color: '#00d4ff' }
+                },
+                {
+                    label: `Massima (${CONFIG.UNITA})`,
+                    data: dailyAverages.map(d => d.maxVal),
+                    backgroundColor: '#ff5252', borderRadius: 3,
+                    barPercentage: 0.55, categoryPercentage: 0.6,
+                    datalabels: { color: '#ff5252' }
+                }
+            ] : [{
+                label: (CONFIG.ID === 'ecowitt_lightning_strike_distance') ? `Totale Fulmini del Giorno` : `Media Giornaliera (${CONFIG.UNITA})`,
+                data: dailyAverages.map(d => d.val),
+                backgroundColor: CONFIG.COLORE, borderRadius: 4, barPercentage: 0.55, categoryPercentage: 0.6
+            }];
+
             Chart.defaults.color = themeColor('--text-muted'); chart30dInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: dailyAverages.map(d => d.dateStr),
-                    datasets: [{
-                        label: (CONFIG.ID === 'ecowitt_lightning_strike_distance') ? `Totale Fulmini del Giorno` : `Media Giornaliera (${CONFIG.UNITA})`,
-                        data: dailyAverages.map(d => d.val),
-                        backgroundColor: CONFIG.COLORE, borderRadius: 4, barPercentage: 0.55, categoryPercentage: 0.6
-                    }]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { top: 45 } },
+                    layout: { padding: { top: 2 } },
                     plugins: {
+                        legend: {
+                            labels: { font: { size: 9 }, padding: 4 },
+                            padding: 0
+                        },
                         datalabels: {
                             color: themeColor('--text-primary'),
                             rotation: -90,
@@ -865,18 +911,22 @@
                             offset: 6,
                             clamp: true,
                             clip: false,
-                            font: { size: 9, weight: 'bold' },
+                            font: { size: 8, weight: 'bold' },
                             formatter: function(value) {
-                                return value > 0 ? Math.round(value) : '';
+                                return (value !== null && !isNaN(value) && (value > 0 || isTemp)) ? Math.round(value) : '';
                             }
                         }
                     },
                     scales: {
+                        x: {
+                            ticks: { font: { size: 11 } }
+                        },
                         y: {
-                            min: (CONFIG.ID === 'ecowitt_absolute_pressure') ? 950 : undefined,
-                            max: (CONFIG.ID === 'ecowitt_absolute_pressure') ? 1050 : undefined,
-                            suggestedMax: (CONFIG.ID === 'ecowitt_absolute_pressure') ? undefined : maxVal30d * 1.5,
-                            beginAtZero: (CONFIG.ID !== 'ecowitt_absolute_pressure')
+                            min: isPressure ? 950 : undefined,
+                            max: isPressure ? 1040 : undefined,
+                            suggestedMax: isPressure ? undefined : ySuggestedMax,
+                            beginAtZero: !isPressure,
+                            ticks: { font: { size: 11 } }
                         }
                     }
                 }
@@ -1029,8 +1079,12 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        layout: { padding: { top: 45, right: 10 } },
+                        layout: { padding: { top: 2, right: 10 } },
                         plugins: {
+                            legend: {
+                                labels: { font: { size: 9 }, padding: 4 },
+                                padding: 0
+                            },
                             datalabels: {
                                 color: themeColor('--text-secondary'),
                                 rotation: -90,
@@ -1039,11 +1093,14 @@
                                 offset: 6,
                                 clamp: true,
                                 clip: false,
-                                font: { size: 9, weight: 'bold' },
+                                font: { size: 8, weight: 'bold' },
                                 formatter: value => value > 0 ? Number(value).toFixed(1) : ''
                             }
                         },
-                        scales: { y: { beginAtZero: true, suggestedMax: maxRain30d * 1.5 } }
+                        scales: {
+                            x: { ticks: { font: { size: 11 } } },
+                            y: { beginAtZero: true, suggestedMax: maxRain30d * 1.5, ticks: { font: { size: 11 } } }
+                        }
                     }
                 });
 
@@ -1073,8 +1130,12 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        layout: { padding: { top: 45, right: 10 } },
+                        layout: { padding: { top: 2, right: 10 } },
                         plugins: {
+                            legend: {
+                                labels: { font: { size: 9 }, padding: 4 },
+                                padding: 0
+                            },
                             datalabels: {
                                 color: themeColor('--text-secondary'),
                                 rotation: -90,
@@ -1083,11 +1144,14 @@
                                 offset: 6,
                                 clamp: true,
                                 clip: false,
-                                font: { size: 9, weight: 'bold' },
+                                font: { size: 8, weight: 'bold' },
                                 formatter: value => value > 0 ? Number(value).toFixed(1) : ''
                             }
                         },
-                        scales: { y: { beginAtZero: true, suggestedMax: maxRainMonthly * 1.5 } }
+                        scales: {
+                            x: { ticks: { font: { size: 11 } } },
+                            y: { beginAtZero: true, suggestedMax: maxRainMonthly * 1.5, ticks: { font: { size: 11 } } }
+                        }
                     }
                 });
             });

@@ -2,6 +2,27 @@
 
 Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti vengono registrate qui, in ordine cronologico inverso.
 
+## 2026-09-16
+
+### Aggiunto
+- Nuova sezione "Notizie Motta Visconti e dintorni" (`notizie.html`): notizie e video degli ultimi 30 giorni per Motta Visconti, Casorate Primo, Bereguardo e Besate, più uno storico completo per anno/mese, alimentata da un bot di raccolta notizie dedicato
+- Predisposto (ma disattivato) un gate di login per la sezione Notizie, da attivare in futuro quando l'accesso sarà legato all'account
+- Nuovo box "Watt Solari" accanto a Raggi UV, con mini barra sfumata e cursore che indica il valore attuale di irraggiamento; relativo storico dedicato (grafico giornaliero + trend 30 giorni)
+- Nuovo box "Temporali" (distanza/orario ultimo fulmine rilevato oggi), ridotto da banner a piena larghezza a box compatto affiancato a "Pioggia Oggi"
+- L'icona meteo dell'ora corrente ora viene confrontata con le rilevazioni reali della stazione (radiazione solare, pioggia): se il cielo è sereno/nuvoloso/piovoso in modo diverso da quanto previsto da Open-Meteo, l'icona mostrata riflette la realtà misurata invece della sola previsione
+
+### Risolto
+- Pulsante fisico "Indietro" su Android nella sezione Notizie: ora risale la gerarchia di navigazione un passo alla volta invece di tornare sempre alla home
+- Pagina di registrazione (web e app): la tastiera non copre più i campi da compilare
+- Previsioni orarie: mostrate una per ogni ora invece che ogni 3, con scorrimento se l'elenco è lungo
+- Popup dettaglio giorno (Previsioni Future): ridotto lo spazio vuoto sopra il titolo e tra l'icona riassuntiva e la tabella oraria; corretto uno scorrimento che su alcuni telefoni veniva interpretato come ricarica della pagina
+
+### Modificato
+- Box Massima/Minima in tutte le pagine storiche: ordine invertito (prima Minima, poi Massima)
+- Grafico storico Temperatura (30 giorni): la media giornaliera (poco significativa) è stata sostituita da due barre per giorno, massima e minima
+- Grafici storici a 30 giorni (tutte le misure, inclusi Pioggia Giornaliera e Accumulo Mensile): meno spazio sprecato sopra la legenda, canvas più alto e più largo, caratteri leggermente ridotti
+- Scale degli assi di Umidità, Pressione e Temporali nei grafici storici: intervallo ridotto per non lasciare così tanto spazio vuoto sopra i valori reali
+
 ## 2026-09-11
 
 ### Risolto
