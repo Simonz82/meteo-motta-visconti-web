@@ -2,6 +2,23 @@
 
 Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti vengono registrate qui, in ordine cronologico inverso.
 
+## 2026-09-17
+
+### Aggiunto
+- Nuovo sistema di temi grafici "glass": 13 temi totali (Scuro, Chiaro, Black Glass, Black AMOLED, Blu, Green, Pink, Red, Violet, Orange, Teal, Gold, Notte), con un effetto vetro/riflesso coerente su tutte le pagine (card, pulsanti, grafici, popup)
+- Notifiche push per le news locali (Motta Visconti, Casorate Primo, Bereguardo, Besate): attivabili singolarmente dalle impostazioni notifiche (anche su Safari/iPhone tramite Web Push)
+- Sezione "News anche su Telegram" spostata in fondo a `notizie.html`, sempre visibile sotto lo Storico Notizie
+- Aggiunto Lago Maggiore tra le Fonti Dati Esterne nel popup Specifiche Tecniche, con nota sulla correzione meteo basata sui dati reali della stazione
+
+### Risolto
+- Pull-to-refresh nell'app Android: trascinare verso il basso dentro un popup (es. Storico Notizie) non ricarica più l'intera pagina, ma scorre correttamente il contenuto del popup
+- Testo del footer ("dati ambientali rilevati...") illeggibile perché troppo scuro su tutti i temi
+- Etichette dei pulsanti footer (Record Storici, Webcam, Archivio Foto, Notizie, App, Apple) poco leggibili sul tema Chiaro dopo il restyling delle card
+- Filtro notizie di Casorate Primo: la ricerca non era racchiusa tra virgolette e restituiva anche notizie di altre zone/paesi non pertinenti; corretto il filtro e ripulito lo storico già raccolto
+
+### Modificato
+- Popup "Specifiche Tecniche": rimossa la sezione con i dettagli di infrastruttura server (NAS, CPU, Home Assistant, InfluxDB, Docker) per motivi di sicurezza; riscritto il resto del testo
+
 ## 2026-09-16
 
 ### Aggiunto
