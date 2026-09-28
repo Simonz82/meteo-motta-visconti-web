@@ -197,7 +197,7 @@
         #forecast-grid.dragging { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; user-select: none; }
         /* Scorre ma senza barra visibile: la sfumatura a destra indica gia' che ci sono altri giorni */
         #forecast-grid::-webkit-scrollbar { display: none; }
-        #forecast-grid.has-more { -webkit-mask-image: linear-gradient(to right, #000 88%, transparent); mask-image: linear-gradient(to right, #000 88%, transparent); }
+        #forecast-grid.has-more { -webkit-mask-image: linear-gradient(to right, #000 78%, rgba(0,0,0,0.45) 91%, transparent); mask-image: linear-gradient(to right, #000 78%, rgba(0,0,0,0.45) 91%, transparent); }
         .forecast-card { flex: 0 0 calc((100% - 24px) / 5); scroll-snap-align: start; box-sizing: border-box; }
         .forecast-card.tendenza { opacity: 0.8; }
         .forecast-tendenza { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.03em; color: var(--text-faint-3); text-transform: uppercase; margin-top: 3px; }
@@ -966,7 +966,7 @@
 </div>
 <!-- PREVISIONI PROSSIMI GIORNI (Open-Meteo) -->
 <div class="dashboard-panel">
-  <h2 class="section-title">Previsioni Future</h2>
+  <h2 class="section-title">Previsioni Future a 16gg</h2>
   <div id="forecast-status" style="text-align: center; color: var(--text-muted); font-size: 0.75rem; margin-bottom: 10px;">Caricamento...</div>
   <div id="forecast-grid"></div>
 </div>

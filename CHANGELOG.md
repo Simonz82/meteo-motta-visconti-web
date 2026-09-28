@@ -11,6 +11,8 @@ Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti veng
 
 ### Modificato
 - Riga delle previsioni scorrevole senza barra di scorrimento visibile, sia sul sito sia nell'app
+- Sfumatura più marcata sul quinto giorno, per far capire che la riga continua
+- Titolo della sezione rinominato in "Previsioni Future a 16gg"
 
 ## 2026-09-19
 
