@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+<script>/* Apertura sempre fresca: se il documento arriva dalla cache HTTP (nessun trasferimento di rete) lo ricarica subito, nascondendola, prima di disegnare la pagina (anche tornando indietro). */(function(){try{var n=performance.getEntriesByType('navigation')[0];if(n){if(n.type==='navigate'||n.type==='back_forward'){if(n.transferSize===0){document.documentElement.style.visibility='hidden';location.reload();}}}}catch(e){}})();</script>
+<script>/* Sempre aggiornata: quando la pagina torna in primo piano (riapertura app, sblocco schermo, cambio scheda) dopo almeno 10 minuti in background si ricarica subito, salvo se stai compilando un campo o hai scelto un file. */(function(){var t=0;function busy(){var a=document.activeElement;if(a){var g=a.tagName;if(g==='INPUT'||g==='TEXTAREA'||g==='SELECT'){return true;}}var f=document.querySelectorAll('input[type=file]');for(var i=0;i<f.length;i++){if(f[i].files){if(f[i].files.length){return true;}}}return false;}document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){t=Date.now();}else{if(t){if(Date.now()-t>600000){if(!busy()){location.reload();}}}t=0;}});window.addEventListener('pageshow',function(e){if(e.persisted){location.reload();}});})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Informativa sulla Privacy - Stazione Meteo Motta Visconti</title>
@@ -631,6 +633,41 @@
 <p>Questa pagina può essere aggiornata nel tempo in caso di nuove funzionalità che comportino il trattamento di ulteriori dati. La data più recente di redazione è indicata in fondo alla pagina.</p>
 
 <p class="subtitle" style="margin-top:30px;">Ultimo aggiornamento: 11 settembre 2026</p>
+
+
+<div id="pageVisitCounter" style="text-align:center; font-size:0.805rem; color:#888; padding:16px 0 6px; opacity:0.7;"></div>
+<script>
+(function() {
+  var PAGE_SLUG = 'privacy';
+  function pvcFmt(n) { var s = String(n), o = ""; while (s.length > 3) { o = "." + s.slice(-3) + o; s = s.slice(0, -3); } return s + o; }
+  // Nuova visita = prima pagina dopo 30 minuti di inattivita' sul sito (come Matomo).
+  function pvcNuova() { try { var k = 'pvcLastHit', now = Date.now(), last = parseInt(localStorage.getItem(k) || '0', 10); localStorage.setItem(k, String(now)); return (!last || now - last > 1800000) ? 1 : 0; } catch (e) { return 0; } }
+  var pvcIsApp = navigator.userAgent.indexOf('MeteoMottaAndroidApp') !== -1;
+  function pvcToken() {
+    if (pvcIsApp) {
+      try { return (typeof AndroidBridge !== 'undefined' && AndroidBridge.getToken) ? AndroidBridge.getToken() : null; } catch (e) { return null; }
+    }
+    try { return localStorage.getItem('webAccountToken'); } catch (e) { return null; }
+  }
+  fetch('/visite.php?action=hit&page=' + PAGE_SLUG + '&nuova=' + pvcNuova())
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.success) return;
+      var token = pvcToken();
+      if (!token) return;
+      fetch('/account.php', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(acc) {
+          if (acc && acc.success && acc.ruolo === 'owner') {
+            var el = document.getElementById('pageVisitCounter');
+            if (el) el.innerText = '\ud83d\udc41 ' + pvcFmt(d.visite_totali) + ' visite totali (' + pvcFmt(d.visite_oggi) + ' oggi)';
+          }
+        })
+        .catch(function() {});
+    })
+    .catch(function() {});
+})();
+</script>
 
 </body>
 </html>

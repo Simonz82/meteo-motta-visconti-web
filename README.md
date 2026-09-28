@@ -11,7 +11,7 @@ Un progetto amatoriale che raccoglie e visualizza:
 
 - 🌡️ **Temperatura, umidità, pressione, vento** — gauge in tempo reale con min/max giornalieri
 - ☀️🌙 **Sole e Luna** — orari alba/tramonto, fase lunare, stagione in corso
-- 📅 **Previsioni Future** — 5 giorni (oggi incluso) con dettaglio orario ogni 3 ore stile "ilmeteo.it"
+- 📅 **Previsioni Future** — 16 giorni (oggi incluso) con scorrimento laterale, dettaglio ora per ora e icone notturne con la luna; dall'ottavo giorno in poi indicati come "tendenza"
 - 🏆 **Record Storici** — temperature e pioggia estreme dal 1940 ad oggi
 - ⚡ **Rilevatore Fulmini** — ultimo fulmine, distanza minima della giornata, allerta se sotto i 10 km nell'ultima ora
 - 🌬️ **Qualità dell'Aria** — indice UAQI, PM2.5, PM10, Ozono, Anidride Nitrosa
@@ -45,6 +45,12 @@ Le modifiche vengono registrate in [CHANGELOG.md](CHANGELOG.md).
 
 - `index.html` — homepage con tutte le card in tempo reale
 - `storico.html` — pagina condivisa per lo storico di ogni misura (temperatura, umidità, vento, fulmini, pioggia, qualità dell'aria, polline), selezionata via `?misura=`
+- `notizie.html` — notizie e video locali di Motta Visconti, Casorate Primo, Bereguardo e Besate, con storico per anno/mese
+- `sagre.html` — sagre ed eventi dei dintorni, con invio locandine dagli utenti e moderazione
+- `foto.html` — archivio foto storiche
+- `changelog.html` — pagina del sito che mostra questo CHANGELOG
+- `privacy.html`, `reset_password.html` — informativa privacy e reimpostazione password dell'account
+- `manifest.json`, `firebase-messaging-sw.js` — manifest web app e service worker per le notifiche push (chiavi oscurate)
 
 ## Nota
 

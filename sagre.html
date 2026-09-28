@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<script>/* Apertura sempre fresca: se il documento arriva dalla cache HTTP (nessun trasferimento di rete) lo ricarica subito, nascondendola, prima di disegnare la pagina (anche tornando indietro). */(function(){try{var n=performance.getEntriesByType('navigation')[0];if(n){if(n.type==='navigate'||n.type==='back_forward'){if(n.transferSize===0){document.documentElement.style.visibility='hidden';location.reload();}}}}catch(e){}})();</script>
+<script>/* Sempre aggiornata: quando la pagina torna in primo piano (riapertura app, sblocco schermo, cambio scheda) dopo almeno 10 minuti in background si ricarica subito, salvo se stai compilando un campo o hai scelto un file. */(function(){var t=0;function busy(){var a=document.activeElement;if(a){var g=a.tagName;if(g==='INPUT'||g==='TEXTAREA'||g==='SELECT'){return true;}}var f=document.querySelectorAll('input[type=file]');for(var i=0;i<f.length;i++){if(f[i].files){if(f[i].files.length){return true;}}}return false;}document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){t=Date.now();}else{if(t){if(Date.now()-t>600000){if(!busy()){location.reload();}}}t=0;}});window.addEventListener('pageshow',function(e){if(e.persisted){location.reload();}});})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <title>Sagre ed Eventi - Motta Visconti e dintorni</title>
+    <style>
+        /* L'attributo hidden va sempre rispettato, anche quando una regola
+           piu' sotto imposta un display esplicito sullo stesso elemento
+           (es. .toggle-form-btn) - senza questo reset quella regola vince
+           e l'elemento resta visibile pur essendo "hidden". */
+        [hidden] { display: none !important; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: var(--bg-card-2);
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px var(--shadow-soft);
+        }
+
+        h1 { font-size: 1.5rem; margin: 0 0 4px; color: var(--accent-primary); font-weight: 800; }
+        .subtitle { color: var(--text-faint); font-size: 0.85rem; margin-bottom: 20px; font-weight: 500; }
+
+        .intro-card {
+            background: var(--bg-card); border-radius: 16px; padding: 16px 18px;
+            margin-bottom: 18px; font-size: 0.85rem; line-height: 1.5; color: var(--text-body);
+            box-shadow: 0 4px 15px var(--shadow-card);
+        }
+        .intro-card strong { color: var(--text-primary); }
+
+        .toggle-form-btn {
+            display: block; width: 100%; background: linear-gradient(145deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff; border: none; border-radius: 14px; padding: 12px; font-weight: 700;
+            font-size: 0.9rem; cursor: pointer; margin-bottom: 18px; box-shadow: 0 4px 15px var(--shadow-soft);
+        }
+
+        .form-card {
+            background: var(--bg-card); border-radius: 16px; padding: 18px;
+            margin-bottom: 18px; box-shadow: 0 4px 15px var(--shadow-card);
+        }
+        .form-card label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin: 12px 0 5px; }
+        .form-card label:first-child { margin-top: 0; }
+        .form-card input[type="text"], .form-card input[type="date"], .form-card input[type="file"] {
+            width: 100%; box-sizing: border-box; background: var(--bg-card-2); border: 1px solid var(--border-color-2);
+            color: var(--text-primary); border-radius: 10px; padding: 10px 12px; font-size: 0.9rem;
+        }
+        .form-card .submit-btn {
+            margin-top: 16px; width: 100%; background: linear-gradient(145deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff; border: none; border-radius: 12px; padding: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer;
+        }
+        .form-hint { font-size: 0.7rem; color: var(--text-faint); margin-top: 4px; }
+        .login-note {
+            background: var(--bg-card); border-radius: 14px; padding: 16px; margin-bottom: 18px;
+            font-size: 0.85rem; color: var(--text-body); text-align: center;
+        }
+        .login-note a { color: var(--accent-primary); font-weight: 700; }
+
+        .pending-section { margin-bottom: 22px; padding-bottom: 18px; border-bottom: 2px solid var(--border-color-2); }
+        .pending-section h2 { font-size: 1.05rem; color: #ff9800; margin-bottom: 12px; }
+        .pending-card {
+            background: var(--bg-card); border: 1px solid var(--border-color-2); border-radius: 14px;
+            padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 15px var(--shadow-card);
+        }
+        .pending-card img { width: 100%; max-height: 260px; object-fit: contain; border-radius: 10px; margin-bottom: 10px; background: var(--bg-card-2); }
+        .pending-card .pdf-badge {
+            display: block; text-align: center; padding: 30px 10px; background: var(--bg-card-2); border-radius: 10px;
+            margin-bottom: 10px; color: var(--accent-primary); font-weight: 700; text-decoration: none;
+        }
+        .pending-card label { display: block; font-size: 0.68rem; font-weight: 700; color: var(--text-faint); text-transform: uppercase; margin: 8px 0 4px; }
+        .pending-card input[type="text"], .pending-card input[type="date"], .pending-card input[type="file"] {
+            width: 100%; box-sizing: border-box; background: var(--bg-card-2); border: 1px solid var(--border-color-2);
+            color: var(--text-primary); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem;
+        }
+        .pending-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+        .pending-actions button {
+            border: none; border-radius: 10px; padding: 10px 4px; font-weight: 700; font-size: 0.78rem; cursor: pointer;
+        }
+        .btn-approva { background: #2e9e46; color: #fff; }
+        .btn-modifica { background: var(--bg-card-2); color: var(--text-primary); border: 1px solid var(--border-color-2) !important; }
+        .btn-rifiuta { background: #c62828; color: #fff; }
+
+        .crumb {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            margin-bottom: 18px; font-size: 0.8rem; color: var(--text-muted);
+        }
+        .crumb button {
+            background: var(--bg-card-2); color: var(--text-secondary); border: none;
+            padding: 7px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer;
+        }
+        .crumb span.sep { color: var(--text-faint-3); }
+        .crumb span.current { color: var(--accent-primary); font-weight: 700; }
+
+        .option-card {
+            background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3));
+            border: 1px solid var(--border-color-3);
+            border-radius: 15px;
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--shadow-soft);
+            margin-bottom: 12px;
+        }
+        .option-card .icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+        .option-card .name { font-weight: 700; font-size: 1.05rem; color: var(--text-primary); }
+        .option-card .hint { font-size: 0.72rem; color: var(--text-faint); margin-top: 4px; }
+
+        .year-grid, .month-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+        }
+        .pill-btn {
+            background: var(--bg-card-2); border: 1px solid var(--border-color-2);
+            color: var(--text-primary); border-radius: 12px; padding: 14px 8px;
+            text-align: center; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+        }
+
+        .sagra-card-wrap { margin-bottom: 16px; }
+        .sagra-card-wrap .sagra-card { margin-bottom: 0; }
+        .sagra-card {
+            display: block; background: var(--bg-card); border-radius: 16px; overflow: hidden;
+            box-shadow: 0 4px 15px var(--shadow-card); text-decoration: none; color: inherit;
+        }
+        .edit-inline-btn {
+            display: block; width: 100%; background: var(--bg-card-2); color: var(--text-primary);
+            border: 1px solid var(--border-color-2); border-radius: 12px;
+            padding: 9px; font-weight: 700; font-size: 0.78rem; cursor: pointer; margin-top: 8px;
+        }
+        .edit-inline-form {
+            background: var(--bg-card); border: 1px solid var(--border-color-2);
+            border-radius: 14px; padding: 12px 14px 14px; margin-top: 8px;
+        }
+        .edit-inline-form label { display: block; font-size: 0.68rem; font-weight: 700; color: var(--text-faint); text-transform: uppercase; margin: 8px 0 4px; }
+        .edit-inline-form label:first-child { margin-top: 0; }
+        .edit-inline-form input[type="text"], .edit-inline-form input[type="date"], .edit-inline-form input[type="file"] {
+            width: 100%; box-sizing: border-box; background: var(--bg-card-2); border: 1px solid var(--border-color-2);
+            color: var(--text-primary); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem;
+        }
+        .edit-inline-form .submit-btn {
+            margin-top: 12px; width: 100%; background: linear-gradient(145deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff; border: none; border-radius: 10px; padding: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer;
+        }
+        .btn-elimina-owner {
+            display: block; width: 100%; background: #7a1f1f; color: #fff; border: 1px solid #a53232;
+            border-radius: 12px; padding: 9px; font-weight: 700; font-size: 0.78rem; cursor: pointer; margin-top: 8px;
+        }
+        .sagra-card img { width: 100%; max-height: 340px; object-fit: contain; background: var(--bg-card-2); display: block; }
+        .sagra-card .pdf-badge {
+            display: block; text-align: center; padding: 40px 10px; background: var(--bg-card-2);
+            color: var(--accent-primary); font-weight: 700; font-size: 1.1rem;
+        }
+        .sagra-info { padding: 12px 14px; }
+        .sagra-titolo { font-weight: 700; font-size: 1rem; color: var(--text-primary); margin-bottom: 4px; }
+        .sagra-meta { font-size: 0.78rem; color: var(--text-faint); }
+        .sagra-meta .paese-tag {
+            display: inline-block; background: var(--bg-card-2); color: var(--accent-primary);
+            border-radius: 999px; padding: 2px 10px; font-weight: 700; margin-right: 6px;
+        }
+
+        .empty-state, .loading-state {
+            text-align: center; color: var(--text-faint); font-size: 0.85rem; padding: 40px 10px;
+        }
+    </style>
+<style id="theme-vars">
+  :root, :root[data-theme="scuro"] {
+    --bg-page: #111111;
+    --bg-card: #1c1c1c;
+    --bg-card-hover: #252525;
+    --bg-card-2: #2a2a2a;
+    --bg-card-3: #1e1e1e;
+    --bg-card-4: #232323;
+    --bg-elevated: #1a1a1a;
+    --bg-deep: #131313;
+
+    --border-color: #333333;
+    --border-color-2: #444444;
+    --border-color-3: #555555;
+
+    --text-primary: #ffffff;
+    --text-secondary: #e1e1e1;
+    --text-secondary-2: #aaaaaa;
+    --icon-muted: #757575;
+    --text-body: #cccccc;
+    --text-muted: #9e9e9e;
+    --text-muted-2: #999999;
+    --text-faint: #888888;
+    --text-faint-2: #777777;
+    --text-faint-3: #666666;
+    --gauge-track: #222222;
+
+    --accent-primary: #00d4ff;
+    --accent-primary-rgb: 0,212,255;
+    --accent-secondary: #4caf50;
+    --accent-secondary-rgb: 76,175,80;
+
+    --shadow-card: rgba(0,0,0,0.4);
+    --shadow-soft: rgba(0,0,0,0.5);
+    --shadow-strong: rgba(0,0,0,0.6);
+    --shadow-modal: rgba(0,0,0,0.8);
+    --overlay-bg: rgba(0,0,0,0.85);
+
+    --card-blur: 0px;
+    --card-border-glass: transparent;
+  }
+
+  :root[data-theme="chiaro"] {
+    --bg-page: #eef1f5;
+    --bg-card: linear-gradient(145deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 100%);
+    --bg-card-hover: linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.68) 100%);
+    --bg-card-2: linear-gradient(145deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.35) 100%);
+    --bg-card-3: rgba(255,255,255,0.85);
+    --bg-card-4: rgba(15,23,42,0.035);
+    --bg-elevated: rgba(255,255,255,0.85);
+    --bg-deep: #dfe4ea;
+
+    --border-color: rgba(15,23,42,0.10);
+    --border-color-2: rgba(15,23,42,0.14);
+    --border-color-3: rgba(15,23,42,0.20);
+
+    --text-primary: #171a1f;
+    --text-secondary: #2f343c;
+    --text-secondary-2: #4a505a;
+    --icon-muted: #7d838c;
+    --text-body: #454b54;
+    --text-muted: #656b74;
+    --text-muted-2: #6f7580;
+    --text-faint: #7d838c;
+    --text-faint-2: #8b919a;
+    --text-faint-3: #9aa0a8;
+    --gauge-track: #c7cbd1;
+
+    --accent-primary: #0090c8;
+    --accent-primary-rgb: 0,144,200;
+    --accent-secondary: #2e9e46;
+    --accent-secondary-rgb: 46,158,70;
+
+    --shadow-card: rgba(30,41,59,0.10);
+    --shadow-soft: rgba(30,41,59,0.14);
+    --shadow-strong: rgba(30,41,59,0.18);
+    --shadow-modal: rgba(30,41,59,0.30);
+    --overlay-bg: rgba(15,23,42,0.45);
+
+    --card-blur: 18px;
+    --card-border-glass: rgba(255,255,255,0.5);
+  }
+
+  :root[data-theme="black"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(255,255,255,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(255,255,255,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(255,255,255,0.11) 100%);
+    --bg-card-3: rgba(255,255,255,0.16);
+    --bg-card-4: rgba(255,255,255,0.13);
+    --bg-elevated: rgba(255,255,255,0.11);
+    --bg-deep: #000000;
+
+    --border-color: rgba(255,255,255,0.16);
+    --border-color-2: rgba(255,255,255,0.24);
+    --border-color-3: rgba(255,255,255,0.34);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e6e6e6;
+    --text-secondary-2: #b0b0b0;
+    --icon-muted: #7d7d7d;
+    --text-body: #cfcfcf;
+    --text-muted: #9a9a9a;
+    --text-muted-2: #8f8f8f;
+    --text-faint: #7d7d7d;
+    --text-faint-2: #6c6c6c;
+    --text-faint-3: #5a5a5a;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #00e5ff;
+    --accent-primary-rgb: 0,229,255;
+    --accent-secondary: #00e676;
+    --accent-secondary-rgb: 0,230,118;
+
+    --shadow-card: rgba(0,0,0,0.6);
+    --shadow-soft: rgba(0,0,0,0.6);
+    --shadow-strong: rgba(0,0,0,0.7);
+    --shadow-modal: rgba(0,0,0,0.9);
+    --overlay-bg: rgba(0,0,0,0.92);
+
+    --card-blur: 16px;
+    --card-border-glass: rgba(255,255,255,0.10);
+  }
+
+  :root[data-theme="blackamoled"] {
+    --compass-inner: rgba(255,255,255,0.07);
+    --compass-outer: rgba(255,255,255,0.045);
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.0) 40%);
+    --bg-card-hover: linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.02) 40%);
+    --bg-card-2: linear-gradient(145deg, rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.0) 40%);
+    --bg-card-3: rgba(255,255,255,0.05);
+    --bg-card-4: rgba(255,255,255,0.04);
+    --bg-elevated: rgba(255,255,255,0.03);
+    --bg-deep: #000000;
+
+    --border-color: rgba(255,255,255,0.12);
+    --border-color-2: rgba(255,255,255,0.18);
+    --border-color-3: rgba(255,255,255,0.26);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e6e6e6;
+    --text-secondary-2: #b0b0b0;
+    --icon-muted: #7d7d7d;
+    --text-body: #cfcfcf;
+    --text-muted: #9a9a9a;
+    --text-muted-2: #8f8f8f;
+    --text-faint: #7d7d7d;
+    --text-faint-2: #6c6c6c;
+    --text-faint-3: #5a5a5a;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #00e5ff;
+    --accent-primary-rgb: 0,229,255;
+    --accent-secondary: #00e676;
+    --accent-secondary-rgb: 0,230,118;
+
+    --shadow-card: rgba(0,0,0,0.6);
+    --shadow-soft: rgba(0,0,0,0.6);
+    --shadow-strong: rgba(0,0,0,0.7);
+    --shadow-modal: rgba(0,0,0,0.9);
+    --overlay-bg: rgba(0,0,0,0.92);
+
+    --card-blur: 16px;
+    --card-border-glass: rgba(255,255,255,0.10);
+  }
+
+  :root[data-theme="blu"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(90,150,220,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(90,150,220,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(90,150,220,0.11) 100%);
+    --bg-card-3: rgba(90,150,220,0.16);
+    --bg-card-4: rgba(90,150,220,0.13);
+    --bg-elevated: rgba(90,150,220,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(90,150,220,0.18);
+    --border-color-2: rgba(90,150,220,0.26);
+    --border-color-3: rgba(90,150,220,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #3fa9ff;
+    --accent-primary-rgb: 63,169,255;
+    --accent-secondary: #64d8c6;
+    --accent-secondary-rgb: 100,216,198;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(90,150,220,0.18);
+  }
+
+  :root[data-theme="green"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(110,200,150,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(110,200,150,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(110,200,150,0.11) 100%);
+    --bg-card-3: rgba(110,200,150,0.16);
+    --bg-card-4: rgba(110,200,150,0.13);
+    --bg-elevated: rgba(110,200,150,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(110,200,150,0.18);
+    --border-color-2: rgba(110,200,150,0.26);
+    --border-color-3: rgba(110,200,150,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #2fdb85;
+    --accent-primary-rgb: 47,219,133;
+    --accent-secondary: #9ccc65;
+    --accent-secondary-rgb: 156,204,101;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(110,200,150,0.18);
+  }
+
+  :root[data-theme="pink"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(230,110,180,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(230,110,180,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(230,110,180,0.11) 100%);
+    --bg-card-3: rgba(230,110,180,0.16);
+    --bg-card-4: rgba(230,110,180,0.13);
+    --bg-elevated: rgba(230,110,180,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(230,110,180,0.18);
+    --border-color-2: rgba(230,110,180,0.26);
+    --border-color-3: rgba(230,110,180,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #ff5cad;
+    --accent-primary-rgb: 255,92,173;
+    --accent-secondary: #ffb86b;
+    --accent-secondary-rgb: 255,184,107;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(230,110,180,0.18);
+  }
+
+  :root[data-theme="red"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(230,110,110,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(230,110,110,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(230,110,110,0.11) 100%);
+    --bg-card-3: rgba(230,110,110,0.16);
+    --bg-card-4: rgba(230,110,110,0.13);
+    --bg-elevated: rgba(230,110,110,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(230,110,110,0.18);
+    --border-color-2: rgba(230,110,110,0.26);
+    --border-color-3: rgba(230,110,110,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #ff5252;
+    --accent-primary-rgb: 255,82,82;
+    --accent-secondary: #ffb74d;
+    --accent-secondary-rgb: 255,183,77;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(230,110,110,0.18);
+  }
+
+  :root[data-theme="notte"] {
+    --bg-page: #060d1a;
+    --bg-card: linear-gradient(145deg, #04070f 0%, rgba(60,110,180,0.20) 100%);
+    --bg-card-hover: linear-gradient(145deg, #070b17 0%, rgba(60,110,180,0.28) 100%);
+    --bg-card-2: linear-gradient(145deg, #03050c 0%, rgba(60,110,180,0.14) 100%);
+    --bg-card-3: rgba(60,110,180,0.20);
+    --bg-card-4: rgba(60,110,180,0.13);
+    --bg-elevated: rgba(60,110,180,0.18);
+    --bg-deep: #04070f;
+
+    --border-color: rgba(120,170,230,0.16);
+    --border-color-2: rgba(120,170,230,0.24);
+    --border-color-3: rgba(120,170,230,0.32);
+
+    --text-primary: #eaf3ff;
+    --text-secondary: #c7ddf5;
+    --text-secondary-2: #9fbede;
+    --icon-muted: #6f93b5;
+    --text-body: #b0cae4;
+    --text-muted: #85a6c6;
+    --text-muted-2: #7a9cbd;
+    --text-faint: #6f93b5;
+    --text-faint-2: #5f84a6;
+    --text-faint-3: #4f7597;
+    --gauge-track: #17263a;
+
+    --accent-primary: #4fd8ff;
+    --accent-primary-rgb: 79,216,255;
+    --accent-secondary: #4ce6a8;
+    --accent-secondary-rgb: 76,230,168;
+
+    --shadow-card: rgba(0,4,15,0.5);
+    --shadow-soft: rgba(0,4,15,0.55);
+    --shadow-strong: rgba(0,4,15,0.65);
+    --shadow-modal: rgba(0,4,15,0.8);
+    --overlay-bg: rgba(2,6,15,0.88);
+
+    --card-blur: 20px;
+    --card-border-glass: rgba(140,200,255,0.16);
+  }
+
+
+
+
+
+
+  :root[data-theme="violet"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(160,110,230,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(160,110,230,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(160,110,230,0.11) 100%);
+    --bg-card-3: rgba(160,110,230,0.16);
+    --bg-card-4: rgba(160,110,230,0.13);
+    --bg-elevated: rgba(160,110,230,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(160,110,230,0.18);
+    --border-color-2: rgba(160,110,230,0.26);
+    --border-color-3: rgba(160,110,230,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #b388ff;
+    --accent-primary-rgb: 179,136,255;
+    --accent-secondary: #ff80ab;
+    --accent-secondary-rgb: 255,128,171;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(160,110,230,0.18);
+  }
+
+  :root[data-theme="orange"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(255,152,0,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(255,152,0,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(255,152,0,0.11) 100%);
+    --bg-card-3: rgba(255,152,0,0.16);
+    --bg-card-4: rgba(255,152,0,0.13);
+    --bg-elevated: rgba(255,152,0,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(255,152,0,0.18);
+    --border-color-2: rgba(255,152,0,0.26);
+    --border-color-3: rgba(255,152,0,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #ff9800;
+    --accent-primary-rgb: 255,152,0;
+    --accent-secondary: #ffca28;
+    --accent-secondary-rgb: 255,202,40;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(255,152,0,0.18);
+  }
+
+  :root[data-theme="teal"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(0,188,212,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(0,188,212,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(0,188,212,0.11) 100%);
+    --bg-card-3: rgba(0,188,212,0.16);
+    --bg-card-4: rgba(0,188,212,0.13);
+    --bg-elevated: rgba(0,188,212,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(0,188,212,0.18);
+    --border-color-2: rgba(0,188,212,0.26);
+    --border-color-3: rgba(0,188,212,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #00bcd4;
+    --accent-primary-rgb: 0,188,212;
+    --accent-secondary: #4dd0e1;
+    --accent-secondary-rgb: 77,208,225;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(0,188,212,0.18);
+  }
+
+  :root[data-theme="gold"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(255,193,7,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(255,193,7,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(255,193,7,0.11) 100%);
+    --bg-card-3: rgba(255,193,7,0.16);
+    --bg-card-4: rgba(255,193,7,0.13);
+    --bg-elevated: rgba(255,193,7,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(255,193,7,0.18);
+    --border-color-2: rgba(255,193,7,0.26);
+    --border-color-3: rgba(255,193,7,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #ffc107;
+    --accent-primary-rgb: 255,193,7;
+    --accent-secondary: #fff176;
+    --accent-secondary-rgb: 255,241,118;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(255,193,7,0.18);
+  }
+
+        /* Visualizzatore locandine a schermo intero (swipe / zoom) */
+        #lb { position: fixed; inset: 0; z-index: 9999; touch-action: none; overscroll-behavior: none; background: #000; display: flex; flex-direction: column; }
+        #lb[hidden] { display: none !important; }
+        #lbStage { flex: 1; position: relative; overflow: hidden; touch-action: none; display: flex; align-items: center; justify-content: center; }
+        #lbImg { max-width: 100%; max-height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; will-change: transform; transform-origin: center center; }
+        #lbBar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; color: #fff; font-size: 0.85rem; gap: 10px; }
+        #lbCap { flex: 1; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #lbCount { opacity: 0.75; font-size: 0.78rem; white-space: nowrap; }
+        #lbClose { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.1rem; cursor: pointer; flex-shrink: 0; }
+        .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 50%; width: 42px; height: 42px; font-size: 1.4rem; cursor: pointer; z-index: 2; }
+        #lbPrev { left: 8px; } #lbNext { right: 8px; }
+        @media (hover: none) { .lb-nav { display: none; } }
+
+        .nofoto-badge { display: flex; align-items: center; justify-content: center; padding: 22px 12px; background: var(--bg-card-2); color: var(--text-faint); font-weight: 700; font-size: 0.85rem; }
+
+        #lbInfo { padding: 12px 18px calc(14px + env(safe-area-inset-bottom, 0px)); color: #fff; text-align: center; background: rgba(0,0,0,0.6); }
+        #lbTitolo { font-weight: 800; font-size: 1.02rem; line-height: 1.25; }
+        #lbMeta { margin-top: 6px; font-size: 0.85rem; opacity: 0.85; }
+        #lbMeta b { color: #9ee7ff; }
+</style>
+
+<script id="theme-switcher">
+(function() {
+  var VALID_THEMES = ['scuro', 'chiaro', 'black', 'blu', 'green', 'pink', 'red', 'notte', 'violet', 'blackamoled', 'orange', 'teal', 'gold'];
+  function applyTheme(name, persist) {
+    if (VALID_THEMES.indexOf(name) === -1) return false;
+    if (name === 'scuro') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', name);
+    }
+    if (persist) {
+      try { localStorage.setItem('siteTheme', name); } catch (e) {}
+    }
+    return true;
+  }
+  window.setAppTheme = function(name) { applyTheme(name, true); };
+  var params = new URLSearchParams(window.location.search);
+  var fromUrl = params.get('theme');
+  if (fromUrl) {
+    applyTheme(fromUrl, true);
+  } else {
+    var stored = null;
+    try { stored = localStorage.getItem('siteTheme'); } catch (e) {}
+    if (stored) applyTheme(stored, false);
+  }
+})();
+</script>
+</head>
+<body>
+
+<a href="index.html" class="back-btn">⬅ Torna al Meteo</a>
+<h1>🎪 Sagre ed Eventi dei dintorni</h1>
+<div class="subtitle">Locandine di feste e sagre a Motta Visconti e nei paesi vicini</div>
+
+<div class="intro-card">
+  <strong>Aiutaci a tenere aggiornata questa pagina!</strong> Chiunque può segnalare un evento: scrivi il titolo,
+  il paese e la data, e carica la locandina (foto o PDF). Dopo il controllo di un amministratore, comparirà qui per tutti.
+</div>
+
+<button id="toggleFormBtn" class="toggle-form-btn" onclick="toggleForm()" hidden>➕ Proponi un evento</button>
+
+<div id="loginNote" class="login-note" hidden>
+  🔒 <a href="index.html">Accedi o registrati</a> dalla home del sito per proporre un evento.
+</div>
+
+<form id="sagraForm" class="form-card" onsubmit="submitSagra(event)" hidden>
+  <label for="formPaese">Paese</label>
+  <input type="text" id="formPaese" list="paesiNoti" placeholder="Es. Motta Visconti" required>
+  <datalist id="paesiNoti">
+    <option value="Motta Visconti">
+    <option value="Besate">
+    <option value="Casorate Primo">
+    <option value="Bereguardo">
+  </datalist>
+
+  <label for="formTitolo">Titolo evento</label>
+  <input type="text" id="formTitolo" placeholder="Es. Sagra del Fungo Porcino" required>
+
+  <label for="formData">Data evento (primo giorno)</label>
+  <input type="date" id="formData" required>
+
+  <label for="formDataFine">Data fine (solo se dura piu' giorni)</label>
+  <input type="date" id="formDataFine">
+
+  <label for="formFile">Locandina (foto o PDF)</label>
+  <input type="file" id="formFile" accept="image/jpeg,image/png,application/pdf" required>
+  <div class="form-hint">Massimo 8 MB - formati: JPG, PNG, PDF.</div>
+
+  <button type="submit" class="submit-btn">Invia la proposta</button>
+</form>
+
+<div id="pendingSection" class="pending-section" hidden>
+  <h2>🛠️ In attesa di approvazione</h2>
+  <div id="pendingList"></div>
+</div>
+
+<div id="crumb" class="crumb"></div>
+<div id="app"></div>
+
+<script>
+var MESI = ['', 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.innerText = s == null ? '' : s;
+  return d.innerHTML;
+}
+
+// Data o intervallo di un evento: "21 Settembre 2026" oppure "15–21 Settembre 2026"
+// (data_evento = primo giorno, data_fine = ultimo giorno, opzionale).
+function formatRange(item) {
+  var a = item.data_evento || '', b = item.data_fine || '';
+  if (!b || b === a) return formatData(a);
+  var pa = a.split('-'), pb = b.split('-');
+  if (pa.length !== 3 || pb.length !== 3) return formatData(a);
+  var ga = parseInt(pa[2], 10), gb = parseInt(pb[2], 10), ma = parseInt(pa[1], 10), mb = parseInt(pb[1], 10);
+  if (pa[0] === pb[0] && ma === mb) return ga + '–' + gb + ' ' + MESI[ma] + ' ' + pa[0];
+  if (pa[0] === pb[0]) return ga + ' ' + MESI[ma] + ' – ' + gb + ' ' + MESI[mb] + ' ' + pa[0];
+  return formatData(a) + ' – ' + formatData(b);
+}
+
+function formatData(iso) {
+  var parts = (iso || '').split('-');
+  if (parts.length !== 3) return iso || '';
+  var g = parseInt(parts[2], 10), m = parseInt(parts[1], 10), a = parts[0];
+  return g + ' ' + (MESI[m] || '') + ' ' + a;
+}
+
+// Dentro l'app Android il sistema di account "web" (quello con il token in
+// localStorage) e' un meccanismo separato dal login nativo dell'app
+// (AccountManager/LoginActivity) e non condivide nulla con esso - qui dentro
+// localStorage.webAccountToken non esiste mai. Dalla versione 46 dell'app,
+// MainActivity.kt espone pero' il vero token nativo via window.AndroidBridge
+// .getToken() (stesso bridge gia' usato per isLoggedIn()), quindi lo usiamo
+// quando disponibile invece di leggere localStorage. Su una versione
+// dell'app precedente alla 46 (bridge senza questo metodo) AndroidBridge
+// .getToken sarebbe undefined: try/catch riporta correttamente "non loggato"
+// invece di rompere la pagina.
+var isAndroidApp = navigator.userAgent.indexOf('MeteoMottaAndroidApp') !== -1;
+
+function getToken() {
+  if (isAndroidApp) {
+    try { return (typeof AndroidBridge !== 'undefined' && AndroidBridge.getToken) ? AndroidBridge.getToken() : null; } catch (e) { return null; }
+  }
+  try { return localStorage.getItem('webAccountToken'); } catch (e) { return null; }
+}
+function isLoggedIn() { return !!getToken(); }
+var isAdmin = false;  // admin O owner
+var isOwner = false;  // SOLO owner - eliminazione definitiva e contatore visite
+
+// Predisposto ma spento: quando true, chi non e' loggato vede solo un invito
+// ad accedere al posto dell'elenco eventi (stesso meccanismo gia' usato in
+// notizie.html per REQUIRE_LOGIN_FOR_NEWS). Attivare solo su richiesta esplicita.
+var REQUIRE_LOGIN_FOR_SAGRE = false;
+
+function renderLoginGate() {
+  crumbEl.innerHTML = '';
+  var azione = isAndroidApp
+    ? 'Apri il menu dell\'app e accedi o registrati.'
+    : 'Torna alla <a href="index.html" style="color:var(--accent-primary);">home del sito</a> e clicca sull\'icona 👤 in alto a sinistra per accedere o registrarti.';
+  app.innerHTML = '<div class="empty-state" style="text-align:left; background:var(--bg-card); border-radius:14px; padding:20px;">' +
+    '<div style="font-size:1.5rem; margin-bottom:10px;">🔒</div>' +
+    '<div style="color:var(--text-primary); font-weight:700; margin-bottom:8px;">Accedi per vedere sagre ed eventi</div>' +
+    '<div style="font-size:0.85rem; line-height:1.5;">' + azione + '</div>' +
+    '</div>';
+}
+
+// ===== Form di proposta (solo utenti loggati) =====
+function toggleForm() {
+  var form = document.getElementById('sagraForm');
+  form.hidden = !form.hidden;
+}
+
+function initFormVisibility() {
+  var toggleBtn = document.getElementById('toggleFormBtn');
+  var loginNote = document.getElementById('loginNote');
+  if (isLoggedIn()) {
+    toggleBtn.hidden = false;
+  } else if (isAndroidApp) {
+    loginNote.innerHTML = '📱 Accedi o registrati dal menu dell\'app per proporre un evento.';
+    loginNote.hidden = false;
+  } else {
+    loginNote.hidden = false;
+  }
+}
+
+function submitSagra(e) {
+  e.preventDefault();
+  var token = getToken();
+  if (!token) return;
+  var fd = new FormData();
+  fd.append('paese', document.getElementById('formPaese').value.trim());
+  fd.append('titolo', document.getElementById('formTitolo').value.trim());
+  fd.append('data_evento', document.getElementById('formData').value);
+  fd.append('data_fine', document.getElementById('formDataFine').value);
+  var fileInput = document.getElementById('formFile');
+  if (fileInput.files[0]) fd.append('file', fileInput.files[0]);
+
+  fetch('/sagre.php?action=submit', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token },
+    body: fd
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.success) {
+        alert('Grazie! La tua proposta è stata inviata: sarà pubblicata dopo l\'approvazione di un amministratore.');
+        document.getElementById('sagraForm').reset();
+        document.getElementById('sagraForm').hidden = true;
+      } else {
+        alert('Non è stato possibile inviare la proposta (' + (d.error || 'errore') + ').');
+      }
+    })
+    .catch(function() { alert('Errore di rete, riprova.'); });
+}
+
+// ===== Sezione moderazione (solo admin/owner) =====
+function fileBlockHtml(item, prefix) {
+  if (item.file_type === 'none' || !item.file_url) return '<div class="nofoto-badge">Nessuna locandina</div>';
+  if (item.file_type === 'pdf') {
+    return '<a class="pdf-badge" href="' + esc(item.file_url) + '" target="_blank" rel="noopener">📄 Apri PDF</a>';
+  }
+  return '<img src="' + esc(item.file_url) + '" alt="">';
+}
+
+function renderPending(items) {
+  var section = document.getElementById('pendingSection');
+  var list = document.getElementById('pendingList');
+  section.hidden = false;
+  if (!items.length) {
+    list.innerHTML = '<div class="empty-state">Nessuna proposta in attesa 🎉</div>';
+    return;
+  }
+  list.innerHTML = items.map(function(item) {
+    return '<div class="pending-card" id="pending-' + item.id + '">' +
+      fileBlockHtml(item) +
+      '<label>Paese</label><input type="text" id="p-paese-' + item.id + '" list="paesiNoti" value="' + esc(item.paese) + '">' +
+      '<label>Titolo</label><input type="text" id="p-titolo-' + item.id + '" value="' + esc(item.titolo) + '">' +
+      '<label>Data evento (primo giorno)</label><input type="date" id="p-data-' + item.id + '" value="' + esc(item.data_evento) + '">' +
+      '<label>Data fine (opzionale)</label><input type="date" id="p-fine-' + item.id + '" value="' + esc(item.data_fine || '') + '">' +
+      '<label>Sostituisci locandina (opzionale)</label><input type="file" id="p-file-' + item.id + '" accept="image/jpeg,image/png,application/pdf">' +
+      '<div class="pending-actions">' +
+        '<button class="btn-approva" onclick="reviewSagra(' + item.id + ', \'approve\')">✅ Approva</button>' +
+        '<button class="btn-modifica" onclick="reviewSagra(' + item.id + ', \'edit\')">✏️ Modifica</button>' +
+        '<button class="btn-rifiuta" onclick="reviewSagra(' + item.id + ', \'reject\')">❌ Rifiuta</button>' +
+      '</div>' +
+      (isOwner ? '<button class="btn-elimina-owner" onclick="deleteSagra(' + item.id + ')">🗑️ Elimina definitivamente</button>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function reviewSagra(id, azione) {
+  var token = getToken();
+  if (!token) return;
+  if (azione === 'reject' && !confirm('Rifiutare questa proposta? Non comparirà nella pagina pubblica.')) return;
+
+  var fd = new FormData();
+  fd.append('id', id);
+  if (azione !== 'reject') {
+    fd.append('paese', document.getElementById('p-paese-' + id).value.trim());
+    fd.append('titolo', document.getElementById('p-titolo-' + id).value.trim());
+    fd.append('data_evento', document.getElementById('p-data-' + id).value);
+    fd.append('data_fine', document.getElementById('p-fine-' + id).value);
+    var fileInput = document.getElementById('p-file-' + id);
+    if (fileInput.files[0]) fd.append('file', fileInput.files[0]);
+  }
+
+  fetch('/sagre.php?action=' + azione, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token },
+    body: fd
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.success) {
+        fetchPending();
+        if (azione === 'approve') render();
+      } else {
+        alert('Operazione non riuscita (' + (d.error || 'errore') + ').');
+      }
+    })
+    .catch(function() { alert('Errore di rete, riprova.'); });
+}
+
+function fetchPending() {
+  var token = getToken();
+  if (!token || !isAdmin) return;
+  fetch('/sagre.php?action=pending', { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) { if (d && d.success) renderPending(d.items); })
+    .catch(function() {});
+}
+
+// ===== Eliminazione definitiva (SOLO owner) =====
+// A differenza di "Rifiuta" (che lascia una riga con stato 'rifiutato' come
+// traccia), questa rimuove del tutto la riga e il file - richiesta esplicita
+// dell'owner per avere "controllo totale" anche su post gia' approvati.
+function deleteSagra(id) {
+  var token = getToken();
+  if (!token || !isOwner) return;
+  if (!confirm('Eliminare DEFINITIVAMENTE questo evento? Non è recuperabile.')) return;
+  var fd = new FormData();
+  fd.append('id', id);
+  fetch('/sagre.php?action=delete', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token },
+    body: fd
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.success) { render(); fetchPending(); }
+      else { alert('Eliminazione non riuscita (' + (d.error || 'errore') + ').'); }
+    })
+    .catch(function() { alert('Errore di rete, riprova.'); });
+}
+
+// ===== Rilevamento preciso del ruolo (admin/owner) via account.php =====
+// Prima si capiva "e' admin?" solo dal fatto che ?action=pending rispondesse
+// 200 invece di 403 - funzionava per il pulsante Modifica (admin+owner), ma
+// non basta per distinguere owner da admin (serve per Elimina e contatore
+// visite, riservati al solo owner). account.php ora restituisce anche il
+// campo ruolo esatto dell'utente loggato.
+function checkRoleAndInit() {
+  var token = getToken();
+  if (!token) { render(); return; }
+  fetch('/account.php', { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      if (d && d.success) {
+        isAdmin = (d.ruolo === 'admin' || d.ruolo === 'owner');
+        isOwner = (d.ruolo === 'owner');
+        if (isAdmin) fetchPending();
+      }
+      render();
+    })
+    .catch(function() { render(); });
+}
+
+// ===== Modifica di una sagra gia' pubblicata (solo admin/owner) =====
+// A differenza della coda "In attesa", qui l'azione e' sempre "edit": lo
+// stato (approvato) resta invariato, si corregge solo il contenuto.
+function toggleEditSagra(id) {
+  var form = document.getElementById('edit-form-' + id);
+  if (form) form.hidden = !form.hidden;
+}
+
+function saveEditSagra(id) {
+  var token = getToken();
+  if (!token) return;
+  var fd = new FormData();
+  fd.append('id', id);
+  fd.append('paese', document.getElementById('e-paese-' + id).value.trim());
+  fd.append('titolo', document.getElementById('e-titolo-' + id).value.trim());
+  fd.append('data_evento', document.getElementById('e-data-' + id).value);
+  fd.append('data_fine', document.getElementById('e-fine-' + id).value);
+  var fileInput = document.getElementById('e-file-' + id);
+  if (fileInput.files[0]) fd.append('file', fileInput.files[0]);
+
+  fetch('/sagre.php?action=edit', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token },
+    body: fd
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.success) { render(); }
+      else { alert('Modifica non riuscita (' + (d.error || 'errore') + ').'); }
+    })
+    .catch(function() { alert('Errore di rete, riprova.'); });
+}
+
+// ===== Navigazione pubblica: Eventi futuri / Storico (anno -> mese) =====
+// Niente divisione per paese: gli eventi sono troppo pochi perche' abbia senso.
+//
+// Lo stato di navigazione e' codificato anche nell'URL (location.hash), non
+// solo nell'oggetto passato a history.pushState. Motivo: aprire una locandina
+// (link con target="_blank") e poi premere Indietro sul telefono NON e' una
+// semplice ricomparsa della stessa pagina JS ancora in memoria - e' spesso
+// una vera ricarica del documento (soprattutto dentro webview), che fa
+// ripartire lo script da zero perdendo lo stato tenuto solo in memoria e
+// facendo apparire un salto di due livelli invece di uno. Ricostruendo lo
+// stato leggendo l'hash ad ogni caricamento, "Indietro" torna sempre
+// esattamente un livello alla volta, sia con reload reale sia senza.
+function stateToHash(s) {
+  if (s.view === 'futuri') return '#futuri';
+  if (s.view === 'storicoAnni') return '#storico';
+  if (s.view === 'storicoMesi') return '#storico/' + s.anno;
+  if (s.view === 'storicoItems') return '#storico/' + s.anno + '/' + s.mese;
+  return '#';
+}
+function hashToState() {
+  var parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  if (!parts.length) return { view: 'home' };
+  if (parts[0] === 'futuri') return { view: 'futuri' };
+  if (parts[0] === 'storico') {
+    if (parts.length === 1) return { view: 'storicoAnni' };
+    if (parts.length === 2) return { view: 'storicoMesi', anno: parseInt(parts[1], 10) };
+    return { view: 'storicoItems', anno: parseInt(parts[1], 10), mese: parseInt(parts[2], 10) };
+  }
+  return { view: 'home' };
+}
+
+var state = hashToState();
+var app = document.getElementById('app');
+var crumbEl = document.getElementById('crumb');
+
+function pushView(newState) {
+  state = newState;
+  history.pushState(state, '', stateToHash(state));
+  render();
+}
+
+function goHome() { pushView({ view: 'home' }); }
+function goFuturi() { pushView({ view: 'futuri' }); }
+function goStoricoAnni() { pushView({ view: 'storicoAnni' }); }
+function goStoricoMesi(anno) { pushView({ view: 'storicoMesi', anno: anno }); }
+function goStoricoItems(anno, mese) { pushView({ view: 'storicoItems', anno: anno, mese: mese }); }
+
+window.addEventListener('popstate', function(e) {
+  // "Indietro" con il visualizzatore aperto = chiude solo quello.
+  if (lbOpen) { lbHide(); return; }
+  state = (e.state && e.state.view) ? e.state : hashToState();
+  render();
+});
+
+function renderCrumb() {
+  var parts = ['<button onclick="goHome()">🎪 Sagre</button>'];
+  if (state.view === 'futuri') {
+    parts.push('<span class="sep">›</span><span class="current">Eventi futuri</span>');
+  } else if (state.view !== 'home') {
+    parts.push('<span class="sep">›</span><button onclick="goStoricoAnni()">Storico</button>');
+    if (state.anno) {
+      if (state.view === 'storicoMesi') {
+        parts.push('<span class="sep">›</span><span class="current">' + state.anno + '</span>');
+      } else {
+        parts.push('<span class="sep">›</span><button onclick="goStoricoMesi(' + state.anno + ')">' + state.anno + '</button>');
+      }
+    }
+    if (state.mese) {
+      parts.push('<span class="sep">›</span><span class="current">' + MESI[state.mese] + '</span>');
+    }
+  }
+  crumbEl.innerHTML = parts.join('');
+}
+
+function sagraCardHtml(item) {
+  // Evento senza locandina (file_type 'none'): card semplice, non cliccabile.
+  var noFoto = (item.file_type === 'none' || !item.file_url);
+  var body = noFoto
+    ? '<div class="nofoto-badge">🎪 Locandina in arrivo</div>'
+    : item.file_type === 'pdf'
+      ? '<div class="pdf-badge">📄 Apri PDF</div>'
+      : '<img src="' + esc(item.file_url) + '" alt="' + esc(item.titolo) + '">';
+  var lbIdx = (noFoto || item.file_type === 'pdf') ? -1 : lbImages.indexOf(item);
+  var card = (noFoto ? '<div class="sagra-card">' : '<a class="sagra-card" href="' + (item.placeholder ? '#' : esc(item.file_url)) + '"' + (item.placeholder ? '' : ' target="_blank" rel="noopener"') +
+    (lbIdx >= 0 ? ' onclick="return openLb(' + lbIdx + ')"' : '') + '>') +
+    body +
+    '<div class="sagra-info">' +
+      '<div class="sagra-titolo">' + esc(item.titolo) + '</div>' +
+      '<div class="sagra-meta"><span class="paese-tag">' + esc(item.paese) + '</span>' + formatRange(item) + '</div>' +
+    '</div>' +
+  (noFoto ? '</div>' : '</a>');
+
+  if (!isAdmin) return '<div class="sagra-card-wrap">' + card + '</div>';
+
+  return '<div class="sagra-card-wrap">' +
+    card +
+    '<button class="edit-inline-btn" onclick="toggleEditSagra(' + item.id + ')">✏️ Modifica</button>' +
+    '<div class="edit-inline-form" id="edit-form-' + item.id + '" hidden>' +
+      '<label>Paese</label><input type="text" id="e-paese-' + item.id + '" list="paesiNoti" value="' + esc(item.paese) + '">' +
+      '<label>Titolo</label><input type="text" id="e-titolo-' + item.id + '" value="' + esc(item.titolo) + '">' +
+      '<label>Data evento (primo giorno)</label><input type="date" id="e-data-' + item.id + '" value="' + esc(item.data_evento) + '">' +
+      '<label>Data fine (opzionale)</label><input type="date" id="e-fine-' + item.id + '" value="' + esc(item.data_fine || '') + '">' +
+      '<label>Sostituisci locandina (opzionale)</label><input type="file" id="e-file-' + item.id + '" accept="image/jpeg,image/png,application/pdf">' +
+      '<button class="submit-btn" onclick="saveEditSagra(' + item.id + ')">💾 Salva modifiche</button>' +
+    '</div>' +
+    (isOwner ? '<button class="btn-elimina-owner" onclick="deleteSagra(' + item.id + ')">🗑️ Elimina definitivamente</button>' : '') +
+  '</div>';
+}
+
+// Locandina segnaposto per gli eventi senza foto: immagine SVG generata al volo
+// con "EVENTO", titolo, paese e data in sovrimpressione. Se in futuro viene
+// caricata una locandina vera (Modifica -> Sostituisci locandina) il server
+// restituisce file_type 'image' e questa non serve piu'.
+function svgEsc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function svgWrap(text, max) {
+  var words = String(text).split(/\s+/), lines = [], cur = '';
+  words.forEach(function(w) {
+    if ((cur + ' ' + w).trim().length > max && cur) { lines.push(cur); cur = w; }
+    else { cur = (cur + ' ' + w).trim(); }
+  });
+  if (cur) lines.push(cur);
+  return lines;
+}
+function placeholderUrl(item) {
+  var lines = svgWrap(item.titolo, 20);
+  var fs = lines.length <= 3 ? 58 : (lines.length <= 5 ? 48 : 40);
+  var y0 = 470 - (lines.length - 1) * fs * 0.6;
+  var tspans = lines.map(function(l, i) {
+    return '<text x="400" y="' + Math.round(y0 + i * fs * 1.2) + '" text-anchor="middle" font-size="' + fs + '" font-weight="800" fill="#fff">' + svgEsc(l) + '</text>';
+  }).join('');
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" font-family="Arial, Helvetica, sans-serif">' +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2a49"/><stop offset="0.55" stop-color="#3a1c71"/><stop offset="1" stop-color="#b24592"/></linearGradient></defs>' +
+    '<rect width="800" height="1000" fill="url(#g)"/>' +
+    '<rect x="40" y="40" width="720" height="920" rx="28" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="4"/>' +
+    '<text x="400" y="190" text-anchor="middle" font-size="90">🎪</text>' +
+    '<text x="400" y="300" text-anchor="middle" font-size="76" font-weight="900" letter-spacing="14" fill="#ffd166">EVENTO</text>' +
+    tspans +
+    '<text x="400" y="780" text-anchor="middle" font-size="46" font-weight="700" fill="#9ee7ff">' + svgEsc(item.paese) + '</text>' +
+    '<text x="400" y="850" text-anchor="middle" font-size="40" fill="#fff">' + svgEsc(formatRange(item)) + '</text>' +
+    '<text x="400" y="925" text-anchor="middle" font-size="28" fill="rgba(255,255,255,0.7)">Locandina in arrivo</text>' +
+    '</svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+function conSegnaposto(item) {
+  if (item.file_type !== 'none' && item.file_url) return item;
+  var copy = {};
+  for (var k in item) copy[k] = item[k];
+  copy.file_type = 'image';
+  copy.file_url = placeholderUrl(item);
+  copy.placeholder = true;
+  return copy;
+}
+
+function renderItemsList(items) {
+  items = items.map(conSegnaposto);
+  if (!items.length) {
+    app.innerHTML = '<div class="empty-state">Nessun evento da mostrare.</div>';
+    return;
+  }
+  lbImages = items.filter(function(it) { return it.file_type === 'image' && it.file_url; });
+  app.innerHTML = items.map(function(it) { return sagraCardHtml(it); }).join('');
+}
+
+function render() {
+  if (REQUIRE_LOGIN_FOR_SAGRE && !isLoggedIn()) {
+    renderLoginGate();
+    return;
+  }
+  renderCrumb();
+
+  if (state.view === 'home') {
+    app.innerHTML =
+      '<div class="option-card" onclick="goFuturi()"><span class="icon">🎉</span><div class="name">Eventi futuri</div><div class="hint">Le prossime sagre e feste</div></div>' +
+      '<div class="option-card" onclick="goStoricoAnni()"><span class="icon">🗂️</span><div class="name">Storico</div><div class="hint">Eventi passati, per anno e mese</div></div>';
+    return;
+  }
+
+  if (state.view === 'futuri') {
+    app.innerHTML = '<div class="loading-state">Caricamento...</div>';
+    fetch('/sagre.php?action=list')
+      .then(function(r) { return r.json(); })
+      .then(function(d) { renderItemsList(d.items || []); })
+      .catch(function() { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; });
+    return;
+  }
+
+  if (state.view === 'storicoAnni') {
+    app.innerHTML = '<div class="loading-state">Caricamento...</div>';
+    fetch('/sagre.php?action=storico_years')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var years = d.years || [];
+        if (!years.length) { app.innerHTML = '<div class="empty-state">Ancora nessun evento passato in archivio.</div>'; return; }
+        app.innerHTML = '<div class="year-grid">' + years.map(function(y) {
+          return '<div class="pill-btn" onclick="goStoricoMesi(' + y + ')">' + y + '</div>';
+        }).join('') + '</div>';
+      })
+      .catch(function() { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; });
+    return;
+  }
+
+  if (state.view === 'storicoMesi') {
+    app.innerHTML = '<div class="loading-state">Caricamento...</div>';
+    fetch('/sagre.php?action=storico_months&anno=' + state.anno)
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var months = d.months || [];
+        app.innerHTML = '<div class="month-grid">' + months.map(function(m) {
+          return '<div class="pill-btn" onclick="goStoricoItems(' + state.anno + ',' + m + ')">' + MESI[m] + '</div>';
+        }).join('') + '</div>';
+      })
+      .catch(function() { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; });
+    return;
+  }
+
+  if (state.view === 'storicoItems') {
+    app.innerHTML = '<div class="loading-state">Caricamento...</div>';
+    fetch('/sagre.php?action=storico_items&anno=' + state.anno + '&mese=' + state.mese)
+      .then(function(r) { return r.json(); })
+      .then(function(d) { renderItemsList(d.items || []); })
+      .catch(function() { app.innerHTML = '<div class="empty-state">Errore nel caricamento.</div>'; });
+    return;
+  }
+}
+
+
+// ===== Visualizzatore locandine: zoom (pinch / doppio tap) + swipe destra/sinistra =====
+// Scorre in ordine le locandine-immagine della lista attualmente visibile
+// (i PDF restano link a parte). Swipe giu' o "Indietro" per chiudere.
+var lbImages = [];
+var lbOpen = false;
+var lbIdx = 0;
+var lbEl = null, lbImg = null;
+var lbScale = 1, lbTx = 0, lbTy = 0;
+
+function lbBuild() {
+  lbEl = document.createElement('div');
+  lbEl.id = 'lb';
+  lbEl.hidden = true;
+  lbEl.innerHTML =
+    '<div id="lbBar"><div id="lbCap"></div><div id="lbCount"></div><button id="lbClose" aria-label="Chiudi">✕</button></div>' +
+    '<div id="lbStage"><button class="lb-nav" id="lbPrev" aria-label="Precedente">‹</button>' +
+    '<img id="lbImg" alt=""><button class="lb-nav" id="lbNext" aria-label="Successiva">›</button></div>' +
+    '<div id="lbInfo"><div id="lbTitolo"></div><div id="lbMeta"></div></div>';
+  document.body.appendChild(lbEl);
+  lbImg = document.getElementById('lbImg');
+  document.getElementById('lbClose').onclick = lbClose;
+  document.getElementById('lbPrev').onclick = function() { lbGo(-1); };
+  document.getElementById('lbNext').onclick = function() { lbGo(1); };
+  lbImg.addEventListener('dblclick', function() { lbToggleZoom(); });
+  lbBindTouch(document.getElementById('lbStage'));
+  document.addEventListener('keydown', function(e) {
+    if (!lbOpen) return;
+    if (e.key === 'ArrowLeft') lbGo(-1);
+    else if (e.key === 'ArrowRight') lbGo(1);
+    else if (e.key === 'Escape') lbClose();
+  });
+}
+
+function lbApply(animate) {
+  lbImg.style.transition = animate ? 'transform 0.2s ease' : 'none';
+  lbImg.style.transform = 'translate(' + lbTx + 'px,' + lbTy + 'px) scale(' + lbScale + ')';
+}
+function lbReset() { lbScale = 1; lbTx = 0; lbTy = 0; lbApply(false); }
+function lbToggleZoom() {
+  if (lbScale > 1) { lbScale = 1; lbTx = 0; lbTy = 0; } else { lbScale = 2.5; }
+  lbApply(true);
+}
+
+function lbShow() {
+  var it = lbImages[lbIdx];
+  lbReset();
+  lbImg.src = it.file_url;
+  document.getElementById('lbTitolo').textContent = it.titolo;
+  var meta = document.getElementById('lbMeta');
+  meta.textContent = '';
+  var b = document.createElement('b'); b.textContent = it.paese;
+  meta.appendChild(b);
+  meta.appendChild(document.createTextNode(' · ' + formatRange(it)));
+  document.getElementById('lbCount').textContent = (lbIdx + 1) + ' / ' + lbImages.length;
+  var single = lbImages.length < 2;
+  document.getElementById('lbPrev').style.visibility = single ? 'hidden' : 'visible';
+  document.getElementById('lbNext').style.visibility = single ? 'hidden' : 'visible';
+  // precarica le vicine per uno scorrimento fluido
+  [lbIdx - 1, lbIdx + 1].forEach(function(n) {
+    if (lbImages[n]) { var im = new Image(); im.src = lbImages[n].file_url; }
+  });
+}
+
+function lbGo(dir) {
+  var n = lbIdx + dir;
+  if (n < 0 || n >= lbImages.length) { lbApply(true); return; }
+  lbIdx = n;
+  lbShow();
+}
+
+function openLb(i) {
+  if (!lbImages[i]) return true; // fallback: apre il link normale
+  try {
+    if (!lbEl) lbBuild();
+    lbIdx = i;
+    lbOpen = true;
+    lbEl.hidden = false;
+    document.body.style.overflow = 'hidden';
+    lbSetPullToRefresh(false);
+    history.pushState({ lb: 1 }, '', location.href);
+    lbShow();
+    return false;
+  } catch (e) { lbOpen = false; return true; }
+}
+
+// Dentro l'app Android il pull-to-refresh nativo (SwipeRefreshLayout) intercetta
+// il trascinamento e annulla il tocco a meta': va spento finche' e' aperto il
+// visualizzatore (stesso ponte gia' usato dai popup della home).
+function lbSetPullToRefresh(enabled) {
+  try {
+    if (typeof AndroidBridge !== 'undefined' && AndroidBridge.setPullToRefreshEnabled) {
+      AndroidBridge.setPullToRefreshEnabled(enabled);
+    }
+  } catch (e) {}
+}
+
+function lbHide() {
+  lbSetPullToRefresh(true);
+  lbOpen = false;
+  if (lbEl) lbEl.hidden = true;
+  document.body.style.overflow = '';
+}
+function lbClose() { if (lbOpen) history.back(); }
+
+function lbBindTouch(stage) {
+  var mode = null, x0 = 0, y0 = 0, dx = 0, dy = 0, d0 = 0, s0 = 1, tx0 = 0, ty0 = 0, lastTap = 0;
+  function dist(t) { var a = t[0], b = t[1]; return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); }
+  stage.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 2) { mode = 'pinch'; d0 = dist(e.touches); s0 = lbScale; return; }
+    if (e.touches.length === 1) {
+      var now = Date.now();
+      if (now - lastTap < 300) { lbToggleZoom(); lastTap = 0; mode = null; return; }
+      lastTap = now;
+      mode = 'drag'; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; dy = 0; tx0 = lbTx; ty0 = lbTy;
+    }
+  }, { passive: false });
+  stage.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    if (mode === 'pinch' && e.touches.length === 2) {
+      lbScale = Math.min(5, Math.max(1, s0 * dist(e.touches) / d0));
+      lbApply(false);
+    } else if (mode === 'drag' && e.touches.length === 1) {
+      dx = e.touches[0].clientX - x0; dy = e.touches[0].clientY - y0;
+      if (lbScale > 1) { lbTx = tx0 + dx; lbTy = ty0 + dy; }
+      else { lbTx = dx; lbTy = Math.max(0, dy); }
+      lbApply(false);
+    }
+  }, { passive: false });
+  function endGesture(e) {
+    if (mode === 'pinch') {
+      if (lbScale < 1.05) { lbScale = 1; lbTx = 0; lbTy = 0; }
+      lbApply(true);
+      if (e.touches.length === 0) mode = null;
+      return;
+    }
+    if (mode !== 'drag') return;
+    mode = null;
+    if (lbScale > 1) { lbApply(true); return; }
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.3) { lbGo(dx < 0 ? 1 : -1); return; }
+    if (dy > 110 && dy > Math.abs(dx) * 1.3) { lbClose(); return; }
+    lbTx = 0; lbTy = 0; lbApply(true);
+  }
+  stage.addEventListener('touchend', endGesture);
+  stage.addEventListener('touchcancel', endGesture);
+}
+
+initFormVisibility();
+checkRoleAndInit(); // chiama gia' lui render() una volta noto il ruolo
+
+// ===== Contatore visite (solo per l'owner, "cosi' curioso") =====
+// L'incremento e' pubblico (deve contare le visite di chiunque), ma il
+// numero si vede SOLO se chi guarda e' owner - non e' un dato sensibile,
+// e' solo un dettaglio che non deve confondere gli altri utenti.
+(function() {
+  function pvcFmt(n) { var s = String(n), o = ""; while (s.length > 3) { o = "." + s.slice(-3) + o; s = s.slice(0, -3); } return s + o; }
+  // Nuova visita = prima pagina dopo 30 minuti di inattivita' sul sito (come Matomo).
+  function pvcNuova() { try { var k = 'pvcLastHit', now = Date.now(), last = parseInt(localStorage.getItem(k) || '0', 10); localStorage.setItem(k, String(now)); return (!last || now - last > 1800000) ? 1 : 0; } catch (e) { return 0; } }
+  fetch('/visite.php?action=hit&page=sagre&nuova=' + pvcNuova())
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.success) return;
+      var token = getToken();
+      if (!token) return;
+      fetch('/account.php', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(acc) {
+          if (acc && acc.success && acc.ruolo === 'owner') {
+            var el = document.getElementById('pageVisitCounter');
+            if (el) el.innerText = '👁 ' + pvcFmt(d.visite_totali) + ' visite totali (' + pvcFmt(d.visite_oggi) + ' oggi)';
+          }
+        })
+        .catch(function() {});
+    })
+    .catch(function() {});
+})();
+</script>
+
+<div id="pageVisitCounter" style="text-align:center; font-size:0.805rem; color:var(--text-faint); padding:16px 0 6px; opacity:0.7;"></div>
+
+</body>
+</html>

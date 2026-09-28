@@ -2,6 +2,32 @@
 
 Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti vengono registrate qui, in ordine cronologico inverso.
 
+## 2026-09-28
+
+### Aggiunto
+- Previsioni Future estese da 5 a 16 giorni (il massimo disponibile da Open-Meteo): si vedono 5 giorni alla volta e gli altri si scorrono lateralmente con il dito (su PC anche trascinando con il mouse o con la rotellina), con una sfumatura sul bordo destro finché ci sono altri giorni
+- Dall'ottavo giorno in poi le card riportano la scritta "Tendenza" e il popup avvisa che la previsione a lungo termine ha un'affidabilità bassa
+- Icone notturne: dopo il tramonto sereno, poco nuvoloso, parzialmente nuvoloso e rovesci mostrano la luna al posto del sole (anche nell'icona di "Oggi" quando è già notte)
+
+### Modificato
+- Riga delle previsioni scorrevole senza barra di scorrimento visibile, sia sul sito sia nell'app
+
+## 2026-09-19
+
+### Aggiunto
+- Nuova sezione "Sagre ed Eventi dei dintorni" (`sagre.html`), con pulsante dedicato in home: gli utenti possono inviare le locandine delle feste locali, pubblicate dopo moderazione
+- Contatore visite in fondo alle pagine, visibile solo al proprietario del sito
+- Popup dettaglio giorno delle previsioni: frecce e swipe laterale per passare da un giorno all'altro senza chiudere il popup
+- Le pagine si ricaricano da sole se aperte dalla cache o riprese dopo almeno 10 minuti in background, così mostrano sempre dati aggiornati
+
+### Modificato
+- Box Temporali: distanza e orario dell'ultimo fulmine mostrati insieme, badge più compatto
+- Sezione "News anche su Telegram" di `notizie.html` visibile solo nella vista principale, non più in ogni sotto-pagina
+- Elenco orario del popup previsioni: barra di scorrimento sottile che non copre più la colonna del vento
+
+### Risolto
+- Salvataggio del tema grafico: un errore del server ora viene segnalato invece di essere ignorato (prima al login successivo poteva tornare il tema precedente)
+
 ## 2026-09-17
 
 ### Aggiunto

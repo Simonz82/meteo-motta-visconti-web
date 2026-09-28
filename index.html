@@ -2,6 +2,8 @@
 
 <html lang="it">
 <head>
+<script>/* Apertura sempre fresca: se il documento arriva dalla cache HTTP (nessun trasferimento di rete) lo ricarica subito, nascondendola, prima di disegnare la pagina (anche tornando indietro). */(function(){try{var n=performance.getEntriesByType('navigation')[0];if(n){if(n.type==='navigate'||n.type==='back_forward'){if(n.transferSize===0){document.documentElement.style.visibility='hidden';location.reload();}}}}catch(e){}})();</script>
+<script>/* Sempre aggiornata: quando la pagina torna in primo piano (riapertura app, sblocco schermo, cambio scheda) dopo almeno 10 minuti in background si ricarica subito, salvo se stai compilando un campo o hai scelto un file. */(function(){var t=0;function busy(){var a=document.activeElement;if(a){var g=a.tagName;if(g==='INPUT'||g==='TEXTAREA'||g==='SELECT'){return true;}}var f=document.querySelectorAll('input[type=file]');for(var i=0;i<f.length;i++){if(f[i].files){if(f[i].files.length){return true;}}}return false;}document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){t=Date.now();}else{if(t){if(Date.now()-t>600000){if(!busy()){location.reload();}}}t=0;}});window.addEventListener('pageshow',function(e){if(e.persisted){location.reload();}});})();</script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" name="viewport"/>
 
@@ -99,7 +101,15 @@
         .twin-val { font-size: 0.89rem; font-weight: 800; color: var(--text-primary); line-height: 1.1; margin-top: 5px; } 
         .twin-val span { font-size: 0.65rem; font-weight: 600; color: var(--text-muted);}
         .twin-desc { font-size: 8px; font-weight: 700; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-top: 8px; color: #111; letter-spacing: 0.5px; }
-        
+
+        /* Elenco ore nel popup "Previsione Futura": la scrollbar verticale ha
+           il suo spazio dedicato (padding-right) invece di sovrapporsi alla
+           colonna del vento, ed è sottile invece del default del browser. */
+        .ore-scroll { padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--border-color-2) transparent; }
+        .ore-scroll::-webkit-scrollbar { width: 6px; }
+        .ore-scroll::-webkit-scrollbar-track { background: transparent; }
+        .ore-scroll::-webkit-scrollbar-thumb { background: var(--border-color-2); border-radius: 3px; }
+
         .pyramid-container { width: 55px; height: 55px; position: relative; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background-color: var(--bg-card-2); pointer-events: none; flex-shrink: 0;}
         .pyramid-fill-wrapper { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
         .pyramid-gradient { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; background: linear-gradient(to top, #4caf50 0%, #ffeb3b 40%, #ff9800 60%, #f44336 80%, #9c27b0 100%); }
@@ -180,6 +190,25 @@
         #webMenuModal .modal-content { margin: auto; }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: var(--icon-muted); cursor: pointer; border: none; background: none; line-height: 1; padding: 0; }
         .modal-title { margin: 0 0 15px 0; color: var(--text-primary); font-size: 1.3rem; font-weight: 600; }
+        .forecast-nav-btn { background: none; border: none; font-size: 1.6rem; color: var(--accent-primary); cursor: pointer; padding: 2px 14px; line-height: 1; user-select: none; }
+        .forecast-nav-btn:disabled { opacity: 0.25; cursor: default; }
+        /* Previsioni 16 giorni: 5 card visibili, le altre si scorrono lateralmente */
+        #forecast-grid { display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; overscroll-behavior-x: contain; scrollbar-width: none; -ms-overflow-style: none; cursor: grab; }
+        #forecast-grid.dragging { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; user-select: none; }
+        /* Scorre ma senza barra visibile: la sfumatura a destra indica gia' che ci sono altri giorni */
+        #forecast-grid::-webkit-scrollbar { display: none; }
+        #forecast-grid.has-more { -webkit-mask-image: linear-gradient(to right, #000 88%, transparent); mask-image: linear-gradient(to right, #000 88%, transparent); }
+        .forecast-card { flex: 0 0 calc((100% - 24px) / 5); scroll-snap-align: start; box-sizing: border-box; }
+        .forecast-card.tendenza { opacity: 0.8; }
+        .forecast-tendenza { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.03em; color: var(--text-faint-3); text-transform: uppercase; margin-top: 3px; }
+        /* Icone notturne composte: luna + nuvola (Unicode non ha emoji "luna con nuvole") */
+        .ico-notte { position: relative; display: inline-block; width: 1.2em; height: 1.05em; line-height: 1; vertical-align: middle; }
+        .ico-notte > span { position: absolute; line-height: 1; }
+        .ico-notte .luna { left: 0; top: 0; font-size: 0.78em; }
+        .ico-notte .nube { right: 0; bottom: 0; font-size: 0.6em; }
+        .ico-notte.parz .luna { font-size: 0.68em; }
+        .ico-notte.parz .nube, .ico-notte.rovesci .nube { font-size: 0.78em; }
+        .ico-notte.rovesci .luna { font-size: 0.62em; }
         .time-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
         .time-btn { background: var(--bg-card-2); border: 1px solid var(--border-color-2); color: var(--text-secondary); padding: 8px 15px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; flex: 1; transition: all 0.2s;}
         .time-btn.active { background: var(--border-color); border-color: var(--text-primary); color: var(--text-primary); font-weight: bold; box-shadow: inset 0 0 0 1px var(--text-primary);}
@@ -323,7 +352,8 @@
   :root[data-theme="chiaro"] #btnLabelRecord { color: #a68b00 !important; }
   :root[data-theme="chiaro"] #btnLabelWebcam { color: #b8601a !important; }
   :root[data-theme="chiaro"] #btnLabelFoto,
-  :root[data-theme="chiaro"] #btnLabelNews { color: #0077a8 !important; }
+  :root[data-theme="chiaro"] #btnLabelNews,
+  :root[data-theme="chiaro"] #btnLabelSagre { color: #0077a8 !important; }
   :root[data-theme="chiaro"] #btnLabelApp { color: #2e7d32 !important; }
   :root[data-theme="chiaro"] #btnLabelApple { color: #4a505a !important; }
 
@@ -938,10 +968,80 @@
 <div class="dashboard-panel">
   <h2 class="section-title">Previsioni Future</h2>
   <div id="forecast-status" style="text-align: center; color: var(--text-muted); font-size: 0.75rem; margin-bottom: 10px;">Caricamento...</div>
-  <div id="forecast-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;"></div>
+  <div id="forecast-grid"></div>
 </div>
 
 <script>
+// Dall'ottavo giorno in avanti la previsione e' solo una tendenza (affidabilita' bassa).
+var FORECAST_TENDENZA_DA = 7;
+
+// Dopo il tramonto: al posto del sole la luna (sereno, poco/parz. nuvoloso,
+// rovesci). Coperto, pioggia, nebbia, neve e temporali restano uguali: con il
+// cielo coperto la luna non si vede comunque.
+function iconaMeteo(icona, notte) {
+  if (!notte) return icona;
+  // Confronto senza il selettore di variante U+FE0F, che puo' esserci o no.
+  switch (String(icona).replace(/\uFE0F/g, '')) {
+    case '☀': return '🌙';
+    case '🌤': return '<span class="ico-notte poco"><span class="luna">🌙</span><span class="nube">☁️</span></span>';
+    case '⛅': return '<span class="ico-notte parz"><span class="luna">🌙</span><span class="nube">☁️</span></span>';
+    case '🌦': return '<span class="ico-notte rovesci"><span class="luna">🌙</span><span class="nube">🌧️</span></span>';
+    default: return icona;
+  }
+}
+
+// Sfumatura sul bordo destro finche' ci sono altri giorni da scorrere.
+function aggiornaForecastFade() {
+  var grid = document.getElementById('forecast-grid');
+  if (!grid) return;
+  grid.classList.toggle('has-more', grid.scrollLeft + grid.clientWidth < grid.scrollWidth - 4);
+}
+
+// Su PC: trascinamento con il mouse e rotellina verticale convertita in
+// scorrimento orizzontale (solo sopra la riga delle previsioni).
+function initForecastScroll() {
+  var grid = document.getElementById('forecast-grid');
+  if (!grid || grid.dataset.scrollInit) return;
+  grid.dataset.scrollInit = '1';
+  grid.addEventListener('scroll', aggiornaForecastFade, { passive: true });
+  window.addEventListener('resize', aggiornaForecastFade);
+  var down = false, startX = 0, startLeft = 0, moved = false;
+  grid.addEventListener('mousedown', function(e) {
+    if (e.button !== 0) return;
+    down = true; moved = false; startX = e.clientX; startLeft = grid.scrollLeft;
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!down) return;
+    var dx = e.clientX - startX;
+    if (!moved && Math.abs(dx) > 5) { moved = true; grid.classList.add('dragging'); }
+    if (moved) grid.scrollLeft = startLeft - dx;
+  });
+  window.addEventListener('mouseup', function() {
+    if (!down) return;
+    down = false;
+    if (moved) {
+      grid.classList.remove('dragging');
+      // Riaggancia alla card piu' vicina dopo il trascinamento.
+      var card = grid.querySelector('.forecast-card');
+      if (card) {
+        var passo = card.getBoundingClientRect().width + 6;
+        grid.scrollTo({ left: Math.round(grid.scrollLeft / passo) * passo, behavior: 'smooth' });
+      }
+    }
+  });
+  // Un trascinamento non deve aprire il popup del giorno sotto il mouse.
+  grid.addEventListener('click', function(e) {
+    if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; }
+  }, true);
+  grid.addEventListener('wheel', function(e) {
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    var max = grid.scrollWidth - grid.clientWidth;
+    if ((e.deltaY < 0 && grid.scrollLeft <= 0) || (e.deltaY > 0 && grid.scrollLeft >= max - 1)) return;
+    e.preventDefault();
+    grid.scrollLeft += e.deltaY;
+  }, { passive: false });
+}
+
 function loadForecast() {
   var status = document.getElementById('forecast-status');
   var grid = document.getElementById('forecast-grid');
@@ -955,29 +1055,41 @@ function loadForecast() {
       status.style.display = 'none';
       window.forecastGiorni = d.giorni;
       grid.innerHTML = d.giorni.map(function(g, idx) {
-        return '<div onclick="openForecastDayModal(' + idx + ')" style="background:var(--bg-card-2); border-radius:12px; padding:10px 4px; text-align:center; cursor:pointer;">' +
+        var tendenza = idx >= FORECAST_TENDENZA_DA;
+        return '<div class="forecast-card' + (tendenza ? ' tendenza' : '') + '" onclick="openForecastDayModal(' + idx + ')" style="background:var(--bg-card-2); border-radius:12px; padding:10px 4px; text-align:center; cursor:pointer;">' +
           '<div style="font-size:0.65rem; color:var(--text-muted); font-weight:600;">' + (g.giorno === 'Oggi' ? 'Oggi' : g.giorno.slice(0,3)) + '</div>' +
           '<div style="font-size:0.6rem; color:var(--text-faint-3); margin-bottom:4px;">' + g.data + '</div>' +
-          '<div style="font-size:2.2rem; line-height:1;">' + g.icona + '</div>' +
+          '<div style="font-size:2.2rem; line-height:1;">' + iconaMeteo(g.icona, g.notte) + '</div>' +
           '<div style="font-size:0.75rem; font-weight:700; color:#ff5252; margin-top:4px;">' + g.temp_max + '°</div>' +
           '<div style="font-size:0.7rem; color:var(--accent-primary);">' + g.temp_min + '°</div>' +
           (g.pioggia > 0 ? '<div style="font-size:0.6rem; color:#4caf50; margin-top:2px;">💧' + g.pioggia + 'mm</div>' : '') +
+          (tendenza ? '<div class="forecast-tendenza">tendenza</div>' : '') +
           '</div>';
       }).join('');
+      initForecastScroll();
+      aggiornaForecastFade();
     })
     .catch(function() {
       status.textContent = 'Errore nel caricamento delle previsioni.';
     });
 }
 
-function openForecastDayModal(idx) {
-  var g = (window.forecastGiorni || [])[idx];
+function renderForecastDay(idx) {
+  var arr = window.forecastGiorni || [];
+  var g = arr[idx];
   if (!g) return;
+  window.currentForecastIdx = idx;
 
-  document.getElementById('modalDataZone').style.display = 'none';
-  document.getElementById('modalAstroZone').style.display = 'block';
+  var tendenza = idx >= FORECAST_TENDENZA_DA;
   document.getElementById('modalTitle').innerText = g.giorno + ' ' + g.data;
-  document.getElementById('astroImage').innerHTML = '<div style="font-size: 5rem; line-height:1;">' + g.icona + '</div><div style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">' + g.descrizione + '</div>';
+  document.getElementById('astroImage').innerHTML = '<div style="font-size: 5rem; line-height:1;">' + iconaMeteo(g.icona, g.notte) + '</div><div style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">' + g.descrizione + '</div>' +
+    (tendenza ? '<div style="color:var(--text-faint-3); font-size:0.7rem; margin-top:6px;">Tendenza: previsione a lungo termine, affidabilità bassa</div>' : '');
+
+  var navBar = document.getElementById('forecastNavBar');
+  navBar.style.display = 'flex';
+  document.getElementById('forecastDayIndicator').innerText = 'Giorno ' + (idx + 1) + ' di ' + arr.length;
+  document.getElementById('forecastPrevBtn').disabled = (idx <= 0);
+  document.getElementById('forecastNextBtn').disabled = (idx >= arr.length - 1);
 
   // Dettaglio ora per ora (non piu' a fasce di 3 ore).
   var oreFasce = g.ore || [];
@@ -985,10 +1097,10 @@ function openForecastDayModal(idx) {
   var righe = oreFasce.map(function(o) {
     return '<div style="display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-color);">' +
       '<span style="width:45px; color:var(--text-muted);">' + o.ora + '</span>' +
-      '<span style="font-size:1.3rem;">' + o.icona + '</span>' +
+      '<span style="font-size:1.3rem;">' + iconaMeteo(o.icona, o.notte) + '</span>' +
       '<span style="width:40px; text-align:right; font-weight:700; color:var(--text-primary);">' + o.temp + '°</span>' +
-      '<span style="width:55px; text-align:right; color:var(--accent-primary); font-size:0.75rem;">💧' + o.pioggia_prob + '%</span>' +
-      '<span style="width:55px; text-align:right; color:var(--text-muted); font-size:0.75rem;">🌬️' + o.vento + 'km/h</span>' +
+      '<span style="width:52px; text-align:right; color:var(--accent-primary); font-size:0.75rem; white-space:nowrap;">💧' + o.pioggia_prob + '%</span>' +
+      '<span style="width:68px; text-align:right; color:var(--text-muted); font-size:0.75rem; white-space:nowrap;">🌬️ ' + o.vento + 'km/h</span>' +
       '</div>';
   }).join('');
 
@@ -998,11 +1110,52 @@ function openForecastDayModal(idx) {
       <span>Min: <strong style="color:var(--accent-primary);">${g.temp_min}°</strong></span>
       <span>Raffica: <strong style="color:var(--text-primary);">${g.raffica} km/h</strong></span>
     </div>
-    <div style="max-height:320px; overflow-y:auto; overscroll-behavior: contain;">${righe}</div>
+    <div class="ore-scroll" style="max-height:320px; overflow-y:auto; overscroll-behavior: contain;">${righe}</div>
     <div style="text-align:center; margin-top:12px; font-size:0.65rem; color:var(--text-faint-3);">Previsione: Open-Meteo</div>
   `;
+}
+
+function navigateForecastDay(delta) {
+  var arr = window.forecastGiorni || [];
+  var idx = (window.currentForecastIdx || 0) + delta;
+  if (idx < 0 || idx >= arr.length) return;
+  renderForecastDay(idx);
+}
+
+function openForecastDayModal(idx) {
+  if (!(window.forecastGiorni || [])[idx]) return;
+
+  document.getElementById('modalDataZone').style.display = 'none';
+  document.getElementById('modalAstroZone').style.display = 'block';
+  window.forecastSwipeActive = true;
+  renderForecastDay(idx);
   document.getElementById('chartModal').style.display = 'flex'; history.pushState({ modal: 'chartModal' }, '', location.pathname);
 }
+
+// Swipe laterale sul popup previsioni: solo quando il popup mostra un giorno di previsione,
+// e solo per gesti prevalentemente orizzontali (per non interferire con lo scroll verticale
+// dell'elenco orario dentro .ore-scroll).
+// Nota: il markup di #chartModal e' piu' in basso nel body (sezione popup condivisa),
+// quindi l'aggancio dei listener va rimandato a dopo il parsing completo del DOM,
+// altrimenti querySelector torna null e l'eccezione blocca anche la loadForecast()
+// che segue in questo stesso script.
+document.addEventListener('DOMContentLoaded', function() {
+  var content = document.querySelector('#chartModal .modal-content');
+  if (!content) return;
+  var startX = 0, startY = 0;
+  content.addEventListener('touchstart', function(e) {
+    if (!window.forecastSwipeActive) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  content.addEventListener('touchend', function(e) {
+    if (!window.forecastSwipeActive) return;
+    var dx = e.changedTouches[0].clientX - startX;
+    var dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy) * 1.3) return;
+    navigateForecastDay(dx < 0 ? 1 : -1);
+  }, { passive: true });
+});
 
 loadForecast();
 </script>
@@ -1914,6 +2067,18 @@ function loadMaggioreChart() {
       </span>
 </div>
 </a>
+<!-- Pulsante Sagre nei dintorni -->
+<a href="sagre.html" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3)); color: var(--text-primary); padding: 9px 25px; border-radius: 15px; text-decoration: none; border: 1px solid var(--border-color-3); box-shadow: 0 4px 15px var(--shadow-soft); max-width: 100%; width: 100%; margin: 0; transition: transform 0.2s;">
+<span style="font-size: 2rem; margin-right: 15px;">
+      🎪
+     </span>
+<div style="text-align: left; flex: 1;">
+<strong id="btnLabelSagre" style="color: #00d4ff; font-size: 0.975rem; display: block; margin-bottom: 2px;">Sagre ed Eventi dei dintorni</strong>
+<span style="font-size: 0.625rem; color: var(--text-secondary-2); text-transform: uppercase; font-weight: 600;">
+       Feste e locandine dei paesi vicini
+      </span>
+</div>
+</a>
 <!-- Pulsante App Android -->
 <style>
   @keyframes linkAppPulse {
@@ -2037,6 +2202,11 @@ function loadMaggioreChart() {
 </div>
 <!-- SEZIONE ASTRONOMICA (Nascosta di default) -->
 <div id="modalAstroZone" style="display: none; text-align: center;">
+<div id="forecastNavBar" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<button class="forecast-nav-btn" id="forecastPrevBtn" onclick="navigateForecastDay(-1)">‹</button>
+<span id="forecastDayIndicator" style="font-size: 0.7rem; color: var(--text-faint-3);"></span>
+<button class="forecast-nav-btn" id="forecastNextBtn" onclick="navigateForecastDay(1)">›</button>
+</div>
 <div id="astroImage" style="margin: 4px auto 8px; width: 120px; height: 120px;">
 </div>
 <div id="astroDataBox" style="background: var(--bg-card-2); border-radius: 15px; padding: 15px; text-align: left; font-size: 0.85rem; color: var(--text-body); line-height: 1.8;">
@@ -2278,6 +2448,8 @@ function loadMaggioreChart() {
 
         function closeModal(e) {
             if (e) e.stopPropagation();
+            window.forecastSwipeActive = false;
+            document.getElementById('forecastNavBar').style.display = 'none';
             if (history.state && history.state.modal === 'chartModal') {
                 history.back();
             } else {
@@ -2306,6 +2478,8 @@ function loadMaggioreChart() {
         function openMoonModal() {
             document.getElementById('modalDataZone').style.display = 'none';
             document.getElementById('modalAstroZone').style.display = 'block';
+            window.forecastSwipeActive = false;
+            document.getElementById('forecastNavBar').style.display = 'none';
             document.getElementById('modalTitle').innerText = "Dettagli Astronomici Luna";
             
             let now = new Date();
@@ -2359,6 +2533,8 @@ function loadMaggioreChart() {
         function openSunModal() {
             document.getElementById('modalDataZone').style.display = 'none';
             document.getElementById('modalAstroZone').style.display = 'block';
+            window.forecastSwipeActive = false;
+            document.getElementById('forecastNavBar').style.display = 'none';
             document.getElementById('modalTitle').innerText = "Ciclo Solare - Motta Visconti";
             
             let now = new Date();
@@ -2403,6 +2579,8 @@ function loadMaggioreChart() {
         function openSeasonModal() {
             document.getElementById('modalDataZone').style.display = 'none';
             document.getElementById('modalAstroZone').style.display = 'block';
+            window.forecastSwipeActive = false;
+            document.getElementById('forecastNavBar').style.display = 'none';
             document.getElementById('modalTitle').innerText = "Stagione in Corso";
 
             let now = new Date();
@@ -2446,6 +2624,8 @@ function loadMaggioreChart() {
         function openRecordsModal() {
             document.getElementById('modalDataZone').style.display = 'none';
             document.getElementById('modalAstroZone').style.display = 'block';
+            window.forecastSwipeActive = false;
+            document.getElementById('forecastNavBar').style.display = 'none';
             document.getElementById('modalTitle').innerText = "Record Storici";
             document.getElementById('astroImage').innerHTML = `<div style="font-size: 6rem; line-height:1; filter: drop-shadow(0 0 15px #ffeb3b);">🏆</div>`;
             document.getElementById('astroDataBox').innerHTML = `<div style="text-align:center; color:var(--text-faint);">Caricamento dati storici...</div>`;
@@ -3094,17 +3274,17 @@ function loadMaggioreChart() {
                     if (ultimoFulmine !== null && banner && distTxt && badgeTxt) {
                         let oreTrascorse = Math.abs(oraAttuale.getTime() - ultimoFulmine.time.getTime()) / (1000 * 60 * 60);
 
-                        distTxt.innerHTML = `${ultimoFulmine.value} <span>km</span>`;
-
                         let o = ultimoFulmine.time;
                         let orarioStr = o.getHours().toString().padStart(2, '0') + ':' + o.getMinutes().toString().padStart(2, '0');
+
+                        distTxt.innerHTML = `a ${ultimoFulmine.value} <span>km</span> <span style="font-size: 0.55rem; opacity: 0.7;">alle ${orarioStr}</span>`;
 
                         badgeTxt.style.color = '#ffffff';
                         badgeTxt.style.textShadow = '0px 1px 2px rgba(0,0,0,0.5)';
 
                         if (oreTrascorse <= 1 && ultimoFulmine.value <= 10) {
                             icon.style.color = '#ffeb3b';
-                            badgeTxt.innerText = `ATTENZIONE • ${orarioStr}`;
+                            badgeTxt.innerText = `ATTENZIONE`;
                             badgeTxt.style.background = '#ffeb3b';
                             badgeTxt.style.color = '#111';
                             badgeTxt.style.textShadow = 'none';
@@ -3114,7 +3294,7 @@ function loadMaggioreChart() {
                             }, 1000);
                         } else {
                             icon.style.color = '#9e9e9e';
-                            badgeTxt.innerText = `${orarioStr} • ${totaleOggi} oggi`;
+                            badgeTxt.innerText = `${totaleOggi} oggi`;
                             badgeTxt.style.background = '#607d8b';
                         }
                     }
@@ -3209,6 +3389,8 @@ function loadMaggioreChart() {
             document.getElementById('appModal').style.display = 'none';
             document.getElementById('chartModal').style.display = 'none';
             document.getElementById('techModal').style.display = 'none';
+            window.forecastSwipeActive = false;
+            document.getElementById('forecastNavBar').style.display = 'none';
             var iosM = document.getElementById('iosModal');
             if (iosM) iosM.style.display = 'none';
         });
@@ -3909,7 +4091,16 @@ function closeIosModal(e) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
         body: JSON.stringify({ theme: theme })
-      }).catch(function() {});
+      }).then(function(r) {
+        // Il tema resta applicato localmente anche se il salvataggio sul
+        // server fallisce, ma senza questo controllo l'errore passava del
+        // tutto inosservato: al prossimo login/refresh il server avrebbe
+        // silenziosamente rimesso il tema precedente, sovrascrivendo la
+        // scelta - vedi il blocco piu' sotto che rilegge ultimo_tema.
+        if (!r.ok) console.warn('Salvataggio tema sul server fallito (HTTP ' + r.status + '), resta solo locale su questo browser.');
+      }).catch(function() {
+        console.warn('Salvataggio tema sul server fallito (errore di rete), resta solo locale su questo browser.');
+      });
     }
     renderWebMenu();
   };
@@ -3957,5 +4148,40 @@ function closeIosModal(e) {
   });
 })();
 </script>
+
+<div id="pageVisitCounter" style="text-align:center; font-size:0.805rem; color:#888; padding:16px 0 6px; opacity:0.7;"></div>
+<script>
+(function() {
+  var PAGE_SLUG = 'index';
+  function pvcFmt(n) { var s = String(n), o = ""; while (s.length > 3) { o = "." + s.slice(-3) + o; s = s.slice(0, -3); } return s + o; }
+  // Nuova visita = prima pagina dopo 30 minuti di inattivita' sul sito (come Matomo).
+  function pvcNuova() { try { var k = 'pvcLastHit', now = Date.now(), last = parseInt(localStorage.getItem(k) || '0', 10); localStorage.setItem(k, String(now)); return (!last || now - last > 1800000) ? 1 : 0; } catch (e) { return 0; } }
+  var pvcIsApp = navigator.userAgent.indexOf('MeteoMottaAndroidApp') !== -1;
+  function pvcToken() {
+    if (pvcIsApp) {
+      try { return (typeof AndroidBridge !== 'undefined' && AndroidBridge.getToken) ? AndroidBridge.getToken() : null; } catch (e) { return null; }
+    }
+    try { return localStorage.getItem('webAccountToken'); } catch (e) { return null; }
+  }
+  fetch('/visite.php?action=hit&page=' + PAGE_SLUG + '&nuova=' + pvcNuova())
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.success) return;
+      var token = pvcToken();
+      if (!token) return;
+      fetch('/account.php', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(acc) {
+          if (acc && acc.success && acc.ruolo === 'owner') {
+            var el = document.getElementById('pageVisitCounter');
+            if (el) el.innerText = '\ud83d\udc41 ' + pvcFmt(d.visite_totali) + ' visite totali (' + pvcFmt(d.visite_oggi) + ' oggi)';
+          }
+        })
+        .catch(function() {});
+    })
+    .catch(function() {});
+})();
+</script>
+
 </body>
 </html>

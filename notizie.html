@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+<script>/* Apertura sempre fresca: se il documento arriva dalla cache HTTP (nessun trasferimento di rete) lo ricarica subito, nascondendola, prima di disegnare la pagina (anche tornando indietro). */(function(){try{var n=performance.getEntriesByType('navigation')[0];if(n){if(n.type==='navigate'||n.type==='back_forward'){if(n.transferSize===0){document.documentElement.style.visibility='hidden';location.reload();}}}}catch(e){}})();</script>
+<script>/* Sempre aggiornata: quando la pagina torna in primo piano (riapertura app, sblocco schermo, cambio scheda) dopo almeno 10 minuti in background si ricarica subito, salvo se stai compilando un campo o hai scelto un file. */(function(){var t=0;function busy(){var a=document.activeElement;if(a){var g=a.tagName;if(g==='INPUT'||g==='TEXTAREA'||g==='SELECT'){return true;}}var f=document.querySelectorAll('input[type=file]');for(var i=0;i<f.length;i++){if(f[i].files){if(f[i].files.length){return true;}}}return false;}document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){t=Date.now();}else{if(t){if(Date.now()-t>600000){if(!busy()){location.reload();}}}t=0;}});window.addEventListener('pageshow',function(e){if(e.persisted){location.reload();}});})();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
     <title>Notizie - Motta Visconti e dintorni</title>
@@ -683,11 +685,12 @@
 <div id="crumb" class="crumb"></div>
 <div id="app"></div>
 
-<!-- Sezione fissa, sempre in fondo alla pagina qualunque sia la vista aperta
-     sopra: canali Telegram sorgente delle notizie, spostati qui dal sito
-     meteo principale il 2026-09-17 perche' tematicamente appartengono a
-     questa pagina, non alla dashboard meteo. -->
-<div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-color);">
+<!-- Canali Telegram sorgente delle notizie, spostati qui dal sito meteo
+     principale il 2026-09-17 perche' tematicamente appartengono a questa
+     pagina, non alla dashboard meteo. Visibile SOLO nella vista home (le 4
+     card paese + Storico Notizie) - nascosta in ogni sotto-vista (elenco di
+     un paese, Storico, mese, ecc.), vedi il toggle in render(). -->
+<div id="telegramSection" style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-color);">
   <h3 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 12px;">📢 News anche su Telegram</h3>
   <div class="grid-towns" style="margin-bottom: 0;">
     <a href="https://t.me/gruppomottavisconti" target="_blank" rel="noopener noreferrer" class="town-card" style="text-decoration: none;">
@@ -815,6 +818,8 @@ function render() {
     renderLoginGate();
     return;
   }
+  var telegramSection = document.getElementById('telegramSection');
+  if (telegramSection) telegramSection.style.display = (state.view === 'home') ? '' : 'none';
   renderCrumb();
   if (state.view === 'home') {
     app.innerHTML = townCardsHtml('goRecent') +
@@ -926,6 +931,41 @@ function renderTimeline(items) {
 // restare bloccato su un'altra voce "home" della cronologia.
 history.replaceState(state, '', location.pathname);
 render();
+</script>
+
+
+<div id="pageVisitCounter" style="text-align:center; font-size:0.805rem; color:#888; padding:16px 0 6px; opacity:0.7;"></div>
+<script>
+(function() {
+  var PAGE_SLUG = 'notizie';
+  function pvcFmt(n) { var s = String(n), o = ""; while (s.length > 3) { o = "." + s.slice(-3) + o; s = s.slice(0, -3); } return s + o; }
+  // Nuova visita = prima pagina dopo 30 minuti di inattivita' sul sito (come Matomo).
+  function pvcNuova() { try { var k = 'pvcLastHit', now = Date.now(), last = parseInt(localStorage.getItem(k) || '0', 10); localStorage.setItem(k, String(now)); return (!last || now - last > 1800000) ? 1 : 0; } catch (e) { return 0; } }
+  var pvcIsApp = navigator.userAgent.indexOf('MeteoMottaAndroidApp') !== -1;
+  function pvcToken() {
+    if (pvcIsApp) {
+      try { return (typeof AndroidBridge !== 'undefined' && AndroidBridge.getToken) ? AndroidBridge.getToken() : null; } catch (e) { return null; }
+    }
+    try { return localStorage.getItem('webAccountToken'); } catch (e) { return null; }
+  }
+  fetch('/visite.php?action=hit&page=' + PAGE_SLUG + '&nuova=' + pvcNuova())
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.success) return;
+      var token = pvcToken();
+      if (!token) return;
+      fetch('/account.php', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(acc) {
+          if (acc && acc.success && acc.ruolo === 'owner') {
+            var el = document.getElementById('pageVisitCounter');
+            if (el) el.innerText = '\ud83d\udc41 ' + pvcFmt(d.visite_totali) + ' visite totali (' + pvcFmt(d.visite_oggi) + ' oggi)';
+          }
+        })
+        .catch(function() {});
+    })
+    .catch(function() {});
+})();
 </script>
 
 </body>
