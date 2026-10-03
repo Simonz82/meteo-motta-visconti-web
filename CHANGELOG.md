@@ -2,6 +2,38 @@
 
 Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti vengono registrate qui, in ordine cronologico inverso.
 
+## 2026-10-04
+
+### Aggiunto
+- Nuova pagina "Utile da sapere" (`utile.html`), con pulsante in home: informazioni pratiche sul paese, ognuna con la fonte ufficiale indicata in fondo
+  - Comune: orari degli uffici con "aperto adesso", Polizia Locale, ecocentro (orario estivo/invernale automatico), biblioteca, ultime notizie e avvisi dal sito del Comune
+  - Numeri utili: emergenze e guasti 24 ore di acqua (Gruppo CAP), gas (GEI) e luce (Duereti, il gestore della rete elettrica di Motta), sportelli, Carabinieri, assistenza degli operatori telefonici e verifica copertura fibra
+  - Farmacie di turno, medici di base e pediatra (orari, telefoni e posti disponibili, dai dati ufficiali ATS Milano, aggiornati in automatico)
+  - Defibrillatori (DAE) di Motta e dintorni dalla mappa AREU, con orari e pulsante "trova il più vicino a me"
+  - Parrocchia: prossima Messa calcolata in automatico, orari delle Messe, oratorio, Caritas e contatti
+  - Scuole: calendario scolastico della Lombardia con conto alla rovescia alla prossima vacanza, contatti dell'Istituto Comprensivo "Ada Negri"
+  - Sport e associazioni del paese
+  - Cinema Arcobaleno: film in programma con locandine e link ai biglietti, aggiornati in automatico
+  - Raccolta rifiuti: "cosa esporre stasera" dal calendario ufficiale AMAGA 2026 con tutte le variazioni per le festività, prossimi 14 giorni, cosa va in ogni bidone, ingombranti e "dove porto…?"
+  - Carburanti: prezzi di oggi dei distributori della zona, dai dati ufficiali del Ministero
+  - Autobus: prossime partenze della linea z509 Motta–Milano Famagosta calcolate dall'orario ufficiale, linea 92 per Pavia, treni
+  - Scioperi dei trasporti che interessano la zona (treni, bus e metro, aerei, generali)
+  - Casa dell'acqua con orari e analisi dell'acqua, ufficio postale, orto e giardino ("serve annaffiare?"), webcam
+- Pagine di approfondimento aperte dalle card della home: Umidità/nebbia/ghiaccio, Barometro, Vento (scala Beaufort), Fulmini (regola 30/30), Qualità dell'aria e attività all'aperto, Fiume Ticino (tendenza e confronto 30 giorni); ognuna ha in alto il pulsante verso il grafico storico
+- Pagina "Storia, Luoghi e Foto" (storia del paese, Ada Negri, chiesa, patrono e tradizioni, Parco del Ticino) con il pulsante verso l'archivio delle foto storiche
+- Popup Stagione, Sole e Luna arricchiti: date esatte di equinozi e solstizi, avanzamento della stagione, ore di luce e variazione rispetto a ieri, consigli del periodo (ora solare/legale, riscaldamento, gomme invernali), posizione del sole, ora d'oro e ora blu, ombra, prossime fasi lunari, cielo buio per vedere le stelle
+- Sagre: campo "Descrizione" (programma, orari, cosa si mangia) visibile nella scheda e nell'ingrandimento della locandina
+
+### Modificato
+- Qualità dell'aria corretta e allineata ovunque (home, storico, pagine): l'indice UAQI di Google va da 0 a 100 e più è alto più l'aria è pulita (prima era letto al contrario); 5 fasce (Ottima, Buona, Discreta, Scarsa, Pessima) con soglie OMS/UE per gli inquinanti, scala condivisa in `aria_scale.js`
+- Storico della qualità dell'aria: legenda delle fasce, barre dei 30 giorni colorate per fascia, "peggiore/migliore" per l'indice
+- "Anidride Nitrosa" rinominata correttamente "Biossido di Azoto (NO2)"
+- Pulsante "Webcam" spostato dalla home dentro "Utile da sapere"; "Archivio Storico Foto" diventa "Storia, Luoghi e Foto"
+
+### Risolto
+- Livello del Ticino a Pavia: da fuori casa non arrivava mai (la fonte ARPA risponde troppo lentamente), ora viene salvato e aggiornato in background
+- Previsione della notte nella pagina nebbia/ghiaccio dopo la mezzanotte
+
 ## 2026-09-28
 
 ### Aggiunto

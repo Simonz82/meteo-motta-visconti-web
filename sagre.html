@@ -59,7 +59,7 @@
         }
         .form-card label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin: 12px 0 5px; }
         .form-card label:first-child { margin-top: 0; }
-        .form-card input[type="text"], .form-card input[type="date"], .form-card input[type="file"] {
+        .form-card textarea, .form-card input[type="text"], .form-card input[type="date"], .form-card input[type="file"] {
             width: 100%; box-sizing: border-box; background: var(--bg-card-2); border: 1px solid var(--border-color-2);
             color: var(--text-primary); border-radius: 10px; padding: 10px 12px; font-size: 0.9rem;
         }
@@ -86,7 +86,7 @@
             margin-bottom: 10px; color: var(--accent-primary); font-weight: 700; text-decoration: none;
         }
         .pending-card label { display: block; font-size: 0.68rem; font-weight: 700; color: var(--text-faint); text-transform: uppercase; margin: 8px 0 4px; }
-        .pending-card input[type="text"], .pending-card input[type="date"], .pending-card input[type="file"] {
+        .pending-card textarea, .pending-card input[type="text"], .pending-card input[type="date"], .pending-card input[type="file"] {
             width: 100%; box-sizing: border-box; background: var(--bg-card-2); border: 1px solid var(--border-color-2);
             color: var(--text-primary); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem;
         }
@@ -150,7 +150,7 @@
         }
         .edit-inline-form label { display: block; font-size: 0.68rem; font-weight: 700; color: var(--text-faint); text-transform: uppercase; margin: 8px 0 4px; }
         .edit-inline-form label:first-child { margin-top: 0; }
-        .edit-inline-form input[type="text"], .edit-inline-form input[type="date"], .edit-inline-form input[type="file"] {
+        .edit-inline-form textarea, .edit-inline-form input[type="text"], .edit-inline-form input[type="date"], .edit-inline-form input[type="file"] {
             width: 100%; box-sizing: border-box; background: var(--bg-card-2); border: 1px solid var(--border-color-2);
             color: var(--text-primary); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem;
         }
@@ -170,6 +170,8 @@
         .sagra-info { padding: 12px 14px; }
         .sagra-titolo { font-weight: 700; font-size: 1rem; color: var(--text-primary); margin-bottom: 4px; }
         .sagra-meta { font-size: 0.78rem; color: var(--text-faint); }
+        .sagra-descr { margin-top: 8px; font-size: 0.85rem; line-height: 1.4; color: var(--text-primary); opacity: 0.9; white-space: pre-line; }
+        textarea { font-family: inherit; resize: vertical; min-height: 70px; }
         .sagra-meta .paese-tag {
             display: inline-block; background: var(--bg-card-2); color: var(--accent-primary);
             border-radius: 999px; padding: 2px 10px; font-weight: 700; margin-right: 6px;
@@ -739,6 +741,8 @@
         #lbTitolo { font-weight: 800; font-size: 1.02rem; line-height: 1.25; }
         #lbMeta { margin-top: 6px; font-size: 0.85rem; opacity: 0.85; }
         #lbMeta b { color: #9ee7ff; }
+        #lbDescr { margin-top: 6px; font-size: 0.82rem; opacity: 0.85; white-space: pre-line; max-height: 22vh; overflow-y: auto; }
+        #lbDescr:empty { display: none; }
 </style>
 
 <script id="theme-switcher">
@@ -805,6 +809,9 @@
   <label for="formDataFine">Data fine (solo se dura piu' giorni)</label>
   <input type="date" id="formDataFine">
 
+  <label for="formDescrizione">Descrizione (opzionale)</label>
+  <textarea id="formDescrizione" rows="3" maxlength="2000" placeholder="Programma, orari, luogo, cosa si mangia..."></textarea>
+
   <label for="formFile">Locandina (foto o PDF)</label>
   <input type="file" id="formFile" accept="image/jpeg,image/png,application/pdf" required>
   <div class="form-hint">Massimo 8 MB - formati: JPG, PNG, PDF.</div>
@@ -822,6 +829,12 @@
 
 <script>
 var MESI = ['', 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+
+// Escape senza <br>: per il contenuto di <textarea>, dove esc() (innerText)
+// trasformerebbe gli a capo in un "<br>" letterale.
+function escTesto(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
 function esc(s) {
   var d = document.createElement('div');
@@ -907,6 +920,68 @@ function initFormVisibility() {
   }
 }
 
+// ===== Compressione locandina prima dell'invio =====
+// Foto oltre ~2 MB vengono ricompresse in JPEG (lato lungo max 3000 px,
+// qualita' 0.92 -> scende a passi finche' sta sotto 2 MB): una locandina
+// resta nitida anche con lo zoom. PDF e immagini gia' leggere passano intatte.
+// Se il browser non riesce a decodificare l'immagine si invia l'originale.
+var LOCANDINA_MAX_BYTES = 2 * 1024 * 1024;
+var LOCANDINA_MAX_LATO = 3000;
+
+function preparaLocandina(file) {
+  if (!file) return Promise.resolve(null);
+  var originale = { blob: file, name: file.name };
+  if (!/^image\/(jpeg|png)$/.test(file.type) || file.size <= LOCANDINA_MAX_BYTES) {
+    return Promise.resolve(originale);
+  }
+  return new Promise(function(resolve) {
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onerror = function() { URL.revokeObjectURL(url); resolve(originale); };
+    img.onload = function() {
+      URL.revokeObjectURL(url);
+      var scala = Math.min(1, LOCANDINA_MAX_LATO / Math.max(img.naturalWidth, img.naturalHeight));
+      var qualita = 0.92;
+      var nome = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+      function tenta() {
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.naturalWidth * scala);
+        canvas.height = Math.round(img.naturalHeight * scala);
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff'; // PNG trasparenti: sfondo bianco invece di nero
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(function(blob) {
+          if (!blob) { resolve(originale); return; }
+          if (blob.size <= LOCANDINA_MAX_BYTES || (qualita <= 0.7 && scala < 0.3)) {
+            resolve(blob.size < file.size ? { blob: blob, name: nome } : originale);
+            return;
+          }
+          if (qualita > 0.75) qualita -= 0.05; else scala *= 0.85;
+          tenta();
+        }, 'image/jpeg', qualita);
+      }
+      tenta();
+    };
+    img.src = url;
+  });
+}
+
+// 413 = rifiutato dal proxy prima di arrivare a sagre.php; file_too_large =
+// oltre il limite di sagre.php (8 MB). Stesso messaggio per entrambi.
+function leggiRispostaSagre(r) {
+  if (r.status === 413) throw new Error('troppo_grande');
+  return r.json().then(function(d) {
+    if (d && d.error === 'file_too_large') throw new Error('troppo_grande');
+    return d;
+  });
+}
+
+function erroreInvioSagre(err) {
+  if (err && err.message === 'troppo_grande') alert('File troppo grande, prova con un\'immagine più leggera.');
+  else alert('Errore di rete, riprova.');
+}
+
 function submitSagra(e) {
   e.preventDefault();
   var token = getToken();
@@ -916,15 +991,19 @@ function submitSagra(e) {
   fd.append('titolo', document.getElementById('formTitolo').value.trim());
   fd.append('data_evento', document.getElementById('formData').value);
   fd.append('data_fine', document.getElementById('formDataFine').value);
+  fd.append('descrizione', document.getElementById('formDescrizione').value.trim());
   var fileInput = document.getElementById('formFile');
-  if (fileInput.files[0]) fd.append('file', fileInput.files[0]);
 
-  fetch('/sagre.php?action=submit', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + token },
-    body: fd
-  })
-    .then(function(r) { return r.json(); })
+  preparaLocandina(fileInput.files[0])
+    .then(function(f) {
+      if (f) fd.append('file', f.blob, f.name);
+      return fetch('/sagre.php?action=submit', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: fd
+      });
+    })
+    .then(leggiRispostaSagre)
     .then(function(d) {
       if (d.success) {
         alert('Grazie! La tua proposta è stata inviata: sarà pubblicata dopo l\'approvazione di un amministratore.');
@@ -934,7 +1013,7 @@ function submitSagra(e) {
         alert('Non è stato possibile inviare la proposta (' + (d.error || 'errore') + ').');
       }
     })
-    .catch(function() { alert('Errore di rete, riprova.'); });
+    .catch(erroreInvioSagre);
 }
 
 // ===== Sezione moderazione (solo admin/owner) =====
@@ -961,6 +1040,7 @@ function renderPending(items) {
       '<label>Titolo</label><input type="text" id="p-titolo-' + item.id + '" value="' + esc(item.titolo) + '">' +
       '<label>Data evento (primo giorno)</label><input type="date" id="p-data-' + item.id + '" value="' + esc(item.data_evento) + '">' +
       '<label>Data fine (opzionale)</label><input type="date" id="p-fine-' + item.id + '" value="' + esc(item.data_fine || '') + '">' +
+      '<label>Descrizione (opzionale)</label><textarea id="p-descr-' + item.id + '" rows="3" maxlength="2000">' + escTesto(item.descrizione) + '</textarea>' +
       '<label>Sostituisci locandina (opzionale)</label><input type="file" id="p-file-' + item.id + '" accept="image/jpeg,image/png,application/pdf">' +
       '<div class="pending-actions">' +
         '<button class="btn-approva" onclick="reviewSagra(' + item.id + ', \'approve\')">✅ Approva</button>' +
@@ -984,16 +1064,20 @@ function reviewSagra(id, azione) {
     fd.append('titolo', document.getElementById('p-titolo-' + id).value.trim());
     fd.append('data_evento', document.getElementById('p-data-' + id).value);
     fd.append('data_fine', document.getElementById('p-fine-' + id).value);
+    fd.append('descrizione', document.getElementById('p-descr-' + id).value.trim());
     var fileInput = document.getElementById('p-file-' + id);
-    if (fileInput.files[0]) fd.append('file', fileInput.files[0]);
   }
 
-  fetch('/sagre.php?action=' + azione, {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + token },
-    body: fd
-  })
-    .then(function(r) { return r.json(); })
+  preparaLocandina(fileInput ? fileInput.files[0] : null)
+    .then(function(f) {
+      if (f) fd.append('file', f.blob, f.name);
+      return fetch('/sagre.php?action=' + azione, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: fd
+      });
+    })
+    .then(leggiRispostaSagre)
     .then(function(d) {
       if (d.success) {
         fetchPending();
@@ -1002,7 +1086,7 @@ function reviewSagra(id, azione) {
         alert('Operazione non riuscita (' + (d.error || 'errore') + ').');
       }
     })
-    .catch(function() { alert('Errore di rete, riprova.'); });
+    .catch(erroreInvioSagre);
 }
 
 function fetchPending() {
@@ -1076,20 +1160,24 @@ function saveEditSagra(id) {
   fd.append('titolo', document.getElementById('e-titolo-' + id).value.trim());
   fd.append('data_evento', document.getElementById('e-data-' + id).value);
   fd.append('data_fine', document.getElementById('e-fine-' + id).value);
+  fd.append('descrizione', document.getElementById('e-descr-' + id).value.trim());
   var fileInput = document.getElementById('e-file-' + id);
-  if (fileInput.files[0]) fd.append('file', fileInput.files[0]);
 
-  fetch('/sagre.php?action=edit', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + token },
-    body: fd
-  })
-    .then(function(r) { return r.json(); })
+  preparaLocandina(fileInput.files[0])
+    .then(function(f) {
+      if (f) fd.append('file', f.blob, f.name);
+      return fetch('/sagre.php?action=edit', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: fd
+      });
+    })
+    .then(leggiRispostaSagre)
     .then(function(d) {
       if (d.success) { render(); }
       else { alert('Modifica non riuscita (' + (d.error || 'errore') + ').'); }
     })
-    .catch(function() { alert('Errore di rete, riprova.'); });
+    .catch(erroreInvioSagre);
 }
 
 // ===== Navigazione pubblica: Eventi futuri / Storico (anno -> mese) =====
@@ -1181,6 +1269,7 @@ function sagraCardHtml(item) {
     '<div class="sagra-info">' +
       '<div class="sagra-titolo">' + esc(item.titolo) + '</div>' +
       '<div class="sagra-meta"><span class="paese-tag">' + esc(item.paese) + '</span>' + formatRange(item) + '</div>' +
+      (item.descrizione ? '<div class="sagra-descr">' + esc(item.descrizione) + '</div>' : '') +
     '</div>' +
   (noFoto ? '</div>' : '</a>');
 
@@ -1194,6 +1283,7 @@ function sagraCardHtml(item) {
       '<label>Titolo</label><input type="text" id="e-titolo-' + item.id + '" value="' + esc(item.titolo) + '">' +
       '<label>Data evento (primo giorno)</label><input type="date" id="e-data-' + item.id + '" value="' + esc(item.data_evento) + '">' +
       '<label>Data fine (opzionale)</label><input type="date" id="e-fine-' + item.id + '" value="' + esc(item.data_fine || '') + '">' +
+      '<label>Descrizione (opzionale)</label><textarea id="e-descr-' + item.id + '" rows="3" maxlength="2000">' + escTesto(item.descrizione) + '</textarea>' +
       '<label>Sostituisci locandina (opzionale)</label><input type="file" id="e-file-' + item.id + '" accept="image/jpeg,image/png,application/pdf">' +
       '<button class="submit-btn" onclick="saveEditSagra(' + item.id + ')">💾 Salva modifiche</button>' +
     '</div>' +
@@ -1335,7 +1425,7 @@ function lbBuild() {
     '<div id="lbBar"><div id="lbCap"></div><div id="lbCount"></div><button id="lbClose" aria-label="Chiudi">✕</button></div>' +
     '<div id="lbStage"><button class="lb-nav" id="lbPrev" aria-label="Precedente">‹</button>' +
     '<img id="lbImg" alt=""><button class="lb-nav" id="lbNext" aria-label="Successiva">›</button></div>' +
-    '<div id="lbInfo"><div id="lbTitolo"></div><div id="lbMeta"></div></div>';
+    '<div id="lbInfo"><div id="lbTitolo"></div><div id="lbMeta"></div><div id="lbDescr"></div></div>';
   document.body.appendChild(lbEl);
   lbImg = document.getElementById('lbImg');
   document.getElementById('lbClose').onclick = lbClose;
@@ -1371,6 +1461,7 @@ function lbShow() {
   var b = document.createElement('b'); b.textContent = it.paese;
   meta.appendChild(b);
   meta.appendChild(document.createTextNode(' · ' + formatRange(it)));
+  document.getElementById('lbDescr').textContent = it.descrizione || '';
   document.getElementById('lbCount').textContent = (lbIdx + 1) + ' / ' + lbImages.length;
   var single = lbImages.length < 2;
   document.getElementById('lbPrev').style.visibility = single ? 'hidden' : 'visible';

@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<script>/* Apertura sempre fresca: se il documento arriva dalla cache HTTP (nessun trasferimento di rete) lo ricarica subito, nascondendola, prima di disegnare la pagina (anche tornando indietro). */(function(){try{var n=performance.getEntriesByType('navigation')[0];if(n){if(n.type==='navigate'||n.type==='back_forward'){if(n.transferSize===0){document.documentElement.style.visibility='hidden';location.reload();}}}}catch(e){}})();</script>
+<script>/* Sempre aggiornata: quando la pagina torna in primo piano (riapertura app, sblocco schermo, cambio scheda) dopo almeno 10 minuti in background si ricarica subito, salvo se stai compilando un campo o hai scelto un file. */(function(){var t=0;function busy(){var a=document.activeElement;if(a){var g=a.tagName;if(g==='INPUT'||g==='TEXTAREA'||g==='SELECT'){return true;}}var f=document.querySelectorAll('input[type=file]');for(var i=0;i<f.length;i++){if(f[i].files){if(f[i].files.length){return true;}}}return false;}document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){t=Date.now();}else{if(t){if(Date.now()-t>600000){if(!busy()){location.reload();}}}t=0;}});window.addEventListener('pageshow',function(e){if(e.persisted){location.reload();}});})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <title>Utile da sapere - Motta Visconti</title>
+    <script src="/aria_scale.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-page); color: var(--text-primary); margin: 0; padding: 20px; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .back-btn { display: inline-block; background: var(--bg-card-2); color: var(--text-secondary); text-decoration: none; padding: 10px 20px; border-radius: 12px; margin-bottom: 20px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 10px var(--shadow-soft); }
+        h1 { font-size: 1.5rem; margin: 0 0 4px; color: var(--accent-primary); font-weight: 800; }
+        .subtitle { color: var(--text-faint); font-size: 0.85rem; margin-bottom: 20px; font-weight: 500; }
+        .crumb { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; font-size: 0.8rem; color: var(--text-muted); }
+        .crumb button { background: var(--bg-card-2); color: var(--text-secondary); border: none; padding: 7px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+        .crumb span.sep { color: var(--text-faint-3); }
+        .crumb span.current { color: var(--accent-primary); font-weight: 700; }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .sec-card { background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3)); border: 1px solid var(--border-color-3); border-radius: 15px; padding: 9px 8px 10px; text-align: center; cursor: pointer; box-shadow: 0 4px 15px var(--shadow-soft); display: flex; flex-direction: column; align-items: center; }
+        .sec-card .icon { font-size: 1.8rem; line-height: 1; margin-bottom: 4px; }
+        .sec-card .name { font-weight: 700; font-size: 0.92rem; line-height: 1.2; color: var(--text-primary); }
+        .sec-card .hint { font-size: 0.66rem; color: var(--text-faint); text-transform: uppercase; font-weight: 600; line-height: 1.25; margin-top: 2px; }
+
+        .info-card { background: var(--bg-card); backdrop-filter: blur(var(--card-blur)); border: 1px solid var(--card-border-glass); border-radius: 15px; padding: 14px 15px; margin-bottom: 12px; box-shadow: 0 2px 8px var(--shadow-soft); font-size: 0.85rem; color: var(--text-body); }
+        .sec-title { font-weight: 700; color: var(--text-primary); margin-bottom: 10px; font-size: 0.92rem; }
+        .row { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border-color); }
+        .row:last-of-type { border-bottom: none; }
+        .row strong { color: var(--text-primary); text-align: right; }
+        .note { font-size: 0.74rem; color: var(--text-faint); margin-top: 10px; line-height: 1.45; }
+        .tip { display: flex; gap: 10px; margin-bottom: 10px; line-height: 1.5; }
+        .tip:last-child { margin-bottom: 0; }
+        .t-icon { font-size: 1.15rem; flex: 0 0 1.7rem; text-align: center; }
+
+        .verdict { display: flex; gap: 12px; align-items: flex-start; background: var(--bg-card); border: 1px solid; border-left-width: 5px; border-radius: 15px; padding: 14px 15px; margin-bottom: 12px; box-shadow: 0 2px 8px var(--shadow-soft); }
+        .v-icon { font-size: 2rem; line-height: 1; }
+        .v-title { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
+        .v-text { font-size: 0.85rem; color: var(--text-body); line-height: 1.5; }
+
+        .tbl { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.76rem; }
+        .tbl th { text-align: left; color: var(--text-faint); font-weight: 600; padding: 5px 4px; border-bottom: 1px solid var(--border-color-2); }
+        .tbl td { padding: 6px 4px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+        .tbl tr.hl td { color: var(--accent-primary); font-weight: 700; }
+
+        .range { position: relative; height: 8px; background: linear-gradient(90deg, #4caf50, #ffc107, #f44336); border-radius: 5px; margin: 12px 0 4px; opacity: 0.85; }
+        .range-fill { position: absolute; top: -4px; width: 4px; height: 16px; background: var(--text-primary); border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 4px var(--shadow-strong); }
+        .range-lbl { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-faint); }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .tabs button { flex: 1; background: var(--bg-card-2); color: var(--text-secondary); border: 1px solid var(--border-color-2); padding: 9px 6px; border-radius: 10px; font-weight: 700; font-size: 0.82rem; cursor: pointer; }
+        .tabs button.active { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); }
+        .fuel-card { background: var(--bg-card); border: 1px solid var(--border-color-2); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; box-shadow: 0 2px 8px var(--shadow-soft); }
+        .fuel-card.best { border-color: #4caf50; }
+        .fuel-head { display: flex; justify-content: space-between; gap: 10px; }
+        .fuel-name { font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
+        .fuel-addr { font-size: 0.74rem; color: var(--text-faint); margin-top: 2px; }
+        .fuel-price { text-align: right; font-weight: 800; font-size: 1.25rem; color: var(--accent-primary); white-space: nowrap; }
+        .fuel-price span { font-size: 0.7rem; font-weight: 600; color: var(--text-faint); }
+        .fuel-serv { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
+        .fuel-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.7rem; color: var(--text-faint); }
+        .fuel-foot a, .pharm a { color: var(--accent-primary); text-decoration: none; font-weight: 700; }
+
+        .big-link { display: flex; gap: 14px; align-items: center; background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3)); border: 1px solid var(--border-color-3); border-radius: 15px; padding: 14px 16px; margin-bottom: 12px; text-decoration: none; color: var(--text-primary); box-shadow: 0 4px 15px var(--shadow-soft); }
+        .big-link .icon { font-size: 1.9rem; }
+        .big-link small { color: var(--text-faint); }
+        .pharm { padding: 8px 0; border-bottom: 1px solid var(--border-color); line-height: 1.5; }
+        .phone { display: flex; flex-direction: column; padding: 9px 0; border-bottom: 1px solid var(--border-color); text-decoration: none; color: var(--text-primary); }
+        .phone small { color: var(--text-faint); margin-top: 2px; }
+        .source { font-size: 0.68rem; color: var(--text-faint); text-align: center; margin: 4px 0 14px; line-height: 1.5; }
+        .source a { color: var(--text-muted); }
+        .pill { display: inline-block; font-size: 0.66rem; font-weight: 800; padding: 2px 8px; border-radius: 10px; margin-left: 4px; vertical-align: middle; }
+        .scale { display: flex; gap: 4px; margin-top: 12px; }
+        .scale span { flex: 1; text-align: center; font-size: 0.62rem; font-weight: 700; padding: 4px 0; border-radius: 6px; }
+        .info-card a { color: var(--accent-primary); }
+        .info-card a.phone, .info-card a.big-link { color: var(--text-primary); }
+        .doc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+        .doc-name { font-weight: 800; font-size: 1rem; color: var(--text-primary); }
+        .doc-type { font-size: 0.74rem; color: var(--text-faint); margin-top: 2px; }
+        .tbl small { color: var(--text-faint); }
+        .storico-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: -4px 0 12px; }
+        .storico-mini a { text-align: center; background: var(--bg-card-2); border: 1px solid var(--border-color-2); color: var(--accent-primary); font-weight: 700; font-size: 0.8rem; padding: 9px 6px; border-radius: 11px; text-decoration: none; }
+        .storico-btn { display: block; text-align: center; background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3)); border: 1px solid var(--border-color-3); color: var(--accent-primary); font-weight: 800; font-size: 0.95rem; padding: 13px 10px; border-radius: 14px; text-decoration: none; margin-bottom: 12px; box-shadow: 0 4px 15px var(--shadow-soft); }
+        .waste-chip { display: inline-flex; align-items: center; gap: 5px; border: 2px solid; border-radius: 999px; padding: 3px 10px; margin: 3px 4px 3px 0; font-weight: 700; font-size: 0.82rem; color: var(--text-primary); }
+        .waste-chip small { font-weight: 600; color: var(--text-faint); }
+        .yesno { line-height: 1.55; margin-bottom: 8px; font-size: 0.82rem; }
+        .movie { display: flex; gap: 12px; align-items: flex-start; }
+        .movie img { width: 70px; border-radius: 8px; flex: 0 0 auto; }
+        .movie-when { font-size: 0.8rem; color: var(--text-secondary); margin: 4px 0; }
+        .movie-links { font-size: 0.78rem; color: var(--text-faint); }
+        .movie-links a { color: var(--accent-primary); font-weight: 700; }
+        .info-card .phone a { color: var(--accent-primary); }
+        .loading-state { text-align: center; color: var(--text-faint); font-size: 0.85rem; padding: 40px 10px; }
+    </style>
+<style id="theme-vars">
+  :root, :root[data-theme="scuro"] {
+    --bg-page: #111111;
+    --bg-card: #1c1c1c;
+    --bg-card-hover: #252525;
+    --bg-card-2: #2a2a2a;
+    --bg-card-3: #1e1e1e;
+    --bg-card-4: #232323;
+    --bg-elevated: #1a1a1a;
+    --bg-deep: #131313;
+
+    --border-color: #333333;
+    --border-color-2: #444444;
+    --border-color-3: #555555;
+
+    --text-primary: #ffffff;
+    --text-secondary: #e1e1e1;
+    --text-secondary-2: #aaaaaa;
+    --icon-muted: #757575;
+    --text-body: #cccccc;
+    --text-muted: #9e9e9e;
+    --text-muted-2: #999999;
+    --text-faint: #888888;
+    --text-faint-2: #777777;
+    --text-faint-3: #666666;
+    --gauge-track: #222222;
+
+    --accent-primary: #00d4ff;
+    --accent-primary-rgb: 0,212,255;
+    --accent-secondary: #4caf50;
+    --accent-secondary-rgb: 76,175,80;
+
+    --shadow-card: rgba(0,0,0,0.4);
+    --shadow-soft: rgba(0,0,0,0.5);
+    --shadow-strong: rgba(0,0,0,0.6);
+    --shadow-modal: rgba(0,0,0,0.8);
+    --overlay-bg: rgba(0,0,0,0.85);
+
+    --card-blur: 0px;
+    --card-border-glass: transparent;
+  }
+
+  :root[data-theme="chiaro"] {
+    --bg-page: #eef1f5;
+    --bg-card: linear-gradient(145deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 100%);
+    --bg-card-hover: linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.68) 100%);
+    --bg-card-2: linear-gradient(145deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.35) 100%);
+    --bg-card-3: rgba(255,255,255,0.85);
+    --bg-card-4: rgba(15,23,42,0.035);
+    --bg-elevated: rgba(255,255,255,0.85);
+    --bg-deep: #dfe4ea;
+
+    --border-color: rgba(15,23,42,0.10);
+    --border-color-2: rgba(15,23,42,0.14);
+    --border-color-3: rgba(15,23,42,0.20);
+
+    --text-primary: #171a1f;
+    --text-secondary: #2f343c;
+    --text-secondary-2: #4a505a;
+    --icon-muted: #7d838c;
+    --text-body: #454b54;
+    --text-muted: #656b74;
+    --text-muted-2: #6f7580;
+    --text-faint: #7d838c;
+    --text-faint-2: #8b919a;
+    --text-faint-3: #9aa0a8;
+    --gauge-track: #c7cbd1;
+
+    --accent-primary: #0090c8;
+    --accent-primary-rgb: 0,144,200;
+    --accent-secondary: #2e9e46;
+    --accent-secondary-rgb: 46,158,70;
+
+    --shadow-card: rgba(30,41,59,0.10);
+    --shadow-soft: rgba(30,41,59,0.14);
+    --shadow-strong: rgba(30,41,59,0.18);
+    --shadow-modal: rgba(30,41,59,0.30);
+    --overlay-bg: rgba(15,23,42,0.45);
+
+    --card-blur: 18px;
+    --card-border-glass: rgba(255,255,255,0.5);
+  }
+
+  :root[data-theme="black"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(255,255,255,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(255,255,255,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(255,255,255,0.11) 100%);
+    --bg-card-3: rgba(255,255,255,0.16);
+    --bg-card-4: rgba(255,255,255,0.13);
+    --bg-elevated: rgba(255,255,255,0.11);
+    --bg-deep: #000000;
+
+    --border-color: rgba(255,255,255,0.16);
+    --border-color-2: rgba(255,255,255,0.24);
+    --border-color-3: rgba(255,255,255,0.34);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e6e6e6;
+    --text-secondary-2: #b0b0b0;
+    --icon-muted: #7d7d7d;
+    --text-body: #cfcfcf;
+    --text-muted: #9a9a9a;
+    --text-muted-2: #8f8f8f;
+    --text-faint: #7d7d7d;
+    --text-faint-2: #6c6c6c;
+    --text-faint-3: #5a5a5a;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #00e5ff;
+    --accent-primary-rgb: 0,229,255;
+    --accent-secondary: #00e676;
+    --accent-secondary-rgb: 0,230,118;
+
+    --shadow-card: rgba(0,0,0,0.6);
+    --shadow-soft: rgba(0,0,0,0.6);
+    --shadow-strong: rgba(0,0,0,0.7);
+    --shadow-modal: rgba(0,0,0,0.9);
+    --overlay-bg: rgba(0,0,0,0.92);
+
+    --card-blur: 16px;
+    --card-border-glass: rgba(255,255,255,0.10);
+  }
+
+  :root[data-theme="blackamoled"] {
+    --compass-inner: rgba(255,255,255,0.07);
+    --compass-outer: rgba(255,255,255,0.045);
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.0) 40%);
+    --bg-card-hover: linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.02) 40%);
+    --bg-card-2: linear-gradient(145deg, rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.0) 40%);
+    --bg-card-3: rgba(255,255,255,0.05);
+    --bg-card-4: rgba(255,255,255,0.04);
+    --bg-elevated: rgba(255,255,255,0.03);
+    --bg-deep: #000000;
+
+    --border-color: rgba(255,255,255,0.12);
+    --border-color-2: rgba(255,255,255,0.18);
+    --border-color-3: rgba(255,255,255,0.26);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e6e6e6;
+    --text-secondary-2: #b0b0b0;
+    --icon-muted: #7d7d7d;
+    --text-body: #cfcfcf;
+    --text-muted: #9a9a9a;
+    --text-muted-2: #8f8f8f;
+    --text-faint: #7d7d7d;
+    --text-faint-2: #6c6c6c;
+    --text-faint-3: #5a5a5a;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #00e5ff;
+    --accent-primary-rgb: 0,229,255;
+    --accent-secondary: #00e676;
+    --accent-secondary-rgb: 0,230,118;
+
+    --shadow-card: rgba(0,0,0,0.6);
+    --shadow-soft: rgba(0,0,0,0.6);
+    --shadow-strong: rgba(0,0,0,0.7);
+    --shadow-modal: rgba(0,0,0,0.9);
+    --overlay-bg: rgba(0,0,0,0.92);
+
+    --card-blur: 16px;
+    --card-border-glass: rgba(255,255,255,0.10);
+  }
+
+  :root[data-theme="blu"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(90,150,220,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(90,150,220,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(90,150,220,0.11) 100%);
+    --bg-card-3: rgba(90,150,220,0.16);
+    --bg-card-4: rgba(90,150,220,0.13);
+    --bg-elevated: rgba(90,150,220,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(90,150,220,0.18);
+    --border-color-2: rgba(90,150,220,0.26);
+    --border-color-3: rgba(90,150,220,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #3fa9ff;
+    --accent-primary-rgb: 63,169,255;
+    --accent-secondary: #64d8c6;
+    --accent-secondary-rgb: 100,216,198;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(90,150,220,0.18);
+  }
+
+  :root[data-theme="green"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(110,200,150,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(110,200,150,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(110,200,150,0.11) 100%);
+    --bg-card-3: rgba(110,200,150,0.16);
+    --bg-card-4: rgba(110,200,150,0.13);
+    --bg-elevated: rgba(110,200,150,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(110,200,150,0.18);
+    --border-color-2: rgba(110,200,150,0.26);
+    --border-color-3: rgba(110,200,150,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #2fdb85;
+    --accent-primary-rgb: 47,219,133;
+    --accent-secondary: #9ccc65;
+    --accent-secondary-rgb: 156,204,101;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(110,200,150,0.18);
+  }
+
+  :root[data-theme="pink"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(230,110,180,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(230,110,180,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(230,110,180,0.11) 100%);
+    --bg-card-3: rgba(230,110,180,0.16);
+    --bg-card-4: rgba(230,110,180,0.13);
+    --bg-elevated: rgba(230,110,180,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(230,110,180,0.18);
+    --border-color-2: rgba(230,110,180,0.26);
+    --border-color-3: rgba(230,110,180,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #ff5cad;
+    --accent-primary-rgb: 255,92,173;
+    --accent-secondary: #ffb86b;
+    --accent-secondary-rgb: 255,184,107;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(230,110,180,0.18);
+  }
+
+  :root[data-theme="red"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(230,110,110,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(230,110,110,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(230,110,110,0.11) 100%);
+    --bg-card-3: rgba(230,110,110,0.16);
+    --bg-card-4: rgba(230,110,110,0.13);
+    --bg-elevated: rgba(230,110,110,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(230,110,110,0.18);
+    --border-color-2: rgba(230,110,110,0.26);
+    --border-color-3: rgba(230,110,110,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #ff5252;
+    --accent-primary-rgb: 255,82,82;
+    --accent-secondary: #ffb74d;
+    --accent-secondary-rgb: 255,183,77;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(230,110,110,0.18);
+  }
+
+  :root[data-theme="notte"] {
+    --bg-page: #060d1a;
+    --bg-card: linear-gradient(145deg, #04070f 0%, rgba(60,110,180,0.20) 100%);
+    --bg-card-hover: linear-gradient(145deg, #070b17 0%, rgba(60,110,180,0.28) 100%);
+    --bg-card-2: linear-gradient(145deg, #03050c 0%, rgba(60,110,180,0.14) 100%);
+    --bg-card-3: rgba(60,110,180,0.20);
+    --bg-card-4: rgba(60,110,180,0.13);
+    --bg-elevated: rgba(60,110,180,0.18);
+    --bg-deep: #04070f;
+
+    --border-color: rgba(120,170,230,0.16);
+    --border-color-2: rgba(120,170,230,0.24);
+    --border-color-3: rgba(120,170,230,0.32);
+
+    --text-primary: #eaf3ff;
+    --text-secondary: #c7ddf5;
+    --text-secondary-2: #9fbede;
+    --icon-muted: #6f93b5;
+    --text-body: #b0cae4;
+    --text-muted: #85a6c6;
+    --text-muted-2: #7a9cbd;
+    --text-faint: #6f93b5;
+    --text-faint-2: #5f84a6;
+    --text-faint-3: #4f7597;
+    --gauge-track: #17263a;
+
+    --accent-primary: #4fd8ff;
+    --accent-primary-rgb: 79,216,255;
+    --accent-secondary: #4ce6a8;
+    --accent-secondary-rgb: 76,230,168;
+
+    --shadow-card: rgba(0,4,15,0.5);
+    --shadow-soft: rgba(0,4,15,0.55);
+    --shadow-strong: rgba(0,4,15,0.65);
+    --shadow-modal: rgba(0,4,15,0.8);
+    --overlay-bg: rgba(2,6,15,0.88);
+
+    --card-blur: 20px;
+    --card-border-glass: rgba(140,200,255,0.16);
+  }
+
+
+
+
+
+
+  :root[data-theme="violet"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(160,110,230,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(160,110,230,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(160,110,230,0.11) 100%);
+    --bg-card-3: rgba(160,110,230,0.16);
+    --bg-card-4: rgba(160,110,230,0.13);
+    --bg-elevated: rgba(160,110,230,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(160,110,230,0.18);
+    --border-color-2: rgba(160,110,230,0.26);
+    --border-color-3: rgba(160,110,230,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #b388ff;
+    --accent-primary-rgb: 179,136,255;
+    --accent-secondary: #ff80ab;
+    --accent-secondary-rgb: 255,128,171;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(160,110,230,0.18);
+  }
+
+  :root[data-theme="orange"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(255,152,0,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(255,152,0,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(255,152,0,0.11) 100%);
+    --bg-card-3: rgba(255,152,0,0.16);
+    --bg-card-4: rgba(255,152,0,0.13);
+    --bg-elevated: rgba(255,152,0,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(255,152,0,0.18);
+    --border-color-2: rgba(255,152,0,0.26);
+    --border-color-3: rgba(255,152,0,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #ff9800;
+    --accent-primary-rgb: 255,152,0;
+    --accent-secondary: #ffca28;
+    --accent-secondary-rgb: 255,202,40;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(255,152,0,0.18);
+  }
+
+  :root[data-theme="teal"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(0,188,212,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(0,188,212,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(0,188,212,0.11) 100%);
+    --bg-card-3: rgba(0,188,212,0.16);
+    --bg-card-4: rgba(0,188,212,0.13);
+    --bg-elevated: rgba(0,188,212,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(0,188,212,0.18);
+    --border-color-2: rgba(0,188,212,0.26);
+    --border-color-3: rgba(0,188,212,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #00bcd4;
+    --accent-primary-rgb: 0,188,212;
+    --accent-secondary: #4dd0e1;
+    --accent-secondary-rgb: 77,208,225;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(0,188,212,0.18);
+  }
+
+  :root[data-theme="gold"] {
+    --bg-page: #000000;
+    --bg-card: linear-gradient(145deg, #050505 0%, rgba(255,193,7,0.16) 100%);
+    --bg-card-hover: linear-gradient(145deg, #0a0a0a 0%, rgba(255,193,7,0.22) 100%);
+    --bg-card-2: linear-gradient(145deg, #030303 0%, rgba(255,193,7,0.11) 100%);
+    --bg-card-3: rgba(255,193,7,0.16);
+    --bg-card-4: rgba(255,193,7,0.13);
+    --bg-elevated: rgba(255,193,7,0.11);
+    --bg-deep: #050505;
+
+    --border-color: rgba(255,193,7,0.18);
+    --border-color-2: rgba(255,193,7,0.26);
+    --border-color-3: rgba(255,193,7,0.36);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2e2;
+    --text-secondary-2: #b8b8b8;
+    --icon-muted: #8f8f8f;
+    --text-body: #cfcfcf;
+    --text-muted: #a3a3a3;
+    --text-muted-2: #999999;
+    --text-faint: #8a8a8a;
+    --text-faint-2: #797979;
+    --text-faint-3: #666666;
+    --gauge-track: #2a2a2a;
+
+    --accent-primary: #ffc107;
+    --accent-primary-rgb: 255,193,7;
+    --accent-secondary: #fff176;
+    --accent-secondary-rgb: 255,241,118;
+
+    --shadow-card: rgba(0,0,0,0.75);
+    --shadow-soft: rgba(0,0,0,0.8);
+    --shadow-strong: rgba(0,0,0,0.88);
+    --shadow-modal: rgba(0,0,0,0.94);
+    --overlay-bg: rgba(0,0,0,0.94);
+
+    --card-blur: 4px;
+    --card-border-glass: rgba(255,193,7,0.18);
+  }
+</style>
+
+<script id="theme-switcher">
+(function() {
+  var VALID_THEMES = ['scuro', 'chiaro', 'black', 'blu', 'green', 'pink', 'red', 'notte', 'violet', 'blackamoled', 'orange', 'teal', 'gold'];
+  function applyTheme(name, persist) {
+    if (VALID_THEMES.indexOf(name) === -1) return false;
+    if (name === 'scuro') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', name);
+    }
+    if (persist) {
+      try { localStorage.setItem('siteTheme', name); } catch (e) {}
+    }
+    return true;
+  }
+  window.setAppTheme = function(name) { applyTheme(name, true); };
+  var params = new URLSearchParams(window.location.search);
+  var fromUrl = params.get('theme');
+  if (fromUrl) {
+    applyTheme(fromUrl, true);
+  } else {
+    var stored = null;
+    try { stored = localStorage.getItem('siteTheme'); } catch (e) {}
+    if (stored) applyTheme(stored, false);
+  }
+})();
+</script>
+</head>
+<body>
+
+<a href="index.html" class="back-btn">⬅ Torna al Meteo</a>
+<h1>💡 Utile da sapere</h1>
+<div class="subtitle">Consigli pratici calcolati dai dati della stazione di Motta Visconti</div>
+
+<div id="crumb" class="crumb"></div>
+<div id="storicoBar"></div>
+<div id="app"></div>
+
+<script>
+// ===================================================================
+// Pagina "Utile da sapere" (2026-10-03). SPA vanilla come notizie.html:
+// una home con i pulsanti delle sezioni, ogni sezione e' una vista
+// (history.pushState, cosi' il tasto Indietro di Android torna alla home).
+// Dati: live.csv / storico_*.csv / pioggia.csv (export InfluxDB gia'
+// usati da index.html), previsioni.php, *_livello.php, carburanti.php.
+// ===================================================================
+
+var LAT = 45.2924, LNG = 8.9864;
+
+var SECTIONS = [
+  { id: 'comune',    icon: '🏛️', name: 'Comune',              hint: 'Orari, telefoni, ecocentro' },
+  { id: 'numeri',    icon: '📞', name: 'Numeri utili',        hint: 'Guasti acqua, gas, luce' },
+  { id: 'farmacie',  icon: '💊', name: 'Farmacie di turno',   hint: 'E numeri utili' },
+  { id: 'medici',    icon: '🩺', name: 'Medici di base',      hint: 'Orari e telefoni' },
+  { id: 'dae',       icon: '❤️', name: 'Defibrillatori',      hint: 'Dove sono i DAE' },
+  { id: 'parrocchia',icon: '⛪', name: 'Parrocchia',          hint: 'Messe, oratorio, Caritas' },
+  { id: 'scuole',    icon: '🏫', name: 'Scuole',              hint: 'Vacanze e contatti' },
+  { id: 'associazioni', icon: '⚽', name: 'Sport e associazioni', hint: 'Le realtà del paese' },
+  { id: 'cinema',    icon: '🎬', name: 'Cinema Arcobaleno',   hint: 'Film in programma' },
+  { id: 'raccolta',  icon: '♻️', name: 'Raccolta rifiuti',    hint: 'Cosa esporre stasera' },
+  { id: 'carburanti',icon: '⛽', name: 'Carburanti in zona',  hint: 'Prezzi di oggi' },
+  { id: 'trasporti', icon: '🚌', name: 'Autobus e treni',     hint: 'Prossime partenze' },
+  { id: 'scioperi',  icon: '🚧', name: 'Scioperi trasporti',  hint: 'Treni, bus, aerei' },
+  { id: 'acqua',     icon: '💧', name: 'Casa dell\'acqua',     hint: 'Acqua gratis e analisi' },
+  { id: 'posta',     icon: '📮', name: 'Ufficio postale',     hint: 'Orari e servizi' },
+  { id: 'orto',      icon: '🌱', name: 'Orto e giardino',     hint: 'Serve annaffiare?' },
+  { id: 'webcam',    icon: '📹', name: 'Webcam',              hint: 'Viste live nei dintorni' },
+  { id: 'nebbia',    icon: '💧', name: 'Umidità, nebbia e ghiaccio',   hint: 'Stanotte e domattina', meteo: true, storico: [['💧 Storico umidità', 'storico.html?misura=hum'], ['🌡️ Storico temperatura', 'storico.html?misura=temp']] },
+  { id: 'barometro', icon: '🧭', name: 'Barometro',           hint: 'Il tempo che cambia', meteo: true, storico: [['📈 Storico pressione', 'storico.html?misura=press']] },
+  { id: 'vento',     icon: '🌬️', name: 'Vento',               hint: 'Scala Beaufort', meteo: true, storico: [['📈 Storico vento', 'storico.html?misura=wind']] },
+  { id: 'aria',      icon: '🏃', name: 'Aria e attività',     hint: 'Uscire, correre, arieggiare', meteo: true, storico: [['📈 Indice qualità aria', 'storico.html?misura=aqi'], ['PM2.5', 'storico.html?misura=pm25'], ['PM10', 'storico.html?misura=pm10'], ['Ozono', 'storico.html?misura=o3'], ['Biossido di azoto', 'storico.html?misura=no2']] },
+  { id: 'fulmini',   icon: '⚡', name: 'Fulmini',             hint: 'Regola 30/30', meteo: true, storico: [['📈 Storico fulmini', 'storico.html?misura=lightning']] },
+  { id: 'ticino',    icon: '🌊', name: 'Ticino',              hint: 'Livelli e tendenza', meteo: true, storico: [['📈 Grafici livelli Ticino e Lago Maggiore', 'index.html#pannello-ticino']] },
+  { id: 'paese',     icon: '📜', name: 'Storia, Luoghi e Foto', hint: 'Conoscere Motta', meteo: true, sub: 'Storia, tradizioni e luoghi di Motta Visconti', storico: [['📸 Foto storiche', 'foto.html']] }
+];
+
+// ---------- utilita' ----------
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function fmt(n, d) { return (n == null || isNaN(n)) ? '—' : Number(n).toFixed(d == null ? 1 : d).replace('.', ','); }
+function hhmm(d) { return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }
+function dayLabel(d) { return d.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' }); }
+function dateKey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function agoText(d) {
+  var min = Math.round((Date.now() - d.getTime()) / 60000);
+  if (min < 1) return 'adesso';
+  if (min < 60) return min + ' min fa';
+  var h = Math.round(min / 60);
+  if (h < 48) return h + (h === 1 ? ' ora fa' : ' ore fa');
+  return Math.round(h / 24) + ' giorni fa';
+}
+function bussola(az) {
+  var dirs = ['Nord', 'Nord-Est', 'Est', 'Sud-Est', 'Sud', 'Sud-Ovest', 'Ovest', 'Nord-Ovest'];
+  return dirs[Math.round(((az % 360) + 360) % 360 / 45) % 8];
+}
+
+function card(html, extraStyle) { return '<div class="info-card"' + (extraStyle ? ' style="' + extraStyle + '"' : '') + '>' + html + '</div>'; }
+function row(label, value, color) {
+  return '<div class="row"><span>' + label + '</span><strong' + (color ? ' style="color:' + color + '"' : '') + '>' + value + '</strong></div>';
+}
+function verdict(icon, title, text, color) {
+  return '<div class="verdict" style="border-color:' + color + '"><div class="v-icon">' + icon + '</div><div><div class="v-title" style="color:' + color + '">' + title + '</div><div class="v-text">' + text + '</div></div></div>';
+}
+function tip(icon, text) { return '<div class="tip"><span class="t-icon">' + icon + '</span><span>' + text + '</span></div>'; }
+function sectionTitle(t) { return '<div class="sec-title">' + t + '</div>'; }
+function note(t) { return '<div class="note">' + t + '</div>'; }
+function loading() { $('app').innerHTML = '<div class="loading-state">Caricamento dati...</div>'; }
+function failed() { $('app').innerHTML = '<div class="loading-state">Dati non disponibili al momento, riprova tra poco.</div>'; }
+
+var GREEN = '#4caf50', YELLOW = '#ffc107', ORANGE = '#ff9800', RED = '#f44336', BLUE = '#29b6f6';
+
+// ---------- caricamento dati (ogni sorgente scaricata una volta sola) ----------
+var cache = {};
+function once(key, fn) { if (!cache[key]) cache[key] = fn().catch(function(e) { delete cache[key]; throw e; }); return cache[key]; }
+
+// CSV InfluxDB: ",result,table,_time,_value,entity_id" -> { entity: [{t: Date, v: number|string}] }
+function loadInflux(file) {
+  return once(file, function() {
+    return fetch(file + '?t=' + Date.now(), { cache: 'no-store' }).then(function(r) { return r.text(); }).then(function(txt) {
+      var out = {};
+      var lines = txt.split(/\r?\n/);
+      var head = lines[0].split(',');
+      var ti = head.indexOf('_time'), vi = head.indexOf('_value'), ei = head.indexOf('entity_id');
+      for (var i = 1; i < lines.length; i++) {
+        var c = lines[i].split(',');
+        if (c.length <= vi || !c[ti] || c[ti] === '_time') continue;
+        var ent = ei >= 0 ? c[ei] : 'value';
+        var num = parseFloat(c[vi]);
+        var v = (isNaN(num) || /T\d\d:/.test(c[vi])) ? c[vi] : num;
+        (out[ent] = out[ent] || []).push({ t: new Date(c[ti]), v: v });
+      }
+      Object.keys(out).forEach(function(k) { out[k].sort(function(a, b) { return a.t - b.t; }); });
+      return out;
+    });
+  });
+}
+function latest(series) { return (series && series.length) ? series[series.length - 1] : null; }
+function valueAt(series, t) {
+  // valore piu' vicino all'istante t (entro 45 minuti)
+  if (!series) return null;
+  var best = null, bd = 45 * 60000;
+  for (var i = 0; i < series.length; i++) {
+    var d = Math.abs(series[i].t - t);
+    if (d < bd) { bd = d; best = series[i]; }
+  }
+  return best;
+}
+function loadJSON(url) {
+  return once(url, function() { return fetch(url, { cache: 'no-store' }).then(function(r) { return r.json(); }); });
+}
+
+// ---------- calcoli meteo ----------
+function dewPoint(t, rh) {
+  var a = 17.62, b = 243.12, g = Math.log(rh / 100) + a * t / (b + t);
+  return b * g / (a - g);
+}
+// Radiazione extraterrestre Ra (mm/giorno equivalenti) per Hargreaves, FAO-56
+function raMm(date) {
+  var doy = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+  var phi = LAT * Math.PI / 180;
+  var dr = 1 + 0.033 * Math.cos(2 * Math.PI * doy / 365);
+  var dec = 0.409 * Math.sin(2 * Math.PI * doy / 365 - 1.39);
+  var ws = Math.acos(-Math.tan(phi) * Math.tan(dec));
+  var ra = 24 * 60 / Math.PI * 0.082 * dr * (ws * Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.sin(ws));
+  return 0.408 * ra;
+}
+function hargreaves(tmin, tmax, date) {
+  var tm = (tmin + tmax) / 2;
+  return Math.max(0, 0.0023 * (tm + 17.8) * Math.sqrt(Math.max(0, tmax - tmin)) * raMm(date));
+}
+// Ore previste (previsioni.php) con data completa, dalla prossima ora in poi
+function forecastHours(prev) {
+  var out = [], now = new Date();
+  (prev.giorni || []).forEach(function(g, gi) {
+    var base = new Date(now.getFullYear(), now.getMonth(), now.getDate() + gi);
+    // usa la data vera del giorno ("03/10"): dopo mezzanotte la cache puo' partire da ieri
+    var dm = String(g.data || '').match(/^(\d{1,2})\/(\d{1,2})$/);
+    if (dm) {
+      base = new Date(now.getFullYear(), +dm[2] - 1, +dm[1]);
+      if (base - now > 200 * 86400000) base.setFullYear(base.getFullYear() - 1);
+      if (now - base > 200 * 86400000) base.setFullYear(base.getFullYear() + 1);
+    }
+    (g.ore || []).forEach(function(o) {
+      var p = String(o.ora).split(':');
+      var d = new Date(base.getFullYear(), base.getMonth(), base.getDate(), parseInt(p[0], 10), parseInt(p[1] || '0', 10));
+      if (d >= new Date(now.getTime() - 3600000)) out.push({ t: d, temp: o.temp, vento: o.vento, prob: o.pioggia_prob });
+    });
+  });
+  return out;
+}
+
+// ---------- navigazione ----------
+var state = { view: 'home' };
+function go(view, push) {
+  state = { view: view };
+  if (push !== false) history.pushState(state, '', location.pathname + (view === 'home' ? '' : '#' + view));
+  render();
+  window.scrollTo(0, 0);
+}
+window.addEventListener('popstate', function(e) { state = e.state || { view: 'home' }; render(); });
+
+function render() {
+  var sec = SECTIONS.filter(function(s) { return s.id === state.view; })[0];
+  // Le sezioni "meteo" si aprono dalle card della pagina principale: titolo proprio,
+  // niente briciola "Utile" e pulsanti larghi verso il grafico storico giusto.
+  var h1 = document.querySelector('h1'), sub = document.querySelector('.subtitle');
+  if (sec && sec.meteo) {
+    h1.textContent = sec.icon + ' ' + sec.name;
+    sub.textContent = sec.sub || 'Dati e consigli dalla stazione meteo di Motta Visconti';
+    $('crumb').innerHTML = '';
+    // primo pulsante largo; eventuali altri (es. singoli inquinanti) in griglia compatta
+    $('storicoBar').innerHTML = '<a class="storico-btn" href="' + sec.storico[0][1] + '">' + sec.storico[0][0] + '</a>' +
+      (sec.storico.length > 1 && sec.id !== 'nebbia' ? '<div class="storico-mini">' + sec.storico.slice(1).map(function(x) { return '<a href="' + x[1] + '">📈 ' + x[0] + '</a>'; }).join('') + '</div>'
+        : sec.storico.slice(1).map(function(x) { return '<a class="storico-btn" href="' + x[1] + '">' + x[0] + '</a>'; }).join(''));
+    document.title = sec.name + ' - Meteo Motta Visconti';
+  } else {
+    h1.textContent = '💡 Utile da sapere';
+    sub.textContent = 'Informazioni pratiche su Motta Visconti';
+    $('storicoBar').innerHTML = '';
+    var crumb = '<button onclick="go(\'home\')">💡 Utile</button>';
+    if (sec) crumb += '<span class="sep">›</span><span class="current">' + sec.icon + ' ' + sec.name + '</span>';
+    $('crumb').innerHTML = crumb;
+    document.title = 'Utile da sapere - Motta Visconti';
+  }
+  if (!sec) return renderHome();
+  loading();
+  var fn = VIEWS[sec.id];
+  Promise.resolve().then(fn).catch(function(e) { console.error(e); failed(); });
+}
+
+function renderHome() {
+  $('app').innerHTML = '<div class="grid">' + SECTIONS.filter(function(s) { return !s.meteo; }).map(function(s) {
+    return '<div class="sec-card" onclick="go(\'' + s.id + '\')"><span class="icon">' + s.icon + '</span><span class="name">' + s.name + '</span><span class="hint">' + s.hint + '</span></div>';
+  }).join('') + '</div>';
+}
+
+var VIEWS = {};
+
+// =================== ORTO E GIARDINO ===================
+VIEWS.orto = function() {
+  return Promise.all([loadInflux('storico_temp.csv'), loadInflux('pioggia.csv'), loadJSON('/previsioni.php').catch(function() { return null; })]).then(function(r) {
+    var temps = r[0]['ecowitt_outdoor_temperature'] || [];
+    var rain = r[1]['value'] || [];
+    var prev = r[2];
+
+    // Tmin/Tmax per giorno locale
+    var days = {};
+    temps.forEach(function(p) {
+      var k = dateKey(p.t);
+      var d = days[k] || (days[k] = { min: 99, max: -99, n: 0, date: new Date(p.t.getFullYear(), p.t.getMonth(), p.t.getDate()) });
+      if (p.v < d.min) d.min = p.v;
+      if (p.v > d.max) d.max = p.v;
+      d.n++;
+    });
+    // pioggia.csv: un valore per giorno, etichettato con la mezzanotte di fine giornata
+    var rainByDay = {};
+    rain.forEach(function(p) { rainByDay[dateKey(new Date(p.t.getTime() - 60000))] = p.v; });
+
+    var today = new Date();
+    var list = [];
+    for (var i = 7; i >= 1; i--) {
+      var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+      var k = dateKey(d), td = days[k];
+      if (!td || td.n < 100) continue; // giornata incompleta
+      var et = hargreaves(td.min, td.max, d);
+      list.push({ date: d, min: td.min, max: td.max, rain: rainByDay[k] || 0, et: et });
+    }
+    if (!list.length) return failed();
+
+    var sumRain = 0, sumEt = 0;
+    list.forEach(function(x) { sumRain += x.rain; sumEt += x.et; });
+    var deficit = sumEt - sumRain;
+    var rainNext = 0, minNext = 99;
+    if (prev && prev.giorni) {
+      prev.giorni.slice(0, 2).forEach(function(g) { rainNext += g.pioggia || 0; });
+      prev.giorni.slice(0, 3).forEach(function(g) { if (g.temp_min < minNext) minNext = g.temp_min; });
+    }
+    var tmean = list.reduce(function(a, x) { return a + (x.min + x.max) / 2; }, 0) / list.length;
+    var month = today.getMonth();
+    var riposo = (month >= 10 || month <= 1) && tmean < 8;
+
+    var v;
+    if (rainNext >= 5) {
+      v = verdict('🌧️', 'Aspetta la pioggia', 'Nelle prossime 48 ore sono previsti circa <b>' + fmt(rainNext, 0) + ' mm</b> di pioggia: annaffiare adesso sarebbe acqua sprecata.', BLUE);
+    } else if (riposo) {
+      v = verdict('😴', 'Piante a riposo', 'Con il freddo le piante consumano pochissima acqua. Annaffia solo i vasi riparati se la terra è asciutta, mai quando è prevista una gelata.', BLUE);
+    } else if (deficit > 15) {
+      v = verdict('💧', 'Annaffia abbondante', 'Negli ultimi ' + list.length + ' giorni il terreno ha perso circa <b>' + fmt(deficit, 0) + ' mm</b> in più di quanta pioggia è caduta. Dai circa <b>' + fmt(Math.min(deficit, 25), 0) + ' litri per m²</b>, meglio in due volte.', ORANGE);
+    } else if (deficit > 5) {
+      v = verdict('🚿', 'Annaffiatura leggera', 'Il terreno è un po\' in deficit (circa <b>' + fmt(deficit, 0) + ' mm</b>). Bastano <b>' + fmt(deficit, 0) + ' litri per m²</b>, soprattutto per ortaggi e vasi.', YELLOW);
+    } else {
+      v = verdict('✅', 'Non serve annaffiare', 'La pioggia degli ultimi giorni basta a coprire l\'acqua evaporata.', GREEN);
+    }
+
+    var html = v;
+    if (minNext <= 2) {
+      html += verdict('🥶', 'Rischio gelata', 'Nei prossimi giorni la minima prevista scende a <b>' + fmt(minNext, 0) + '°C</b>. Copri le piante delicate con tessuto non tessuto e porta al riparo i vasi.', RED);
+    }
+    html += card(
+      sectionTitle('📊 Bilancio acqua ultimi ' + list.length + ' giorni') +
+      row('Pioggia caduta', fmt(sumRain, 1) + ' mm', BLUE) +
+      row('Acqua evaporata (stimata)', fmt(sumEt, 1) + ' mm', ORANGE) +
+      row('Pioggia prevista 48 ore', fmt(rainNext, 1) + ' mm') +
+      '<table class="tbl"><tr><th>Giorno</th><th>Min/Max</th><th>Pioggia</th><th>Evap.</th></tr>' +
+      list.map(function(x) {
+        return '<tr><td>' + dayLabel(x.date) + '</td><td>' + fmt(x.min, 0) + '° / ' + fmt(x.max, 0) + '°</td><td>' + fmt(x.rain, 1) + '</td><td>' + fmt(x.et, 1) + '</td></tr>';
+      }).join('') + '</table>' +
+      note('1 mm di pioggia = 1 litro d\'acqua per metro quadro. L\'evaporazione è stimata con il metodo FAO di Hargreaves dalle temperature della stazione.')
+    );
+    html += card(sectionTitle('💡 Consigli') +
+      tip('🌙', 'Annaffia la sera tardi o la mattina presto: di giorno metà dell\'acqua evapora prima di arrivare alle radici.') +
+      tip('🪣', 'Meglio poche annaffiature abbondanti che tante leggere: le radici crescono più in profondità.') +
+      tip('🍂', 'Uno strato di pacciamatura (foglie, paglia, corteccia) riduce l\'evaporazione anche del 50%.') +
+      tip('🪴', 'I vasi si asciugano molto più in fretta della terra: controllali anche quando l\'orto non ne ha bisogno.'));
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== NEBBIA, BRINA, GHIACCIO ===================
+VIEWS.nebbia = function() {
+  return Promise.all([loadInflux('live.csv'), loadJSON('/previsioni.php').catch(function() { return null; })]).then(function(r) {
+    var live = r[0], prev = r[1];
+    var t = latest(live['ecowitt_outdoor_temperature']), h = latest(live['ecowitt_humidity']);
+    if (!t || !h) return failed();
+    var td = dewPoint(t.v, h.v), spread = t.v - td;
+
+    // notte prossima: dalle 20 di stasera (o da adesso) alle 9 di domattina
+    var now = new Date();
+    var start = now.getHours() >= 9 ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20) : now;
+    if (start < now) start = now;
+    var end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + (start.getHours() >= 9 ? 1 : 0), 9);
+    var night = prev ? forecastHours(prev).filter(function(x) { return x.t >= start && x.t <= end; }) : [];
+    var minN = null, minAt = null, windAvg = 0;
+    night.forEach(function(x) { if (minN === null || x.temp < minN) { minN = x.temp; minAt = x.t; } windAvg += x.vento; });
+    if (night.length) windAvg /= night.length;
+
+    var html = card(
+      sectionTitle('🌡️ Adesso') +
+      row('Temperatura', fmt(t.v) + '°C') +
+      row('Umidità', fmt(h.v, 0) + '%') +
+      row('Punto di rugiada', fmt(td) + '°C', BLUE) +
+      row('Differenza', fmt(spread) + '°C', spread <= 2 ? ORANGE : null) +
+      note('Il punto di rugiada è la temperatura a cui l\'aria diventa satura: se l\'aria si raffredda fin lì si forma condensa, cioè nebbia, rugiada o brina.'));
+
+    if (minN !== null) {
+      var condensa = minN <= td + 1;
+      var calmo = windAvg <= 7;
+      var vs = '';
+      if (minN <= 0 && condensa) vs += verdict('❄️', 'Brina e ghiaccio probabili', 'Stanotte la minima prevista è <b>' + fmt(minN, 0) + '°C</b> verso le ' + hhmm(minAt) + ', sotto il punto di rugiada. Al mattino auto e prati bianchi: attenzione al ghiaccio su ponti, strade di campagna e marciapiedi in ombra.', RED);
+      else if (minN <= 1) vs += verdict('🧊', 'Possibile ghiaccio', 'Minima prevista <b>' + fmt(minN, 0) + '°C</b> verso le ' + hhmm(minAt) + '. Dove la strada è bagnata può gelare: prudenza al mattino presto.', ORANGE);
+      if (minN > 0 && condensa && calmo) vs += verdict('🌫️', 'Nebbia probabile', 'L\'aria stanotte si raffredda fino al punto di rugiada (minima ' + fmt(minN, 0) + '°C) con vento debole. Facile nebbia nella valle del Ticino dopo mezzanotte e al mattino: fendinebbia e distanza di sicurezza.', ORANGE);
+      else if (minN > 0 && condensa) vs += verdict('💧', 'Rugiada al mattino', 'L\'aria raggiunge la saturazione ma il vento dovrebbe impedire una nebbia fitta. Probabili foschie e rugiada.', YELLOW);
+      if (!vs) vs = verdict('✅', 'Nessun problema previsto', 'Stanotte la minima prevista (' + fmt(minN, 0) + '°C) resta sopra il punto di rugiada: nebbia e brina poco probabili.', GREEN);
+      html = vs + html;
+      html += card(sectionTitle('🌙 Stanotte (previsione)') +
+        row('Minima prevista', fmt(minN, 0) + '°C alle ' + hhmm(minAt)) +
+        row('Vento medio previsto', fmt(windAvg, 0) + ' km/h'));
+    }
+    html += card(sectionTitle('💡 Da sapere') +
+      tip('🚗', 'Con la nebbia usa anabbaglianti e fendinebbia posteriore solo sotto i 50 m di visibilità, mai gli abbaglianti: riflettono sulla nebbia e accecano.') +
+      tip('🌉', 'I ponti gelano per primi: l\'aria li raffredda sopra e sotto. Vale anche per il ponte di Bereguardo.') +
+      tip('🌫️', 'Nella pianura padana la nebbia è più frequente da ottobre a gennaio, con alta pressione, cielo sereno e notti lunghe.'));
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== BAROMETRO ===================
+VIEWS.barometro = function() {
+  return loadInflux('live.csv').then(function(live) {
+    var s = live['ecowitt_absolute_pressure'];
+    var cur = latest(s);
+    if (!cur) return failed();
+    var p3 = valueAt(s, new Date(cur.t.getTime() - 3 * 3600000));
+    var p24 = s[0];
+    var d3 = p3 ? cur.v - p3.v : 0, d24 = cur.v - p24.v;
+
+    var v;
+    if (d3 <= -3.5) v = verdict('⛈️', 'Calo rapido', 'In 3 ore la pressione è scesa di <b>' + fmt(-d3) + ' hPa</b>. Peggioramento probabile a breve, con vento o temporali.', RED);
+    else if (d3 <= -1.5) v = verdict('🌧️', 'Pressione in calo', 'Scesa di <b>' + fmt(-d3) + ' hPa</b> in 3 ore. Possibile peggioramento entro 12-24 ore.', ORANGE);
+    else if (d3 >= 3.5) v = verdict('🌬️', 'Aumento rapido', 'Salita di <b>' + fmt(d3) + ' hPa</b> in 3 ore. Tempo in miglioramento, ma possibile vento sostenuto.', YELLOW);
+    else if (d3 >= 1.5) v = verdict('🌤️', 'Pressione in aumento', 'Salita di <b>' + fmt(d3) + ' hPa</b> in 3 ore. Tempo in miglioramento o stabile.', GREEN);
+    else v = verdict('⚖️', 'Pressione stabile', 'Variazione di soli <b>' + fmt(d3) + ' hPa</b> in 3 ore. Nessun cambiamento in vista a breve.', GREEN);
+
+    // grafico 24 ore
+    var vals = s.map(function(x) { return x.v; });
+    var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+    if (mx - mn < 2) { var c = (mx + mn) / 2; mn = c - 1; mx = c + 1; }
+    var t0 = s[0].t.getTime(), t1 = cur.t.getTime();
+    var pts = s.map(function(x) {
+      return ((x.t.getTime() - t0) / (t1 - t0) * 300).toFixed(1) + ',' + (90 - (x.v - mn) / (mx - mn) * 80).toFixed(1);
+    }).join(' ');
+    var svg = '<svg viewBox="0 0 300 100" style="width:100%;height:110px;margin-top:6px"><polyline points="' + pts + '" fill="none" stroke="var(--accent-primary)" stroke-width="2.2" stroke-linejoin="round"/></svg>' +
+      '<div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-faint)"><span>' + hhmm(s[0].t) + ' ieri</span><span>min ' + fmt(Math.min.apply(null, vals)) + ' · max ' + fmt(Math.max.apply(null, vals)) + '</span><span>' + hhmm(cur.t) + '</span></div>';
+
+    var html = v + card(
+      sectionTitle('📈 Ultime 24 ore') +
+      row('Pressione adesso', fmt(cur.v) + ' hPa') +
+      row('Rispetto a 3 ore fa', (d3 >= 0 ? '+' : '') + fmt(d3) + ' hPa', d3 <= -1.5 ? ORANGE : (d3 >= 1.5 ? GREEN : null)) +
+      row('Rispetto a 24 ore fa', (d24 >= 0 ? '+' : '') + fmt(d24) + ' hPa') + svg);
+    html += card(sectionTitle('💡 Come si legge') +
+      tip('📉', 'Conta più la <b>tendenza</b> del valore: un calo di oltre 1,5 hPa in 3 ore annuncia spesso un peggioramento, oltre 3,5 hPa un cambiamento brusco.') +
+      tip('📈', 'Una salita costante dopo la pioggia indica che arriva l\'alta pressione: cielo più sereno e, in inverno, più nebbia e smog.') +
+      tip('🤕', 'Chi soffre di meteopatia avverte spesso mal di testa o dolori articolari proprio durante i cali rapidi.') +
+      note('È lo stesso principio dei vecchi barometri da parete, applicato ai dati della stazione.'));
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== VENTO ===================
+var BEAUFORT = [
+  [1, 0, 'Calma', 'Il fumo sale dritto.'],
+  [6, 1, 'Bava di vento', 'Il fumo si inclina, le banderuole stanno ferme.'],
+  [12, 2, 'Brezza leggera', 'Si sente il vento sul viso, le foglie frusciano.'],
+  [20, 3, 'Brezza tesa', 'Foglie e rametti sempre in movimento, le bandiere si distendono.'],
+  [29, 4, 'Vento moderato', 'Si alzano polvere e carta, si muovono i rami piccoli.'],
+  [39, 5, 'Vento teso', 'Oscillano gli alberelli, increspature sui canali.'],
+  [50, 6, 'Vento fresco', 'Si muovono i rami grandi, fischiano i fili, ombrelli difficili da usare.'],
+  [62, 7, 'Vento forte', 'Interi alberi in movimento, fatica a camminare controvento.'],
+  [75, 8, 'Burrasca', 'Si spezzano i rami, cadono vasi e oggetti non fissati.'],
+  [88, 9, 'Burrasca forte', 'Danni a tegole e coperture, alberi a rischio.'],
+  [9999, 10, 'Tempesta', 'Alberi sradicati, danni gravi: resta al chiuso.']
+];
+function beaufort(kmh) { for (var i = 0; i < BEAUFORT.length; i++) if (kmh < BEAUFORT[i][0]) return BEAUFORT[i]; return BEAUFORT[BEAUFORT.length - 1]; }
+
+VIEWS.vento = function() {
+  return Promise.all([loadInflux('live.csv'), loadJSON('/previsioni.php').catch(function() { return null; })]).then(function(r) {
+    var live = r[0], prev = r[1];
+    var sp = latest(live['ecowitt_wind_speed']), dir = latest(live['ecowitt_wind_direction']), gust = latest(live['ecowitt_max_daily_gust']);
+    var speed = sp ? sp.v : 0;
+    var b = beaufort(speed), bg = gust ? beaufort(gust.v) : null;
+    var html = '';
+    var maxPrev = 0, maxDay = null;
+    if (prev && prev.giorni) prev.giorni.slice(0, 2).forEach(function(g) { if (g.raffica > maxPrev) { maxPrev = g.raffica; maxDay = g.giorno; } });
+    if (maxPrev >= 60) html += verdict('⚠️', 'Raffiche forti in arrivo', maxDay + ' previste raffiche fino a <b>' + maxPrev + ' km/h</b>. Metti al sicuro vasi, ombrelloni, teli e oggetti sui balconi. Evita di parcheggiare sotto gli alberi.', RED);
+    else if (maxPrev >= 40) html += verdict('🌬️', 'Giornata ventosa', maxDay + ' previste raffiche fino a <b>' + maxPrev + ' km/h</b>. Fissa teli e oggetti leggeri all\'aperto.', ORANGE);
+    else html += verdict('🍃', 'Niente vento forte in vista', 'Oggi e domani raffiche previste fino a ' + maxPrev + ' km/h.', GREEN);
+
+    html += card(sectionTitle('🌬️ Adesso') +
+      row('Velocità', fmt(speed) + ' km/h') +
+      row('Scala Beaufort', 'forza ' + b[1] + ' · ' + b[2]) +
+      (dir && speed >= 2 ? row('Direzione', 'da ' + bussola(dir.v) + ' (' + fmt(dir.v, 0) + '°)') : '') +
+      (gust ? row('Raffica massima oggi', fmt(gust.v) + ' km/h · forza ' + bg[1]) : '') +
+      note(b[3]));
+
+    if (dir && speed >= 2) {
+      var dn = bussola(dir.v), txt;
+      if (/^Nord/.test(dn)) txt = 'Il vento da nord scende dalle Alpi: aria più secca e pulita. Quando è forte si chiama favonio (föhn) e spazza via nebbia e smog.';
+      else if (/^Sud/.test(dn)) txt = 'Il vento da sud porta aria più umida dal mare e dall\'Appennino: spesso precede nuvole e pioggia.';
+      else if (dn === 'Est') txt = 'Il vento da est in pianura è spesso debole e porta aria umida dall\'Adriatico.';
+      else txt = 'Il vento da ovest arriva dal Piemonte e dalle Alpi occidentali, spesso dopo il passaggio di una perturbazione.';
+      html += card(sectionTitle('🧭 Da dove arriva') + tip('💨', txt));
+    }
+
+    html += card(sectionTitle('📋 Scala Beaufort') + '<table class="tbl"><tr><th>Forza</th><th>km/h</th><th>Effetti</th></tr>' +
+      BEAUFORT.slice(0, 10).map(function(x, i) {
+        var lo = i === 0 ? 0 : BEAUFORT[i - 1][0];
+        var me = x[1] === b[1];
+        return '<tr' + (me ? ' class="hl"' : '') + '><td>' + x[1] + ' ' + x[2] + '</td><td>' + lo + '–' + (x[0] - 1) + '</td><td>' + x[3] + '</td></tr>';
+      }).join('') + '</table>');
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== ARIA E ATTIVITA' ===================
+VIEWS.aria = function() {
+  return loadInflux('live.csv').then(function(live) {
+    var uaqi = latest(live['air_quality_indice_universale_della_qualita_dell_aria_uaqi']);
+    var pm10 = latest(live['air_quality_pm10']), pm25 = latest(live['air_quality_pm2_5']);
+    var o3 = latest(live['air_quality_ozono']), no2 = latest(live['air_quality_anidride_nitrosa']);
+    var pol = latest(live['polline_tipi_rischio_pollinico_complessivo_oggi']);
+    if (!uaqi && !pm10 && !pm25) return failed();
+
+    // giudizio = fascia peggiore tra indice e singoli inquinanti (scala /aria_scale.js)
+    var items = [];
+    if (pm25) items.push({ k: 'pm25', label: 'PM2.5', v: pm25.v, unit: 'µg/m³' });
+    if (pm10) items.push({ k: 'pm10', label: 'PM10', v: pm10.v, unit: 'µg/m³' });
+    if (o3) items.push({ k: 'o3', label: 'Ozono', v: o3.v, unit: 'ppb' });
+    if (no2) items.push({ k: 'no2', label: 'Biossido di azoto', v: no2.v, unit: 'ppb' });
+    items.forEach(function(x) { x.lv = ARIA.pollutant(x.k, x.v); });
+    var worst = uaqi ? ARIA.uaqi(uaqi.v).index : 0, why = [];
+    items.forEach(function(x) { if (x.lv.index > worst) worst = x.lv.index; });
+    items.forEach(function(x) { if (x.lv.index >= 3 && x.lv.index === worst) why.push(x.label.toLowerCase()); });
+    var L = ARIA.LEVELS[worst];
+
+    var v;
+    if (worst <= 1) v = verdict('🏃', 'Via libera', 'Aria ' + L.name.toLowerCase() + ': ottimo momento per correre, andare in bici o arieggiare casa.', L.color);
+    else if (worst === 2) v = verdict('🚶', 'Aria discreta', 'Va bene per qualsiasi attività. Chi ha asma o problemi respiratori può preferire sforzi moderati.', L.color);
+    else if (worst === 3) v = verdict('😷', 'Aria scarsa', 'Meglio attività leggere all\'aperto' + (why.length ? ' (' + why.join(', ') + ' alto)' : '') + '. Sforzi intensi meglio rimandarli o farli al chiuso.', L.color);
+    else v = verdict('🏠', 'Meglio restare al chiuso', 'Aria molto inquinata' + (why.length ? ' (' + why.join(', ') + ')' : '') + '. Evita sforzi all\'aperto, soprattutto bambini, anziani e chi ha problemi respiratori. Finestre chiuse nelle ore peggiori.', L.color);
+
+    function pill(lv) { return '<span class="pill" style="background:' + lv.color + ';color:' + lv.text + '">' + lv.name + '</span>'; }
+    var html = v + card(sectionTitle('🌫️ Adesso') +
+      (uaqi ? row('Indice qualità aria (UAQI)', fmt(uaqi.v, 0) + '/100 ' + pill(ARIA.uaqi(uaqi.v))) : '') +
+      items.map(function(x) { return row(x.label, fmt(x.v) + ' ' + x.unit + ' ' + pill(x.lv)); }).join('') +
+      (pol ? row('Rischio pollini oggi', fmt(pol.v, 0) + ' su 5', pol.v >= 3 ? ORANGE : (pol.v >= 2 ? YELLOW : GREEN)) : '') +
+      '<div class="scale">' + ARIA.LEVELS.map(function(l) { return '<span style="background:' + l.color + ';color:' + l.text + '">' + l.name + '</span>'; }).join('') + '</div>' +
+      note('UAQI è l\'indice di Google Air Quality: va da 0 a 100 e più è alto, più l\'aria è pulita. Le fasce degli inquinanti seguono le linee guida OMS e i limiti UE.'));
+
+    // ora con il PM10 piu' basso nelle ultime 24 ore: indicativa per arieggiare
+    var s = live['air_quality_pm10'];
+    if (s && s.length > 6) {
+      var best = s.reduce(function(a, x) { return x.v < a.v ? x : a; }, s[0]);
+      var worstP = s.reduce(function(a, x) { return x.v > a.v ? x : a; }, s[0]);
+      html += card(sectionTitle('🪟 Quando arieggiare') +
+        row('PM10 più basso (ultime 24h)', 'alle ' + hhmm(best.t) + ' · ' + fmt(best.v) + ' µg/m³', GREEN) +
+        row('PM10 più alto (ultime 24h)', 'alle ' + hhmm(worstP.t) + ' · ' + fmt(worstP.v) + ' µg/m³', ORANGE) +
+        note('Le polveri seguono di solito lo stesso ritmo ogni giorno: arieggia nelle ore in cui ieri erano più basse. Bastano 5-10 minuti con le finestre spalancate.'));
+    }
+    var m = new Date().getMonth();
+    html += card(sectionTitle('💡 Consigli') +
+      (m >= 4 && m <= 8 ? tip('☀️', 'D\'estate l\'ozono sale nel pomeriggio con il sole forte: corri o pedala la mattina presto o la sera.') :
+                          tip('🌫️', 'Da ottobre a marzo, con alta pressione e nebbia, le polveri restano basse al suolo: le ore centrali sono di solito le migliori per stare fuori.')) +
+      tip('🚗', 'Evita di correre lungo le strade trafficate: lungo l\'alzaia e nei boschi del Ticino l\'aria è più pulita.') +
+      tip('🤧', 'Con pollini alti: arieggia la sera o dopo la pioggia, lava i capelli rientrando, non stendere i panni fuori.'));
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== FULMINI ===================
+VIEWS.fulmini = function() {
+  return loadInflux('storico_fulmini.csv').then(function(data) {
+    var lastS = latest(data['ecowitt_last_lightning_strike']);
+    var dist = latest(data['ecowitt_lightning_strike_distance']);
+    var count = latest(data['ecowitt_lightning_strikes']);
+    var lastT = lastS ? new Date(lastS.v) : null;
+    var minAgo = lastT ? (Date.now() - lastT.getTime()) / 60000 : null;
+
+    var html;
+    if (minAgo !== null && minAgo <= 30 && dist && dist.v <= 15) {
+      html = verdict('🏠', 'Mettiti al riparo', 'Ultimo fulmine <b>' + agoText(lastT) + '</b> a circa <b>' + fmt(dist.v, 0) + ' km</b>. Sei dentro la distanza di pericolo: resta al chiuso finché non passano 30 minuti dall\'ultimo tuono.', RED);
+    } else if (minAgo !== null && minAgo <= 30) {
+      html = verdict('⛈️', 'Temporale in zona', 'Ultimo fulmine <b>' + agoText(lastT) + '</b> a circa <b>' + fmt(dist ? dist.v : null, 0) + ' km</b>. Tieni d\'occhio il cielo e preparati a rientrare.', ORANGE);
+    } else if (minAgo !== null && minAgo <= 24 * 60) {
+      html = verdict('✅', 'Temporale passato', 'L\'ultimo fulmine rilevato è di ' + agoText(lastT) + ', più di 30 minuti fa: si può tornare all\'aperto.', GREEN);
+    } else {
+      html = verdict('✅', 'Nessun fulmine recente', 'La stazione non rileva fulmini nelle ultime 24 ore.', GREEN);
+    }
+    html += card(sectionTitle('⚡ Rilevatore della stazione') +
+      row('Ultimo fulmine rilevato', lastT ? lastT.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }) + ' alle ' + hhmm(lastT) : '—') +
+      (dist ? row('Distanza stimata', fmt(dist.v, 0) + ' km') : '') +
+      note('Il sensore rileva i fulmini fino a circa 40 km. La distanza è una stima.'));
+    html += card(sectionTitle('📏 La regola 30/30') +
+      tip('⏱️', 'Conta i secondi tra il lampo e il tuono. <b>Dividi per 3</b> e hai la distanza in km: 9 secondi = 3 km.') +
+      tip('🏠', 'Se passano <b>meno di 30 secondi</b> (10 km) sei a portata di fulmine: rientra subito.') +
+      tip('⏳', 'Torna fuori solo <b>30 minuti dopo l\'ultimo tuono</b>: i fulmini possono cadere anche lontano dal centro del temporale.'));
+    html += card(sectionTitle('🛟 Se sei all\'aperto') +
+      tip('🚗', 'L\'auto con la carrozzeria chiusa è un ottimo riparo. Tende, gazebo e capanni no.') +
+      tip('🌳', 'Mai sotto un albero isolato: è il punto dove il fulmine cade più facilmente.') +
+      tip('🌊', 'Esci subito dal Ticino, dai canali e dalle piscine, e allontanati dalle rive.') +
+      tip('🚲', 'Scendi dalla bici e allontanati da recinzioni e pali metallici. Se sei in un prato aperto accovacciati a piedi uniti.') +
+      tip('🔌', 'In casa stacca TV, router e computer: le sovratensioni sulla rete li danneggiano anche senza un fulmine diretto.'));
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== TICINO ===================
+var RIVER = [
+  { id: 'lago', name: 'Lago Maggiore', url: '/lago_maggiore.php' },
+  { id: 'vigevano', name: 'Ticino a Vigevano', url: '/vigevano_livello.php' },
+  { id: 'bereguardo', name: 'Ticino a Bereguardo', url: '/bereguardo_livello.php' },
+  { id: 'pavia', name: 'Ticino a Pavia', url: '/pavia_livello.php' }
+];
+VIEWS.ticino = function() {
+  return Promise.all(RIVER.map(function(st) {
+    return loadJSON(st.url + '?days=30').then(function(d) { return { st: st, d: d }; }).catch(function() { return { st: st, d: null }; });
+  })).then(function(res) {
+    function parseT(s) { var p = s.split(/[- :]/); return new Date(+p[0], p[1] - 1, +p[2], +p[3] || 0, +p[4] || 0); }
+    var any = false, rising = [], html = '';
+    var cards = res.map(function(r) {
+      if (!r.d || !r.d.success || !r.d.points || !r.d.points.length) return card(sectionTitle(r.st.name) + note('Dati non disponibili.'));
+      any = true;
+      var pts = r.d.points.map(function(p) { return { t: parseT(p.t), v: p.v }; });
+      var cur = pts[pts.length - 1];
+      var p6 = valueAt(pts, new Date(cur.t.getTime() - 6 * 3600000)), p24 = valueAt(pts, new Date(cur.t.getTime() - 24 * 3600000));
+      var vals = pts.map(function(p) { return p.v; });
+      var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+      var d6 = p6 ? cur.v - p6.v : null, d24 = p24 ? cur.v - p24.v : null;
+      var pct = mx > mn ? (cur.v - mn) / (mx - mn) * 100 : 50;
+      var trend = '⏸️ stabile', tc = null;
+      if (d24 !== null && d24 >= 15) { trend = '⬆️ in forte crescita'; tc = RED; rising.push(r.st.name); }
+      else if (d24 !== null && d24 >= 4) { trend = '↗️ in crescita'; tc = ORANGE; rising.push(r.st.name); }
+      else if (d24 !== null && d24 <= -4) { trend = '↘️ in calo'; tc = GREEN; }
+      return card(sectionTitle('🌊 ' + r.st.name) +
+        row('Livello adesso', fmt(cur.v) + ' cm') +
+        row('Tendenza', trend, tc) +
+        (d6 !== null ? row('Ultime 6 ore', (d6 >= 0 ? '+' : '') + fmt(d6) + ' cm') : '') +
+        (d24 !== null ? row('Ultime 24 ore', (d24 >= 0 ? '+' : '') + fmt(d24) + ' cm') : '') +
+        '<div class="range"><div class="range-fill" style="left:' + pct.toFixed(0) + '%"></div></div>' +
+        '<div class="range-lbl"><span>min 30gg ' + fmt(mn) + '</span><span>max 30gg ' + fmt(mx) + '</span></div>');
+    });
+    if (!any) return failed();
+    if (rising.length) html += verdict('📈', 'Livelli in crescita', 'Sta salendo: <b>' + rising.join(', ') + '</b>. Evita le zone golenali e le rive basse, e non lasciare auto nei parcheggi vicino al fiume.', ORANGE);
+    else html += verdict('✅', 'Livelli tranquilli', 'Nessuna crescita significativa del Ticino nelle ultime 24 ore.', GREEN);
+    html += cards.join('');
+    html += card(sectionTitle('💡 Come si legge') +
+      tip('📏', 'I valori sono riferiti allo <b>zero dell\'idrometro</b>, non alla profondità dell\'acqua: un numero negativo non vuol dire fiume vuoto.') +
+      tip('🔁', 'Il Ticino esce dal Lago Maggiore a Sesto Calende e passa da Vigevano, poi Bereguardo, poi Pavia. Una piena si vede <b>prima a Vigevano</b> e qualche ora dopo più a valle.') +
+      tip('🌧️', 'Dopo forti piogge sulle Alpi il lago sale per giorni e il Ticino resta alto a lungo, anche quando qui non piove più.') +
+      tip('⚠️', 'Per le allerte ufficiali di piena fanno fede Protezione Civile, ARPA Lombardia e AIPo. Questa pagina mostra solo la tendenza.'));
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== WEBCAM (spostate qui dalla home il 2026-10-03) ===================
+VIEWS.webcam = function() {
+  $('app').innerHTML =
+    '<a class="big-link" href="https://www.meteoblue.com/en/weather/webcams/motta-visconti_italy_3172502" target="_blank" rel="noopener noreferrer"><span class="icon">📹</span><span><b>Webcam nei dintorni</b><br><small>Viste live intorno a Motta Visconti, Ticino e pianura</small></span></a>' +
+    card(tip('🌫️', 'Utili per vedere con i tuoi occhi nebbia, neve o temporali in arrivo prima di metterti in strada.')) +
+    '<div class="source">Fonte: <a href="https://www.meteoblue.com/" target="_blank" rel="noopener">meteoblue</a>, raccolta di webcam pubbliche.</div>';
+  return Promise.resolve();
+};
+
+// =================== COMUNE DI MOTTA VISCONTI ===================
+// Dati presi dal sito ufficiale del Comune e da AMAGA (verificati il 2026-10-03).
+// Orari che cambiano spesso: controllare le pagine linkate in "Fonti".
+var ORARI_COMUNE = { 1: [['10:00', '12:30'], ['16:00', '17:00']], 2: [['08:30', '10:30']], 3: [['10:00', '12:30'], ['16:00', '17:00']], 4: [['10:00', '12:30']], 5: [['10:00', '12:30']] };
+var ORARI_ECOCENTRO = {
+  inverno: { 1: [['11:00', '16:00']], 3: [['11:00', '16:00']], 6: [['11:00', '16:00']] },
+  estate:  { 1: [['11:00', '16:00']], 3: [['11:00', '14:00']], 6: [['10:00', '17:00']] }
+};
+var ORARI_BIBLIOTECA = { 2: [['10:00', '12:00'], ['15:30', '19:00']], 3: [['15:30', '19:00']], 4: [['15:30', '19:00']], 5: [['15:30', '19:00']], 6: [['09:30', '12:30']] };
+var GIORNI_IT = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+function apertoOra(orari, now) {
+  var slots = orari[now.getDay()] || [], hm = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  for (var i = 0; i < slots.length; i++) if (hm >= slots[i][0] && hm < slots[i][1]) return 'aperto fino alle ' + slots[i][1];
+  // prossima apertura
+  for (var d = 0; d < 8; d++) {
+    var day = (now.getDay() + d) % 7, sl = orari[day] || [];
+    for (var j = 0; j < sl.length; j++) {
+      if (d === 0 && sl[j][0] <= hm) continue;
+      return 'chiuso · riapre ' + (d === 0 ? 'oggi' : d === 1 ? 'domani' : GIORNI_IT[day].toLowerCase()) + ' alle ' + sl[j][0];
+    }
+  }
+  return 'chiuso';
+}
+function tabellaOrari(orari) {
+  return '<table class="tbl">' + [1, 2, 3, 4, 5, 6].map(function(d) {
+    var sl = orari[d];
+    return '<tr' + (new Date().getDay() === d ? ' class="hl"' : '') + '><td>' + GIORNI_IT[d] + '</td><td>' + (sl ? sl.map(function(x) { return x[0] + '–' + x[1]; }).join(' e ') : 'chiuso') + '</td></tr>';
+  }).join('') + '</table>';
+}
+function statoBadge(t) { var open = t.indexOf('aperto') === 0; return '<span class="pill" style="background:' + (open ? GREEN : 'var(--border-color-2)') + ';color:' + (open ? '#fff' : 'var(--text-secondary)') + '">' + t + '</span>'; }
+
+VIEWS.comune = function() {
+  var now = new Date(), m = now.getMonth();
+  var estate = m >= 4 && m <= 8;
+  var eco = estate ? ORARI_ECOCENTRO.estate : ORARI_ECOCENTRO.inverno;
+  var html = card(sectionTitle('🏛️ Municipio') +
+    row('Indirizzo', 'Piazza San Rocco 9/A') +
+    '<a class="phone" href="tel:0290008111"><span>📞 <b>02 9000 8111</b> centralino</span><small>Numero unico, poi scegli l\'ufficio</small></a>' +
+    '<a class="phone" href="mailto:urp@comune.mottavisconti.mi.it"><span>✉️ urp@comune.mottavisconti.mi.it</span><small>PEC: segreteria@pec.comune.mottavisconti.mi.it</small></a>' +
+    '<div style="margin-top:10px">Ufficio relazioni con il pubblico (URP) ' + statoBadge(apertoOra(ORARI_COMUNE, now)) + '</div>' +
+    tabellaOrari(ORARI_COMUNE) +
+    note('Il sabato il Municipio è chiuso, salvo aperture straordinarie (da giugno, il primo sabato del mese 9:00–11:30). Gli altri uffici hanno orari propri: chiama il centralino.'));
+  html += card(sectionTitle('👮 Polizia Locale') +
+    row('Sede', 'Piazza Giuseppina del Maino 1') +
+    '<a class="phone" href="tel:0290007019"><span>📞 <b>02 9000 7019</b></span><small>oppure centralino 02 9000 8111, opzione 3</small></a>' +
+    '<a class="phone" href="tel:3391815183"><span>📱 <b>339 181 5183</b> cellulare di servizio</span><small>polizialocale@comune.mottavisconti.mi.it</small></a>' +
+    '<table class="tbl"><tr><td>Lunedì e mercoledì</td><td>10:00–11:30 e 16:00–17:00</td></tr><tr><td>Sabato</td><td>10:00–12:30</td></tr></table>' +
+    note('Per le emergenze chiama sempre il 112.'));
+  html += card(sectionTitle('♻️ Ecocentro (piazzola ecologica)') +
+    row('Indirizzo', 'Via Alcide De Gasperi') +
+    '<div style="margin:6px 0 2px">Adesso ' + statoBadge(apertoOra(eco, now)) + '</div>' +
+    tabellaOrari(eco) +
+    note('Orario ' + (estate ? 'estivo (maggio–settembre)' : 'invernale (ottobre–aprile)') + '. Gestione rifiuti: AMAGA, numero verde <a href="tel:800776717">800 77 67 17</a> (lun–ven 14:00–16:30).') +
+    '<a class="big-link" style="margin-top:10px" href="https://amaga.it/gestione-servizi-ambientali-comune-di-motta-visconti/" target="_blank" rel="noopener"><span class="icon">🗓️</span><span><b>Calendario raccolta rifiuti</b><br><small>Calendario 2026 e guida ai servizi (AMAGA)</small></span></a>' +
+    '<a class="big-link" href="#raccolta" onclick="go(\'raccolta\'); return false;"><span class="icon">♻️</span><span><b>Cosa esporre stasera</b><br><small>Calendario con festività e cosa va dove</small></span></a>');
+  html += card(sectionTitle('📚 Biblioteca comunale') +
+    '<a class="phone" href="tel:0290000001"><span>📞 <b>02 9000 0001</b></span><small>biblioteca@comune.mottavisconti.mi.it</small></a>' +
+    '<div style="margin:6px 0 2px">Adesso ' + statoBadge(apertoOra(ORARI_BIBLIOTECA, now)) + '</div>' + tabellaOrari(ORARI_BIBLIOTECA) +
+    note('Orario invernale. D\'estate l\'orario cambia: <a href="https://catalogo.fondazioneperleggere.it/library/Motta-Visconti/timetable" target="_blank" rel="noopener">orari aggiornati e catalogo</a> sul sito della Fondazione Per Leggere.'));
+  html += '<div id="comuneNews"></div>';
+  html += '<a class="big-link" href="https://comune.mottavisconti.mi.it/" target="_blank" rel="noopener"><span class="icon">🌐</span><span><b>Sito ufficiale del Comune</b><br><small>Notizie, servizi online, modulistica</small></span></a>';
+  html += '<div class="source">Fonti: <a href="https://comune.mottavisconti.mi.it/unit%C3%A0-organizzative/2063314/ufficio-u-r-p" target="_blank" rel="noopener">Comune di Motta Visconti (URP)</a>, <a href="https://comune.mottavisconti.mi.it/unit%C3%A0-organizzative/2063447/ufficio-vigilanza-polizia-locale" target="_blank" rel="noopener">Polizia Locale</a>, <a href="https://comune.mottavisconti.mi.it/luoghi/2164019/biblioteca-comunale" target="_blank" rel="noopener">Biblioteca</a>, <a href="https://amaga.it/gestione-servizi-ambientali-comune-di-motta-visconti/" target="_blank" rel="noopener">AMAGA</a>. Dati verificati il 3 ottobre 2026: in caso di dubbio fanno fede i siti ufficiali.</div>';
+  $('app').innerHTML = html;
+  loadJSON('/comune_news.php').then(function(n) {
+    var box = $('comuneNews');
+    if (!box || !n || !n.success || !n.notizie.length) return;
+    box.innerHTML = card(sectionTitle('📣 Ultime dal Comune') + n.notizie.slice(0, 6).map(function(x) {
+      return '<a class="phone" href="' + esc(x.link) + '" target="_blank" rel="noopener"><span>' + esc(x.titolo) + '</span><small>' + esc(x.tipo) + ' · ' + parseISO(x.data).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) + '</small></a>';
+    }).join('') + note('<a href="https://comune.mottavisconti.mi.it/novita" target="_blank" rel="noopener">Tutte le notizie e gli avvisi del Comune</a>'));
+  }).catch(function() {});
+  return Promise.resolve();
+};
+
+// =================== NUMERI UTILI E GUASTI ===================
+// Gestori verificati sui siti ufficiali il 2026-10-04 (CAP: Carta del servizio;
+// GEI: pagina sportelli; Carabinieri: sito del Comune di Bubbiano).
+function numero(icon, label, tel, sub) {
+  var n = String(tel).replace(/[^\d+]/g, '');
+  return '<a class="phone" href="tel:' + n + '"><span>' + icon + ' <b>' + esc(tel) + '</b> ' + label + '</span>' + (sub ? '<small>' + sub + '</small>' : '') + '</a>';
+}
+VIEWS.numeri = function() {
+  var html = '<a class="big-link" href="#dae" onclick="go(\'dae\'); return false;"><span class="icon">❤️</span><span><b>Defibrillatori (DAE) vicini</b><br><small>Dove sono, orari e il più vicino a te</small></span></a>' + card(sectionTitle('🚨 Emergenze') +
+    numero('🚨', 'Numero unico emergenze', '112', 'Ambulanza, Carabinieri, Polizia, Vigili del Fuoco. Gratuito, anche senza credito.') +
+    numero('🩺', 'Guardia medica', '116117', 'Notti, weekend e festivi, per problemi non urgenti') +
+    numero('☠️', 'Centro antiveleni Niguarda', '02 6610 1029', '24 ore su 24'));
+  html += card(sectionTitle('🔧 Guasti e pronto intervento (24 ore)') +
+    numero('💧', 'Acqua e fognatura · Gruppo CAP', '800 175 571', 'Perdite, mancanza d\'acqua, fognature. Gratuito anche da cellulare. Email: prontointervento@gruppocap.it') +
+    numero('🔥', 'Gas · GEI (rete gas di Motta)', '800 330 315', '<b>Odore di gas?</b> Non accendere luci né fiamme, apri le finestre, chiudi il contatore ed esci di casa prima di chiamare.') +
+    numero('⚡', 'Luce · Duereti (rete elettrica di Motta)', '800 269 042', 'Guasti, blackout, pali o cavi danneggiati. Gratuito, 24 ore su 24. Tieni pronto il codice POD (in bolletta o sul contatore, inizia con IT253E).') +
+    '<div class="note" style="margin:2px 0 10px">Corrente saltata? Controlla se c\'è un\'interruzione in corso e quando torna: ' +
+    '<a href="https://www.duereti.it/it/servizi-elettricita/verifica-interruzioni" target="_blank" rel="noopener">verifica interruzioni</a> sul sito, ' +
+    'WhatsApp o SMS al <a href="https://api.whatsapp.com/send?phone=393399907837" target="_blank" rel="noopener">339 990 7837</a>, ' +
+    'Telegram <a href="https://t.me/duereti_bot" target="_blank" rel="noopener">@duereti_bot</a> (scrivi il POD o l\'indirizzo).</div>' +
+    numero('💡', 'Lampioni e strade · Comune', '02 9000 8111', 'Illuminazione pubblica, buche, alberi caduti: centralino, opzione 9 (Ufficio tecnico)'));
+  html += card(sectionTitle('🏢 Sportelli e servizio clienti') +
+    numero('💧', 'Gruppo CAP · servizio clienti', '800 428 428', 'Contratti, bollette, letture') +
+    numero('🔥', 'GEI · sportello di Motta Visconti', '02 9000 1915', 'Via Borgomaneri 36 · su appuntamento lunedì, mercoledì e giovedì · ufficiomottavisconti@geispa.it') +
+    '<div class="phone"><span>⚡ <a href="tel:800737330" style="color:var(--text-primary);text-decoration:none"><b>800 737 330</b></a> Duereti · informazioni e reclami</span>' +
+    '<small>Per la rete elettrica (cali di tensione, interruzioni ripetute, allacci). Email <a href="mailto:reclami.reti@duereti.it">reclami.reti@duereti.it</a> · <a href="https://www.duereti.it/it/assistenza/informazioni-reclami" target="_blank" rel="noopener">modulo online</a> · <a href="https://areaclienti.duereti.it/" target="_blank" rel="noopener">portale clienti</a></small></div>' +
+    numero('♻️', 'AMAGA · rifiuti', '800 77 67 17', 'Lunedì–venerdì 14:00–16:30 · ritiro ingombranti, calendario raccolta') +
+    note('Per contratti e bollette di luce e gas chiama il tuo venditore (quello che ti manda la bolletta). Il distributore (GEI per il gas, Duereti per la luce) gestisce solo la rete e i guasti.'));
+  html += card(sectionTitle('👮 Sicurezza') +
+    numero('🚓', 'Carabinieri · Stazione di Motta Visconti', '02 9000 0004', 'Via Ugo La Malfa') +
+    numero('👮', 'Polizia Locale', '02 9000 7019', 'Piazza Giuseppina del Maino 1 · cellulare di servizio 339 181 5183'));
+  html += card(sectionTitle('📶 Telefono e internet') +
+    '<div class="tbl-wrap"><table class="tbl"><tr><th>Operatore</th><th>Assistenza</th></tr>' +
+    [['TIM', '187'], ['Vodafone', '190'], ['WINDTRE', '159'], ['Iliad', '177'], ['Fastweb', '192 193']].map(function(x) {
+      return '<tr><td>' + x[0] + '</td><td><a href="tel:' + x[1].replace(/ /g, '') + '">' + x[1] + '</a></td></tr>';
+    }).join('') + '</table></div>' +
+    tip('🔍', 'Per sapere se a casa tua arriva la fibra cerca il tuo indirizzo su <a href="https://www.openfiber.it/" target="_blank" rel="noopener">Open Fiber</a> e su <a href="https://www.fibercop.it/" target="_blank" rel="noopener">FiberCop</a>: sono le due reti su cui si appoggiano quasi tutti gli operatori.') +
+    tip('🗺️', 'La mappa pubblica della banda ultralarga è sul sito <a href="https://bandaultralarga.italia.it/mappa/" target="_blank" rel="noopener">bandaultralarga.italia.it</a>.') +
+    note('Per un guasto alla linea di casa chiama sempre il tuo operatore, non la rete: è lui che apre la segnalazione.'));
+  html += card(sectionTitle('🆘 Ascolto e aiuto') +
+    numero('💜', 'Antiviolenza e stalking', '1522', 'Gratuito, 24 ore su 24, anonimo, anche in chat su 1522.eu') +
+    numero('🧒', 'Emergenza infanzia', '114', 'Bambini e ragazzi in pericolo, 24 ore su 24') +
+    numero('📱', 'Telefono Azzurro', '19696', 'Ascolto per bambini, ragazzi e genitori'));
+  html += '<div class="source">Fonti: <a href="https://www.gruppocap.it/" target="_blank" rel="noopener">Gruppo CAP</a> (Carta del Servizio Idrico Integrato), <a href="https://www.geispa.it/about-us/sportelli/" target="_blank" rel="noopener">GEI Reti Gas</a>, <a href="https://www.duereti.it/it/assistenza/pronto-intervento" target="_blank" rel="noopener">Duereti</a>, <a href="https://amaga.it/gestione-servizi-ambientali-comune-di-motta-visconti/" target="_blank" rel="noopener">AMAGA</a>, Comune di Motta Visconti, siti degli operatori. Verificati il 4 ottobre 2026.</div>';
+  $('app').innerHTML = html;
+  return Promise.resolve();
+};
+
+// =================== RACCOLTA RIFIUTI (calendario ufficiale AMAGA 2026) ===================
+// Fonte: "Calendario raccolta domiciliare 2026" di AMAGA per Motta Visconti (PDF) e
+// pagina "Raccolta differenziata" del Comune. Verificati il 2026-10-04.
+// ATTENZIONE: a fine anno va inserito il calendario 2027 (VARIAZIONI + eventuali cambi di giorno).
+var RIFIUTI = {
+  resto:     { nome: 'Indifferenziato (resto)', icon: '🗑️', color: '#9e9e9e' },
+  pannolini: { nome: 'Pannolini',               icon: '👶', color: '#4fc3f7' },
+  organico:  { nome: 'Organico',                icon: '🍎', color: '#8d6e63' },
+  carta:     { nome: 'Carta e cartone',         icon: '📦', color: '#2196f3' },
+  plastica:  { nome: 'Imballaggi in plastica',  icon: '🧴', color: '#fbc02d' },
+  vetro:     { nome: 'Vetro e lattine',         icon: '🍾', color: '#43a047' }
+};
+var SETTIMANA_RIFIUTI = { 2: ['organico'], 3: ['plastica'], 4: ['carta'], 5: ['resto', 'pannolini', 'organico'], 6: ['vetro'] };
+var CALENDARIO_VALIDO_FINO = '2027-01-06';
+// sospesi: tipi non raccolti quel giorno; recuperi: tipi raccolti in piu' (con la data originale)
+var VARIAZIONI_RIFIUTI = {
+  '2026-01-01': { sospesi: ['carta'] },
+  '2026-01-02': { sospesi: ['resto', 'pannolini'], recuperi: [['carta', '1/1']] },
+  '2026-04-25': { sospesi: ['vetro'] },
+  '2026-05-01': { sospesi: ['resto', 'organico', 'pannolini'] },
+  '2026-05-02': { recuperi: [['pannolini', '1/5']] },
+  '2026-08-15': { sospesi: ['vetro'] },
+  '2026-12-25': { sospesi: ['resto', 'organico', 'pannolini'] },
+  '2026-12-26': { sospesi: ['vetro'], recuperi: [['organico', '25/12']] },
+  '2026-12-28': { recuperi: [['resto', '25/12'], ['vetro', '26/12']] },
+  '2027-01-01': { sospesi: ['resto', 'organico', 'pannolini'] },
+  '2027-01-02': { recuperi: [['pannolini', '1/1']] },
+  '2027-01-06': { sospesi: ['plastica'] }
+};
+function raccoltaDel(d) {
+  var k = dateKey(d), v = VARIAZIONI_RIFIUTI[k] || {};
+  var tipi = (SETTIMANA_RIFIUTI[d.getDay()] || []).filter(function(t) { return (v.sospesi || []).indexOf(t) < 0; });
+  var rec = (v.recuperi || []).map(function(r) { return r[0]; });
+  return { tipi: tipi.concat(rec.filter(function(t) { return tipi.indexOf(t) < 0; })), sospesi: v.sospesi || [], recuperi: v.recuperi || [], variato: !!VARIAZIONI_RIFIUTI[k] };
+}
+function chipRifiuto(t, extra) {
+  var r = RIFIUTI[t];
+  return '<span class="waste-chip" style="border-color:' + r.color + '"><span>' + r.icon + '</span>' + r.nome + (extra ? ' <small>' + extra + '</small>' : '') + '</span>';
+}
+var COSA_VA = [
+  ['organico', 'Avanzi di cibo crudi o cotti · fondi di caffè e filtri di tè · bucce, torsoli, noccioli · carne, pesce, ossa, lische · pane, formaggi, gusci d\'uovo · tovaglioli e carta assorbente sporchi di cibo · carta del pane · foglie e fiori di casa · tappi di sughero · sacchetti biodegradabili',
+               'Liquidi e olio · lettiere non biodegradabili · tessuti · mozziconi · polvere e sacchetti dell\'aspirapolvere'],
+  ['plastica', 'Bottiglie e flaconi vuoti · pellicole · vaschette per alimenti · imballaggi con sigla PET, PE, PP · piatti e bicchieri di plastica',
+               'Plastica che non è imballaggio: posate, giocattoli, penne, gomma · CD e cassette · contenitori di prodotti tossici o infiammabili (T, F) · oggetti elettronici'],
+  ['carta',    'Giornali, riviste, quaderni, fogli · cartone e cartoncino tagliati e appiattiti · scatole per alimenti · tetrapak risciacquato e schiacciato · cassette di carta · prodotti con sigla PAP',
+               'Fazzoletti usati · carta oleata o plastificata · carta sintetica · contenitori di prodotti pericolosi'],
+  ['vetro',    'Bottiglie, barattoli e vasi di vetro · bicchieri e vetri rotti · lattine · barattoli e tappi di metallo · stagnola e vaschette di alluminio · piccoli oggetti metallici',
+               'Ceramica e porcellana · cristallo · pirex e vetroceramica · flaconi di farmaci · lampadine e neon · specchi · schermi TV e monitor'],
+  ['resto',    'Gomma · giocattoli · CD, DVD, videocassette · penne e pennarelli · sacchi dell\'aspirapolvere · spazzolini e rasoi · abiti rovinati · fazzoletti usati · lettiere per animali',
+               'Tutto ciò che si ricicla · calcinacci · indumenti in buono stato · toner e cartucce · farmaci · pile · vernici e solventi'],
+  ['pannolini','Pannolini, pannoloni, assorbenti (esposti a parte, il venerdì)', '']
+];
+VIEWS.raccolta = function() {
+  var now = new Date(), oggi = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var domani = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() + 1);
+  var rOggi = raccoltaDel(oggi), rDom = raccoltaDel(domani);
+  var html = '';
+  if (dateKey(oggi) > CALENDARIO_VALIDO_FINO) html += verdict('⚠️', 'Calendario da aggiornare', 'Il calendario ufficiale caricato qui vale fino al 6 gennaio 2027: i giorni sotto seguono lo schema settimanale, controlla le variazioni sull\'app Riciclario.', ORANGE);
+  // dopo le 22 la sera "stasera" e' ormai passata: si guarda gia' a domani sera
+  if (now.getHours() < 6 && rOggi.tipi.length) {
+    html += verdict('⏰', 'Oggi si raccoglie', rOggi.tipi.map(function(t) { return chipRifiuto(t); }).join(' ') + '<div style="margin-top:6px">Se non l\'hai ancora fatto, esponi entro le 6:00.</div>', '#43a047');
+  }
+  if (rDom.tipi.length) {
+    html += verdict('🌙', 'Stasera esponi (dopo le 20:00)', rDom.tipi.map(function(t) { var rc = rDom.recuperi.filter(function(r) { return r[0] === t; })[0]; return chipRifiuto(t, rc ? 'recupero del ' + rc[1] : ''); }).join(' ') +
+      (rDom.sospesi.length ? '<div style="margin-top:6px">Domani <b>sospeso</b>: ' + rDom.sospesi.map(function(t) { return RIFIUTI[t].nome.toLowerCase(); }).join(', ') + '.</div>' : '') +
+      '<div style="margin-top:6px">Raccolta domani, ' + GIORNI_IT[domani.getDay()].toLowerCase() + ' ' + domani.getDate() + '.</div>', '#43a047');
+  } else {
+    html += verdict('😌', 'Stasera niente da esporre', 'Domani (' + GIORNI_IT[domani.getDay()].toLowerCase() + ') non c\'è raccolta' + (rDom.sospesi.length ? ': ' + rDom.sospesi.map(function(t) { return RIFIUTI[t].nome.toLowerCase(); }).join(', ') + ' sospeso per festività' : '') + '.', GREEN);
+  }
+
+  // prossimi 14 giorni
+  var rows = '';
+  for (var i = 0; i < 14; i++) {
+    var d = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() + i), r = raccoltaDel(d);
+    if (!r.tipi.length && !r.sospesi.length) continue;
+    rows += '<tr' + (i === 1 ? ' class="hl"' : '') + '><td>' + (i === 0 ? 'Oggi' : i === 1 ? 'Domani' : dayLabel(d)) + '</td><td>' +
+      r.tipi.map(function(t) { var rc = r.recuperi.filter(function(x) { return x[0] === t; })[0]; return RIFIUTI[t].icon + ' ' + RIFIUTI[t].nome + (rc ? ' <b style="color:' + ORANGE + '">(recupero del ' + rc[1] + ')</b>' : ''); }).join('<br>') +
+      (r.sospesi.length ? (r.tipi.length ? '<br>' : '') + '<span style="color:' + RED + '">✖ sospeso: ' + r.sospesi.map(function(t) { return RIFIUTI[t].nome.toLowerCase(); }).join(', ') + '</span>' : '') + '</td></tr>';
+  }
+  html += card(sectionTitle('🗓️ Prossimi 14 giorni') + '<table class="tbl">' + rows + '</table>' +
+    note('Le date sono quelle di <b>raccolta</b>: esponi la sera prima dopo le 20:00, oppure entro le 6:00 del giorno stesso.'));
+
+  // schema settimanale
+  html += card(sectionTitle('📅 Settimana tipo') + '<table class="tbl">' + [1, 2, 3, 4, 5, 6].map(function(g) {
+    var t = SETTIMANA_RIFIUTI[g] || [];
+    return '<tr' + (domani.getDay() === g ? ' class="hl"' : '') + '><td>' + GIORNI_IT[g] + '</td><td>' + (t.length ? t.map(function(x) { return RIFIUTI[x].icon + ' ' + RIFIUTI[x].nome; }).join('<br>') : '—') + '</td></tr>';
+  }).join('') + '</table>');
+
+  // variazioni per festivita'
+  var vk = Object.keys(VARIAZIONI_RIFIUTI).sort();
+  html += card(sectionTitle('🎉 Variazioni per festività') + '<table class="tbl">' + vk.map(function(k) {
+    var p = k.split('-'), d = new Date(+p[0], p[1] - 1, +p[2]), v = VARIAZIONI_RIFIUTI[k], passato = d < oggi;
+    var txt = [];
+    if (v.sospesi) txt.push('<span style="color:' + RED + '">sospeso: ' + v.sospesi.map(function(t) { return RIFIUTI[t].nome.toLowerCase(); }).join(', ') + '</span>');
+    if (v.recuperi) txt.push('<span style="color:' + GREEN + '">recupero: ' + v.recuperi.map(function(r) { return RIFIUTI[r[0]].nome.toLowerCase() + ' del ' + r[1]; }).join(', ') + '</span>');
+    return '<tr style="' + (passato ? 'opacity:0.45' : '') + '"><td>' + d.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined }) + '</td><td>' + txt.join('<br>') + '</td></tr>';
+  }).join('') + '</table>' + note('In grigio le variazioni già passate. Variazioni straordinarie (maltempo, scioperi) vengono comunicate da AMAGA sull\'app Riciclario.'));
+
+  // cosa va dove
+  COSA_VA.forEach(function(c) {
+    var r = RIFIUTI[c[0]];
+    html += '<div class="info-card" style="border-left:5px solid ' + r.color + '">' + sectionTitle(r.icon + ' ' + r.nome) +
+      '<div class="yesno"><b style="color:' + GREEN + '">✔ Sì</b> ' + c[1] + '</div>' +
+      (c[2] ? '<div class="yesno"><b style="color:' + RED + '">✖ No</b> ' + c[2] + '</div>' : '') + '</div>';
+  });
+
+  html += card(sectionTitle('🛋️ Ingombranti, RAEE, verde') +
+    tip('🛋️', '<b>Ingombranti e RAEE</b> (mobili, materassi, elettrodomestici, TV): ritiro a domicilio gratuito <b>su prenotazione</b> almeno 48 ore prima su <a href="https://sportelloutenti.amaga.it/" target="_blank" rel="noopener">sportelloutenti.amaga.it</a> o al numero verde <a href="tel:800776717">800 77 67 17</a>. Oppure portali all\'ecocentro.') +
+    tip('🔌', 'Quando compri un elettrodomestico nuovo il negozio deve ritirare gratis quello vecchio dello stesso tipo ("uno contro uno").') +
+    tip('🌿', '<b>Verde e ramaglie</b> (erba, potature, foglie): solo all\'ecocentro, non nell\'organico.') +
+    tip('💊', '<b>Farmaci e pile</b>: negli appositi contenitori o all\'ecocentro. <b>Olio da cucina</b>: all\'ecocentro, mai nel lavandino.') +
+    tip('♻️', '<b>Ecocentro</b> di via De Gasperi: lunedì e mercoledì 11–16, sabato 11–16 (ottobre–aprile); d\'estate lunedì 11–16, mercoledì 11–14, sabato 10–17. Porta la tessera sanitaria (CNS) dell\'intestatario TARI o l\'ultima bolletta.'));
+  html += card(sectionTitle('❓ Dove porto…?') +
+    '<table class="tbl">' + [
+      ['💊 Farmaci scaduti', 'contenitori nelle farmacie del paese, oppure ecocentro'],
+      ['🔋 Pile e batterie', 'contenitori nei negozi che le vendono, oppure ecocentro'],
+      ['🍳 Olio da cucina', 'ecocentro (in bottiglia chiusa), mai nel lavandino'],
+      ['🖨️ Toner e cartucce', 'ecocentro'],
+      ['🎨 Vernici e solventi', 'ecocentro, nel contenitore originale'],
+      ['📱 Piccoli elettrodomestici', 'ecocentro, oppure gratis nei grandi negozi di elettronica anche senza comprare nulla'],
+      ['🧱 Calcinacci (piccole quantità)', 'ecocentro'],
+      ['🛋️ Mobili e materassi', 'ritiro a domicilio su prenotazione o ecocentro']
+    ].map(function(r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') + '</table>' +
+    note('Nel dubbio usa l\'app Riciclario: scrivi il nome dell\'oggetto e ti dice dove va.')) +
+    card(sectionTitle('📱 Per non sbagliare') +
+    tip('📲', 'L\'app <b>Riciclario</b> di AMAGA manda notifiche per i cambi di calendario e dice dove buttare ogni oggetto.') +
+    tip('🕗', 'Esponi i contenitori <b>pieni</b>, sul marciapiede davanti a casa senza intralciare, <b>dopo le 20:00</b> della sera prima ed entro le 6:00.') +
+    tip('📄', '<a href="https://amaga.it/wp-content/uploads/2026/08/MOTTA-VISCONTI_Calendario-raccolta-domiciliare-2026.pdf" target="_blank" rel="noopener">Calendario 2026 in PDF</a> · <a href="https://amaga.it/wp-content/uploads/2026/08/MOTTA-VISCONTI_Guida-ai-servizi.pdf" target="_blank" rel="noopener">Guida ai servizi</a> · segnalazioni: <a href="mailto:segnalazioni.mottavisconti@amaga.it">segnalazioni.mottavisconti@amaga.it</a>'));
+  html += '<div class="source">Fonti: <a href="https://amaga.it/gestione-servizi-ambientali-comune-di-motta-visconti/" target="_blank" rel="noopener">AMAGA, Calendario raccolta domiciliare 2026 e Guida ai servizi di Motta Visconti</a>; <a href="https://comune.mottavisconti.mi.it/raccolta-differenziata/calendario/3155318/zona-1" target="_blank" rel="noopener">Comune di Motta Visconti, Raccolta differenziata</a>. Verificati il 4 ottobre 2026.</div>';
+  $('app').innerHTML = html;
+  return Promise.resolve();
+};
+
+// =================== CALENDARIO SCOLASTICO LOMBARDIA 2026/27 ===================
+// Fonte: Regione Lombardia, calendario permanente (DGR 3318/2012), pagina 2026/2027.
+// Da aggiornare ogni estate per l'anno scolastico successivo.
+var SCUOLA = {
+  anno: '2026/2027',
+  inizio: '2026-09-14', inizioInfanzia: '2026-09-07',
+  fine: '2027-06-08', fineInfanzia: '2027-06-30',
+  vacanze: [
+    ['2026-10-04', '2026-10-04', 'San Francesco d\'Assisi'],
+    ['2026-11-01', '2026-11-01', 'Tutti i Santi'],
+    ['2026-12-08', '2026-12-08', 'Immacolata'],
+    ['2026-12-23', '2027-01-06', 'Vacanze di Natale'],
+    ['2027-02-08', '2027-02-09', 'Carnevale'],
+    ['2027-03-25', '2027-03-30', 'Vacanze di Pasqua'],
+    ['2027-04-25', '2027-04-25', 'Festa della Liberazione'],
+    ['2027-05-01', '2027-05-01', 'Festa del Lavoro'],
+    ['2027-06-02', '2027-06-02', 'Festa della Repubblica']
+  ]
+};
+function daysUntil(target, now) {
+  var a = new Date(now.getFullYear(), now.getMonth(), now.getDate()), b = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+  return Math.round((b - a) / 86400000);
+}
+function giornoScolastico(d) {
+  var k = dateKey(d), dow = d.getDay();
+  if (dow === 0 || dow === 6) return false; // le corse "scolastiche" dei bus sono lun-ven
+  if (k < SCUOLA.inizio || k > SCUOLA.fine) return false;
+  return !SCUOLA.vacanze.some(function(v) { return k >= v[0] && k <= v[1]; });
+}
+function parseISO(k) { var p = k.split('-'); return new Date(+p[0], p[1] - 1, +p[2]); }
+
+// =================== AUTOBUS E TRENI ===================
+function hmToMin(t) { var p = String(t).split(':'); return (+p[0]) * 60 + (+p[1]); }
+VIEWS.trasporti = function() {
+  return loadJSON('/trasporti.php').catch(function() { return null; }).then(function(d) {
+    var now = new Date(), nowMin = now.getHours() * 60 + now.getMinutes();
+    var html = '';
+    if (d && d.success) {
+      function tipoGiorno(day) { return (day.getDay() === 0 || festivoFisso(day)) ? null : day.getDay() === 6 ? 'Sabato' : 'Feriale'; }
+      function tab(verso, tipo) { return (d.tabelle || []).filter(function(t) { return t.verso === verso && t.giorni === tipo; })[0]; }
+      // prossime corse: da adesso oggi, altrimenti le prime del prossimo giorno con servizio
+      function prossime(verso, campo) {
+        for (var i = 0; i < 4; i++) {
+          var day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i), tipo = tipoGiorno(day), t = tipo && tab(verso, tipo);
+          if (!t) continue;
+          var list = t.corse.filter(function(c) { return i > 0 || hmToMin(c[campo]) >= nowMin; }).sort(function(x, y) { return hmToMin(x[campo]) - hmToMin(y[campo]); }).slice(0, 4);
+          if (list.length) return { giorno: i, day: day, tipo: tipo, corse: list, scol: giornoScolastico(day) };
+        }
+        return null;
+      }
+      function quando(p) { return p.giorno === 0 ? 'oggi' : p.giorno === 1 ? 'domani' : GIORNI_IT[p.day.getDay()].toLowerCase() + ' ' + p.day.getDate(); }
+      var vm = prossime('Milano', 'motta_ora'), vt = prossime('Motta Visconti', 'milano_ora');
+      var oggiServizio = vm && vm.giorno === 0;
+      if (!oggiServizio && (now.getDay() === 0 || festivoFisso(now))) html += verdict('😴', 'Oggi nessuna corsa', 'La linea z509 non effettua corse la domenica e nei festivi. Qui sotto le prime corse ' + (vm ? quando(vm) : '') + '.', ORANGE);
+      if (vm && vm.tipo === 'Feriale' && !vm.scol) html += verdict('📅', 'Giorno non scolastico', 'Le corse feriali qui sotto sono quelle dei <b>giorni scolastici</b>: ' + quando(vm) + ' potrebbero non effettuarsi tutte. Controlla l\'orario non scolastico sul sito STAR Mobility.', ORANGE);
+      html += card(sectionTitle('🚌 Da Motta verso Milano Famagosta (M2)' + (vm && vm.giorno > 0 ? ' · ' + quando(vm) : '')) +
+        (vm ? '<table class="tbl"><tr><th>Parte da Motta</th><th>Fermata</th><th>Arriva a Famagosta</th></tr>' + vm.corse.map(function(c) {
+          return '<tr><td><b>' + c.motta_ora + '</b></td><td>' + esc(titleCase(c.motta_fermata)) + '</td><td>' + (c.milano_ora || '—') + '</td></tr>';
+        }).join('') + '</table>' : note('Nessuna corsa nei prossimi giorni.')));
+      html += card(sectionTitle('🏠 Da Milano Famagosta verso Motta' + (vt && vt.giorno > 0 ? ' · ' + quando(vt) : '')) +
+        (vt ? '<table class="tbl"><tr><th>Parte da Famagosta</th><th>Arriva a Motta</th><th>Fermata</th></tr>' + vt.corse.map(function(c) {
+          return '<tr><td><b>' + c.milano_ora + '</b></td><td>' + c.motta_ora + '</td><td>' + esc(titleCase(c.motta_fermata)) + '</td></tr>';
+        }).join('') + '</table>' : note('Nessuna corsa nei prossimi giorni.')));
+    html += card(sectionTitle('ℹ️ Linea z509 Motta Visconti – Milano') +
+        tip('🛣️', 'Passa da Casorate Primo, Vernate, Noviglio e Binasco fino al capolinea di <b>Milano Famagosta</b>, dove c\'è la metropolitana M2. Alcune corse partono da Trivolzio e Bereguardo.') +
+        tip('📅', 'Corse dal lunedì al venerdì nei giorni scolastici e il sabato; nessuna corsa la domenica e nei festivi.') +
+        '<a class="big-link" href="https://starmobility.it/star/outline.php?line=Z509" target="_blank" rel="noopener"><span class="icon">🕑</span><span><b>Orario completo z509</b><br><small>Tutte le corse e le fermate (STAR Mobility)</small></span></a>' +
+        note('Orari validi dal ' + esc(d.validita || '') + '. Gli orari sono quelli programmati: ritardi e deviazioni non sono indicati.'));
+    } else {
+      html += note('Orari della linea z509 non disponibili in questo momento.');
+    }
+    html += card(sectionTitle('🚌 Verso Pavia: linea 92 Autoguidovie') +
+      tip('🛣️', 'Collega Rosate e Vernate, Casorate Primo, Motta Visconti e Bereguardo con Pavia. Fermate in paese: San Rocchino, Matteotti, Cavour, Enzo Ferrari, Garibaldi, Cimitero.') +
+      '<a class="big-link" href="https://pavia.autoguidovie.it/it/l/extraurbano-pavia/index" target="_blank" rel="noopener"><span class="icon">🕑</span><span><b>Orari linea 92</b><br><small>Autoguidovie, extraurbano di Pavia (PDF)</small></span></a>');
+    html += card(sectionTitle('🚆 Treni') +
+      tip('🚉', 'Le stazioni più vicine sono <b>Abbiategrasso</b> e <b>Vigevano</b> (verso Milano e Mortara) e <b>Pavia</b>. Da Milano Famagosta con la M2 si arriva anche a Milano Porta Genova, Cadorna e Centrale.') +
+      '<a class="big-link" href="https://www.trenord.it/" target="_blank" rel="noopener"><span class="icon">🚆</span><span><b>Orari Trenord</b><br><small>Treni regionali in tempo reale</small></span></a>' +
+      '<a class="big-link" href="https://www.atm.it/" target="_blank" rel="noopener"><span class="icon">🚇</span><span><b>Metropolitana ATM</b><br><small>M2 da Famagosta, scioperi e avvisi</small></span></a>');
+    html += '<div id="trSciopero"></div>';
+    html += '<div class="source">Fonti: <a href="https://starmobility.it/star/outline.php?line=Z509" target="_blank" rel="noopener">STAR Mobility, orari linea z509</a>; <a href="https://pavia.autoguidovie.it/" target="_blank" rel="noopener">Autoguidovie Pavia, linea 92</a>. Prossime partenze calcolate dall\'orario ufficiale.</div>';
+    $('app').innerHTML = html;
+    loadJSON('/scioperi.php').then(function(sc) {
+      var oggi = dateKey(new Date());
+      var v = (sc.scioperi || []).filter(function(x) { return x.settore !== 'Aereo' && (x.fine || x.inizio) >= oggi && daysUntil(parseISO(x.inizio), new Date()) <= 7; });
+      if (v.length && $('trSciopero')) $('trSciopero').innerHTML = '<a class="big-link" href="#scioperi" onclick="go(\'scioperi\'); return false;" style="border-color:' + ORANGE + '"><span class="icon">🚧</span><span><b>Sciopero in vista</b><br><small>' + v.map(function(x) { return parseISO(x.inizio).toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' }) + ': ' + x.settore.toLowerCase(); }).join(' · ') + '</small></span></a>';
+    }).catch(function() {});
+  });
+};
+
+// =================== SCUOLE ===================
+VIEWS.scuole = function() {
+  var now = new Date(), oggi = new Date(now.getFullYear(), now.getMonth(), now.getDate()), k = dateKey(oggi);
+  var html = '';
+  var inVacanza = SCUOLA.vacanze.filter(function(v) { return k >= v[0] && k <= v[1]; })[0];
+  var prossima = SCUOLA.vacanze.filter(function(v) { return v[0] > k; })[0];
+  if (k < SCUOLA.inizio) html += verdict('🎒', 'Si torna a scuola tra ' + daysUntil(parseISO(SCUOLA.inizio), oggi) + ' giorni', 'Inizio lezioni lunedì 14 settembre 2026 (scuola dell\'infanzia dal 7 settembre).', BLUE);
+  else if (k > SCUOLA.fine) html += verdict('☀️', 'Scuola finita!', 'Le lezioni sono terminate l\'8 giugno 2027 (infanzia il 30 giugno).', GREEN);
+  else if (inVacanza) html += verdict('🎉', inVacanza[2], 'Oggi niente scuola. Si rientra il giorno dopo il ' + parseISO(inVacanza[1]).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }) + ' (salvo weekend).', GREEN);
+  else if (prossima) html += verdict('📅', 'Prossima vacanza tra ' + daysUntil(parseISO(prossima[0]), oggi) + ' giorni', '<b>' + prossima[2] + '</b>: ' + (prossima[0] === prossima[1] ? parseISO(prossima[0]).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }) : 'dal ' + parseISO(prossima[0]).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }) + ' al ' + parseISO(prossima[1]).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' })) + '.', BLUE);
+  var fineDays = daysUntil(parseISO(SCUOLA.fine), oggi);
+  html += card(sectionTitle('🗓️ Calendario scolastico ' + SCUOLA.anno + ' (Lombardia)') +
+    row('Inizio lezioni', '14 settembre 2026') + row('Scuola dell\'infanzia', 'dal 7 settembre 2026') +
+    row('Fine lezioni', '8 giugno 2027' + (fineDays > 0 && k >= SCUOLA.inizio ? ' · tra ' + fineDays + ' giorni' : '')) + row('Fine infanzia', '30 giugno 2027') +
+    '<table class="tbl">' + SCUOLA.vacanze.map(function(v) {
+      var a = parseISO(v[0]), b = parseISO(v[1]), pass = v[1] < k;
+      var quando = v[0] === v[1] ? a.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' }) : a.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) + ' – ' + b.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+      return '<tr style="' + (pass ? 'opacity:0.45' : '') + '"' + (inVacanza === v ? ' class="hl"' : '') + '><td>' + v[2] + '</td><td>' + quando + '</td></tr>';
+    }).join('') + '</table>' +
+    note('Ogni scuola può aggiungere qualche giorno di chiusura (ponti) deciso dal proprio Consiglio d\'Istituto: controlla le circolari della scuola. Il Carnevale indicato è quello del calendario regionale.'));
+  html += card(sectionTitle('🏫 Istituto Comprensivo "Ada Negri"') +
+    row('Segreteria', 'Via Don Milani 4') +
+    '<a class="phone" href="tel:0290000266"><span>📞 <b>02 9000 0266</b> segreteria</span><small>MIIC872009@istruzione.it · PEC miic872009@pec.istruzione.it</small></a>' +
+    '<a class="phone" href="tel:0290007112"><span>🧸 <b>02 9000 7112</b> Scuola dell\'infanzia</span><small>Via Don Milani 12</small></a>' +
+    '<a class="phone" href="tel:0290001649"><span>✏️ <b>02 9000 1649</b> Scuola primaria</span><small>Via Don Milani 2</small></a>' +
+    '<a class="phone" href="tel:0290009439"><span>📐 <b>02 9000 9439</b> Scuola secondaria di primo grado</span><small>Via Raffaele Novari 1</small></a>' +
+    '<a class="big-link" style="margin-top:10px" href="https://www.icmottavisconti.edu.it/" target="_blank" rel="noopener"><span class="icon">🌐</span><span><b>Sito della scuola</b><br><small>Circolari, orari segreteria, modulistica, Pago in Rete</small></span></a>');
+  html += '<div class="source">Fonti: <a href="https://www.regione.lombardia.it/istruzione-formazione-e-lavoro/formazione-professionale/calendario-scolastico-2026-2027" target="_blank" rel="noopener">Regione Lombardia, calendario scolastico 2026/2027</a>; <a href="https://www.icmottavisconti.edu.it/" target="_blank" rel="noopener">IC Ada Negri di Motta Visconti</a>. Verificati il 4 ottobre 2026.</div>';
+  $('app').innerHTML = html;
+  return Promise.resolve();
+};
+
+// =================== CINEMA ARCOBALENO ===================
+VIEWS.cinema = function() {
+  return loadJSON('/cinema.php').catch(function() { return null; }).then(function(d) {
+    var html = '';
+    if (d && d.success && d.eventi.length) {
+      html += d.eventi.map(function(e) {
+        return '<div class="info-card movie">' + (e.locandina ? '<img src="' + esc(e.locandina) + '" alt="" loading="lazy">' : '') +
+          '<div><div class="doc-name">' + esc(e.titolo) + '</div><div class="movie-when">📅 ' + esc(e.data) + (e.ora ? ' · 🕘 ' + esc(e.ora) : '') + '</div>' +
+          '<div class="movie-links">' + (e.biglietti ? '<a href="' + esc(e.biglietti) + '" target="_blank" rel="noopener">🎟️ Biglietti</a>' : '<span>🎟️ biglietti presto online</span>') +
+          (e.link ? ' · <a href="' + esc(e.link) + '" target="_blank" rel="noopener">Scheda film</a>' : '') + '</div></div></div>';
+      }).join('');
+    } else {
+      html += note('Programmazione non disponibile in questo momento.');
+    }
+    html += card(sectionTitle('🎟️ Prezzi') +
+      row('Intero (da 18 anni)', '€ 8,00') + row('Ridotto (4–17 anni, over 65)', '€ 5,00') + row('Lunedì: intero / ridotto', '€ 6,50 / € 5,00') + row('Fino a 3 anni, persone con disabilità', 'gratis') +
+      note('La biglietteria apre 30 minuti prima di ogni spettacolo; i biglietti si comprano anche online.'));
+    html += card(row('📍 Dove', 'Via San Luigi Gonzaga 8') +
+      '<a class="big-link" style="margin-top:10px" href="https://www.cinearcobaleno.com/programmazione/" target="_blank" rel="noopener"><span class="icon">🎬</span><span><b>Programmazione completa</b><br><small>cinearcobaleno.com</small></span></a>');
+    html += '<div class="source">Fonte: <a href="https://www.cinearcobaleno.com/" target="_blank" rel="noopener">CineTeatro Arcobaleno</a>, programmazione aggiornata automaticamente dal loro sito.</div>';
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== STORIA E LUOGHI ===================
+VIEWS.paese = function() {
+  var html = card(sectionTitle('🏰 Un po\' di storia') +
+    tip('🏘️', 'Il borgo originario si chiamava <b>Campese</b>, poco a ovest dell\'attuale paese. Nel Medioevo, con le guerre tra Milano e Pavia, gli abitanti si spostarono alla "Motta", una fortezza su un terreno rialzato: <i>motta</i> in lingua gallica vuol dire proprio "terreno rialzato".') +
+    tip('🐍', 'Il paese passò poi ai <b>Visconti</b>, da cui prende il nome. Dal 1473 la famiglia possedeva due terzi del feudo, il resto era dei del Majno. Il biscione visconteo è ancora nello stemma comunale, concesso nel 1933; le spade incrociate ricordano le battaglie combattute in zona.'));
+  html += card(sectionTitle('✍️ Ada Negri') +
+    tip('📚', 'La poetessa <b>Ada Negri</b> insegnò dal 1888 nella scuola elementare di Motta Visconti, dove passò il periodo più felice della sua vita. A lei sono intitolati l\'Istituto Comprensivo e il <b>Museo Ada Negri</b> del paese.'));
+  html += card(sectionTitle('⛪ Chiesa di San Giovanni Battista') +
+    tip('🔔', 'Ricostruita nel 1782 su una chiesa del primo Quattrocento, è un esempio di <b>barocchetto lombardo</b>. Conserva tele del Seicento, tra cui una Nascita della Vergine di Giovanni Maria Arduino. Il campanile, alto 35 metri, ha 5 campane fuse da Barigozzi nel 1883.'));
+  html += card(sectionTitle('🎉 Il patrono e le tradizioni') +
+    tip('🌾', 'Il patrono è <b>San Giovanni Battista</b>, festeggiato il <b>24 giugno</b>: tutto il mese di giugno è di festa, con bancarelle, concerti, cena in piazza e giostre.') +
+    tip('🥚', 'Un\'antica tradizione: la sera del 23 giugno si riempie d\'acqua un vasetto di vetro, si aggiunge l\'albume di un uovo e lo si lascia all\'aperto, alla rugiada. Al mattino l\'albume avrà preso la forma di una barca, la "barca di San Giovanni".') +
+    tip('🏃', 'La <b>MaraMotta</b>, camminata organizzata dalla parrocchia, attraversa cascine e boschi fino al Ticino, al Guado della Signora.'));
+  html += card(sectionTitle('🌳 Il Parco del Ticino') +
+    tip('🦌', 'Il territorio comunale fa parte del <b>Parco Lombardo della Valle del Ticino</b>: boschi, lanche e sentieri lungo il fiume, ideali per camminate e bici. Rispetta le regole del Parco: niente fuochi, cani al guinzaglio, non lasciare rifiuti.') +
+    '<a class="big-link" style="margin-top:6px" href="https://ente.parcoticino.it/" target="_blank" rel="noopener"><span class="icon">🌿</span><span><b>Parco del Ticino</b><br><small>Sentieri, regole ed eventi</small></span></a>');
+  html += '<div class="source">Fonte: <a href="https://it.wikipedia.org/wiki/Motta_Visconti" target="_blank" rel="noopener">Wikipedia, Motta Visconti</a> e <a href="https://it.wikipedia.org/wiki/Ada_Negri" target="_blank" rel="noopener">Ada Negri</a>.</div>';
+  $('app').innerHTML = html;
+  return Promise.resolve();
+};
+
+// =================== DEFIBRILLATORI (copia della mappa AREU in dae_motta.json) ===================
+function distKm(lat1, lon1, lat2, lon2) {
+  var dx = (lon2 - lon1) * 78.6, dy = (lat2 - lat1) * 111.2;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+function daeCard(x, km) {
+  var maps = 'https://www.google.com/maps/dir/?api=1&destination=' + x.lat + ',' + x.lon + '&travelmode=walking';
+  return '<div class="phone" style="cursor:default"><span><b>' + esc(x.nome) + '</b>' + (x.h24 ? ' <span class="pill" style="background:' + GREEN + ';color:#fff">24 ore</span>' : '') + '</span>' +
+    '<small>' + esc(x.indirizzo) + (x.comune ? ', ' + esc(x.comune) : '') + ' · ' + (km < 1 ? Math.round(km * 1000) + ' m' : fmt(km, 1) + ' km') + ' · <a href="' + maps + '" target="_blank" rel="noopener">🧭 Portami lì</a>' +
+    (x.orario ? '<br>🕑 ' + esc(x.orario) : '<br>🕑 orari non indicati: potrebbe essere accessibile solo quando la struttura è aperta') + '</small></div>';
+}
+VIEWS.dae = function() {
+  return loadJSON('/dae_motta.json').then(function(d) {
+    var html = verdict('🚨', 'Arresto cardiaco? Chiama subito il 112', 'L\'operatore ti guida nel massaggio cardiaco e ti dice dov\'è il defibrillatore più vicino. Manda qualcuno a prenderlo mentre tu fai il massaggio: non serve essere esperti, il DAE parla e spiega cosa fare.', RED) +
+      '<a class="big-link" href="tel:112"><span class="icon">📞</span><span><b>Chiama il 112</b><br><small>Gratuito, anche senza credito</small></span></a>' +
+      '<button class="storico-btn" style="width:100%;cursor:pointer" onclick="daeVicini()">📍 Trova il DAE più vicino a me</button><div id="daeVicini"></div>';
+    var motta = d.dae.filter(function(x) { return /motta/i.test(x.comune); });
+    var altri = d.dae.filter(function(x) { return !/motta/i.test(x.comune); });
+    html += card(sectionTitle('❤️ A Motta Visconti (' + motta.length + ')') + motta.map(function(x) { return daeCard(x, x.km); }).join(''));
+    html += card(sectionTitle('📍 Nei paesi vicini') + altri.slice(0, 25).map(function(x) { return daeCard(x, x.km); }).join(''));
+    html += card(sectionTitle('💡 Da sapere') +
+      tip('🗺️', 'La mappa completa e aggiornata è sul sito di <a href="https://www.areu.lombardia.it/web/home/mappa-dae-lombardia" target="_blank" rel="noopener">AREU Lombardia</a>. L\'app ufficiale <b>Where ARE U</b> chiama il 112 inviando anche la tua posizione.') +
+      tip('🔒', 'Alcuni DAE sono dentro palestre, scuole o uffici: si possono usare solo quando la struttura è aperta. Quelli segnati <b>24 ore</b> sono sempre accessibili.') +
+      tip('🎓', 'AREU e le associazioni di volontariato organizzano corsi gratuiti o economici di primo soccorso e uso del DAE (BLSD).') +
+      note('Non sono mostrati i DAE registrati presso abitazioni private.'));
+    html += '<div class="source">Fonte: <a href="https://www.areu.lombardia.it/web/home/mappa-dae-lombardia" target="_blank" rel="noopener">AREU Lombardia, mappa DAE</a> (dati registrati dai proprietari dei defibrillatori), copia del ' + parseISO(d.aggiornato).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) + '.</div>';
+    $('app').innerHTML = html;
+    window.daeData = d;
+  });
+};
+function daeVicini() {
+  var box = $('daeVicini');
+  if (!navigator.geolocation) { box.innerHTML = note('Il tuo telefono non permette di leggere la posizione.'); return; }
+  box.innerHTML = note('Cerco la tua posizione...');
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var la = pos.coords.latitude, lo = pos.coords.longitude;
+    var list = window.daeData.dae.map(function(x) { return { x: x, km: distKm(la, lo, x.lat, x.lon) }; }).sort(function(a, b) { return a.km - b.km; }).slice(0, 3);
+    box.innerHTML = card(sectionTitle('📍 I 3 più vicini a te') + list.map(function(o) { return daeCard(o.x, o.km); }).join(''));
+  }, function() { box.innerHTML = note('Posizione non disponibile: controlla di aver dato il permesso. Sotto trovi comunque l\'elenco completo.'); }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+// =================== SCIOPERI TRASPORTI (feed ufficiale MIT) ===================
+VIEWS.scioperi = function() {
+  return loadJSON('/scioperi.php').then(function(d) {
+    if (!d || !d.success) return failed();
+    var oggi = dateKey(new Date());
+    var lista = d.scioperi.filter(function(x) { return (x.fine || x.inizio) >= oggi; });
+    var html = '';
+    var vicini = lista.filter(function(x) { return daysUntil(parseISO(x.inizio), new Date()) <= 7; });
+    if (vicini.length) html += verdict('⚠️', vicini.length + (vicini.length === 1 ? ' sciopero' : ' scioperi') + ' nei prossimi 7 giorni', vicini.map(function(x) { return '<b>' + parseISO(x.inizio).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }) + '</b>: ' + esc(x.settore.toLowerCase()) + ' (' + esc(x.ambito) + ')'; }).join('<br>'), ORANGE);
+    else html += verdict('✅', 'Nessuno sciopero nei prossimi 7 giorni', 'Per treni, bus, metro e aerei che interessano la nostra zona.', GREEN);
+    var ICON = { 'Ferroviario': '🚆', 'Trasporto pubblico locale': '🚌', 'Generale': '✊', 'Aereo': '✈️' };
+    html += lista.length ? lista.map(function(x) {
+      var a = parseISO(x.inizio), b = x.fine && x.fine !== x.inizio ? parseISO(x.fine) : null;
+      return '<div class="info-card"><div class="doc-name">' + (ICON[x.settore] || '🚧') + ' ' + esc(x.settore) + ' · ' + esc(x.ambito) + '</div>' +
+        '<div class="movie-when">📅 ' + a.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }) + (b ? ' – ' + b.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }) : '') + '</div>' +
+        (x.modalita ? '<div class="v-text">🕑 ' + esc(x.modalita.toLowerCase()) + '</div>' : '') +
+        (x.categoria ? '<div class="note" style="margin-top:4px">' + esc(x.categoria) + '</div>' : '') + '</div>';
+    }).join('') : note('Nessuno sciopero in programma.');
+    html += card(sectionTitle('💡 Da sapere') +
+      tip('🛡️', 'Durante gli scioperi del trasporto locale e dei treni ci sono sempre le <b>fasce di garanzia</b> (di solito la mattina presto e il tardo pomeriggio): gli orari precisi li pubblica ogni azienda.') +
+      tip('🔄', 'Gli scioperi possono essere revocati o rinviati: controlla il giorno prima sui siti di Trenord, ATM e delle compagnie aeree.'));
+    html += '<div class="source">Fonte: <a href="https://scioperi.mit.gov.it/" target="_blank" rel="noopener">Ministero delle Infrastrutture e dei Trasporti, Osservatorio scioperi</a>. Mostrati solo gli scioperi nazionali e quelli in Lombardia (province di Milano e Pavia) di treni, bus/metro, aerei e generali.</div>';
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== UFFICIO POSTALE ===================
+var ORARI_POSTA = { 1: [['08:20', '13:35']], 2: [['08:20', '13:35']], 3: [['08:20', '13:35']], 4: [['08:20', '13:35']], 5: [['08:20', '13:35']], 6: [['08:20', '12:35']] };
+VIEWS.posta = function() {
+  var now = new Date();
+  var html = card(sectionTitle('📮 Ufficio postale di Motta Visconti') +
+    row('Indirizzo', 'Via Borgomaneri 65') +
+    '<div style="margin:6px 0 2px">Adesso ' + statoBadge(apertoOra(ORARI_POSTA, now)) + '</div>' + tabellaOrari(ORARI_POSTA) +
+    note('Orari ordinari: possono cambiare d\'estate o nei giorni prefestivi.'));
+  html += card(sectionTitle('🏛️ Ufficio "Polis"') +
+    tip('🪪', 'L\'ufficio fa parte del progetto <b>Polis – Casa dei Servizi Digitali</b> di Poste Italiane: oltre ai servizi postali permette di richiedere alcuni documenti della Pubblica Amministrazione (per esempio certificati anagrafici) direttamente allo sportello.') +
+    tip('🎫', 'Con l\'app <b>Ufficio Postale</b> puoi prenotare il turno o un appuntamento ed evitare la coda.') +
+    '<a class="big-link" href="https://www.poste.it/cerca/index.html#/" target="_blank" rel="noopener"><span class="icon">🔎</span><span><b>Cerca ufficio postale</b><br><small>Orari aggiornati e servizi sul sito di Poste</small></span></a>');
+  html += '<div class="source">Fonte: <a href="https://tgposte.poste.it/2023/11/28/polis-ufficio-postale-motta-visconti/" target="_blank" rel="noopener">Poste Italiane (TG Poste), riapertura dell\'ufficio Polis di Motta Visconti</a>.</div>';
+  $('app').innerHTML = html;
+  return Promise.resolve();
+};
+
+// =================== CASA DELL'ACQUA ===================
+VIEWS.acqua = function() {
+  var now = new Date(), h = now.getHours();
+  var html = card(sectionTitle('💧 Casa dell\'acqua di Motta Visconti') +
+    row('Indirizzo', 'Via Palmiro Togliatti 10') +
+    row('Orario', 'tutti i giorni 7:00–22:00') +
+    '<div style="margin:6px 0 2px">Adesso ' + statoBadge(h >= 7 && h < 22 ? 'aperto fino alle 22:00' : 'chiuso · riapre alle 7:00') + '</div>' +
+    '<a class="phone" href="tel:800271999"><span>📞 <b>800 271 999</b> Gruppo CAP</span><small>Per segnalare un guasto della casa dell\'acqua</small></a>' +
+    '<a class="big-link" style="margin-top:10px" href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Via Palmiro Togliatti 10, Motta Visconti') + '" target="_blank" rel="noopener"><span class="icon">🧭</span><span><b>Portami lì</b><br><small>Apri in Google Maps</small></span></a>');
+  html += card(sectionTitle('🔬 Com\'è la nostra acqua') +
+    row('Durezza', '20 °F (media)') + row('Residuo fisso', '284 mg/l') + row('Nitrati', '11 mg/l (limite 50)') + row('Sodio', '6 mg/l') + row('Calcio', '60 mg/l') + row('pH', '7') +
+    row('Batteri', 'assenti (acqua batteriologicamente pura)', GREEN) +
+    note('Analisi di Gruppo CAP del 7 settembre 2026. È la stessa acqua del rubinetto di casa, controllata più volte al mese: si può bere tranquillamente.'));
+  html += card(sectionTitle('💡 Consigli') +
+    tip('♻️', 'Porta bottiglie di vetro o borracce pulite: niente plastica usa e getta.') +
+    tip('🧊', 'Conserva l\'acqua in frigo e consumala entro un paio di giorni, soprattutto quella frizzante.'));
+  html += '<div class="source">Fonte: <a href="https://www.gruppocap.it/it/cosa-facciamo/case-dell-acqua/motta-visconti/0151510099CDA" target="_blank" rel="noopener">Gruppo CAP, Casa dell\'acqua di Motta Visconti</a> (indirizzo, orari e analisi).</div>';
+  $('app').innerHTML = html;
+  return Promise.resolve();
+};
+
+// =================== SPORT E ASSOCIAZIONI (elenco del Comune) ===================
+var ASSOCIAZIONI = [
+  ['⚽ Sport', [['A.S.D. Calcio Mottese', '2978129/associazione-s-d-calcio-mottese'], ['A.S.D. Artedanza e Movimento', '2978144/associazione-asd-artedanza-movimento'], ['A.S.D. T-Dance', '2978133/associazione-s-d-t-dance'], ['A.S.D. Metamorphosis', '3063480/s-d-metamorphosis'], ['ASD Oceno', '3435735/asd-oceno'], ['ASD Sport Academy Fun', '2978224/associazione-kids-sport-education-asd'], ['A.S.D. Mizu Tamashii Dojo', '3013924/s-d-mizu-tamashii-dojo'], ['Gruppo Nautico Mottese', '2977440/gruppo-nautico-mottese']]],
+  ['🤝 Volontariato e aiuto', [['Croce Azzurra', '2978209/associazione-croce-azzurra'], ['A.V.I.S. Motta Visconti–Besate', '2978145/associazione-v-s-sez-motta-visconti-besate'], ['Giacche Verdi', '2978214/associazione-giacche-verdi'], ['Rainbow', '2978221/associazione-rainbow'], ['Il Laboratorio dei Folletti', '2977443/laboratorio-folletti'], ['Due Ali per Volare', '3402975/associazione-due-ali-volare'], ['Allattamento e dintorni', '3075239/allattamento-dintorni-asp']]],
+  ['🎭 Cultura, feste e tempo libero', [['Pro Loco', '2978220/associazione-pro-loco'], ['Endurance – arte, musica e teatro', '2978211/endurance-compagnia-d-arte-musica-teatro'], ['Favolafolle APS', '3143982/associazione-favolafolle-aps'], ['Altrovequi', '2977442/altrovequi'], ['Pane e Mate', '2978219/associazione-pane-mate'], ['Big Mama', '2978146/associazione-big-mama'], ['La Mischia', '2978216/associazione-mischia'], ['A.N.P.I.', '2977505/associazione-nazionale-partigiani-d-italia-n-p'], ['Rotaract Morimondo Abbazia', '2978223/associazione-rotaract-morimondo-abbazia']]]
+];
+VIEWS.associazioni = function() {
+  var html = ASSOCIAZIONI.map(function(g) {
+    return card(sectionTitle(g[0]) + g[1].map(function(a) {
+      return '<a class="phone" href="https://comune.mottavisconti.mi.it/associazioni/' + a[1] + '" target="_blank" rel="noopener"><span>' + esc(a[0]) + '</span><small>Scheda, contatti e attività sul sito del Comune ›</small></a>';
+    }).join(''));
+  }).join('');
+  html += card(tip('🏟️', 'Impianti: centro sportivo e piscina coperta in via Ticino, palestre delle scuole in via Don Milani.') +
+    '<a class="big-link" href="https://comune.mottavisconti.mi.it/associazioni" target="_blank" rel="noopener"><span class="icon">📋</span><span><b>Elenco completo</b><br><small>Tutte le associazioni registrate presso il Comune</small></span></a>');
+  html += '<div class="source">Fonte: <a href="https://comune.mottavisconti.mi.it/associazioni" target="_blank" rel="noopener">Comune di Motta Visconti, elenco associazioni</a>, ottobre 2026. Per iscriversi o avere informazioni rivolgersi direttamente alle associazioni.</div>';
+  $('app').innerHTML = html;
+  return Promise.resolve();
+};
+
+// =================== MEDICI DI BASE (dati ATS Milano via medici.php) ===================
+var SEMAFORO = {
+  verde:  ['Accetta nuovi pazienti', '#4caf50', '#fff'],
+  giallo: ['Solo casi particolari', '#ffc107', '#111'],
+  rosso:  ['Nessun posto libero', '#f44336', '#fff'],
+  nero:   ['Cessato', '#555', '#fff']
+};
+function telLink(t) { var n = String(t || '').replace(/[^\d+]/g, ''); return n ? '<a href="tel:' + n + '">' + esc(t) + '</a>' : ''; }
+// "Lunedì: 10.00-12.00 A    17.00-20.00 A" -> { 1: ['10.00-12.00 A', '17.00-20.00 A'] }
+function parseOrari(txt) {
+  var out = {};
+  String(txt || '').split('\n').forEach(function(line) {
+    var m = line.match(/^\s*([A-Za-zÀ-ù]+)\s*:\s*(.*)$/);
+    if (!m) return;
+    var d = GIORNI_IT.map(function(g) { return g.toLowerCase(); }).indexOf(m[1].toLowerCase());
+    if (d < 0) return;
+    var slots = m[2].match(/\d{1,2}[.,:]\d{2}\s*-\s*\d{1,2}[.,:]\d{2}(\s*[A-Za-z][A-Za-z ]*?(?=\s{2,}|\s*\d|$))?/g) || [m[2]];
+    out[d] = slots.map(function(x) { return x.replace(/\s+/g, ' ').trim(); });
+  });
+  return out;
+}
+function inSlotNow(slots, now) {
+  var hm = now.getHours() * 60 + now.getMinutes();
+  return (slots || []).some(function(sl) {
+    var m = sl.match(/(\d{1,2})[.,:](\d{2})\s*-\s*(\d{1,2})[.,:](\d{2})/);
+    return m && hm >= (+m[1]) * 60 + (+m[2]) && hm < (+m[3]) * 60 + (+m[4]);
+  });
+}
+VIEWS.medici = function() {
+  return loadJSON('/medici.php').then(function(d) {
+    if (!d || !d.success || !d.medici || !d.medici.length) return failed();
+    var now = new Date(), today = now.getDay();
+    var html = '';
+    d.medici.forEach(function(m) {
+      var sem = SEMAFORO[m.semaforo] || null;
+      var aperto = m.ambulatori.some(function(a) { return inSlotNow(parseOrari(a.orari)[today], now); });
+      html += '<div class="info-card">' +
+        '<div class="doc-head"><div><div class="doc-name">' + esc(titleCase(m.cognome + ' ' + m.nome)) + '</div>' +
+        '<div class="doc-type">' + (m.tipo === 'Pediatra' ? '👶 Pediatra' : '🩺 Medico di base') + (m.gruppo ? ' · ' + esc(titleCase(m.gruppo)) : '') + '</div></div>' +
+        (aperto ? '<span class="pill" style="background:' + GREEN + ';color:#fff">in ambulatorio ora</span>' : '') + '</div>' +
+        (sem ? '<div style="margin:6px 0 2px"><span class="pill" style="margin-left:0;background:' + sem[1] + ';color:' + sem[2] + '">' + sem[0] + '</span></div>' : '');
+      m.ambulatori.forEach(function(a) {
+        var o = parseOrari(a.orari);
+        var maps = (a.lat && a.lng) ? 'https://www.google.com/maps/search/?api=1&query=' + a.lat + ',' + a.lng : null;
+        html += row('📍 ' + esc(a.indirizzo) + (maps ? ' · <a href="' + maps + '" target="_blank" rel="noopener">Mappa</a>' : ''), '') +
+          (a.telefono ? row('📞 Telefono', telLink(a.telefono)) : '') +
+          (a.telefono_ambulatorio && a.telefono_ambulatorio !== a.telefono ? row('☎️ Ambulatorio', telLink(a.telefono_ambulatorio)) : '') +
+          '<table class="tbl">' + [1, 2, 3, 4, 5, 6].filter(function(g) { return o[g]; }).map(function(g) {
+            return '<tr' + (g === today ? ' class="hl"' : '') + '><td>' + GIORNI_IT[g] + '</td><td>' + o[g].map(esc).join('<br>') + '</td></tr>';
+          }).join('') + '</table>';
+      });
+      (m.sostituzioni || []).forEach(function(x) {
+        html += note('🔁 Sostituito da ' + esc(titleCase(x.sostituto)) + (x.dal ? ' dal ' + esc(String(x.dal).slice(0, 10)) : '') + (x.al ? ' al ' + esc(String(x.al).slice(0, 10)) : ''));
+      });
+      html += '</div>';
+    });
+    html += card(sectionTitle('💡 Da sapere') +
+      tip('🅰️', 'La lettera «A» accanto agli orari è quella riportata da ATS: in genere indica visite <b>su appuntamento</b>. Chiama prima di andare.') +
+      tip('🔄', 'Per scegliere o cambiare medico usa il <a href="https://www.fascicolosanitario.regione.lombardia.it/" target="_blank" rel="noopener">Fascicolo Sanitario Elettronico</a> o l\'ufficio Scelta e Revoca dell\'ASST Ovest Milanese.') +
+      tip('🌙', 'Di notte, nel weekend e nei festivi, quando il medico non c\'è, chiama la guardia medica al <a href="tel:116117"><b>116117</b></a>. Per le emergenze il <a href="tel:112"><b>112</b></a>.'));
+    html += '<div class="source">Fonte: <a href="https://www.ats-milano.it/trova-medico" target="_blank" rel="noopener">ATS Milano, servizio «Trova medico»</a> (dati ufficiali, aggiornati periodicamente da ATS e non in tempo reale). Ultimo controllo: ' + new Date(d.aggiornato).toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) + '.</div>';
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== PARROCCHIA SAN GIOVANNI BATTISTA ===================
+// Orari dal sito ufficiale della parrocchia e dagli avvisi settimanali (verificati 2026-10-03).
+// Gli avvisi della settimana possono cambiarli: c'e' sempre il link.
+function festivoFisso(d) {
+  var k = (d.getMonth() + 1) + '-' + d.getDate();
+  return ['1-1', '1-6', '8-15', '11-1', '12-8', '12-25'].indexOf(k) >= 0;
+}
+function inizioAvventoAmbrosiano(y) {
+  // prima domenica dopo San Martino (11 novembre): da lunedi' successivo Messa serale alle 17
+  var d = new Date(y, 10, 12);
+  while (d.getDay() !== 0) d.setDate(d.getDate() + 1);
+  return new Date(y, 10, d.getDate() + 1);
+}
+function messeDelGiorno(d) {
+  var dow = d.getDay(), m = d.getMonth(), y = d.getFullYear();
+  var domani = new Date(y, m, d.getDate() + 1);
+  var estate = (m === 6 || m === 7);
+  if (dow === 0 || festivoFisso(d)) return estate ? ['08:00', '10:00', '18:00'] : ['08:00', '09:30', '11:00', '18:00'];
+  var sera = (d >= inizioAvventoAmbrosiano(y) || m === 0) ? '17:00' : '18:00';
+  var primoGiovedi = (dow === 4 && d.getDate() <= 7);
+  var fer = { 1: ['09:00'], 2: [sera], 3: ['09:30', sera], 4: primoGiovedi ? ['09:00', '21:00'] : [sera], 5: ['09:00', sera], 6: ['09:00'] }[dow] || [];
+  if (m === 7) fer = fer.filter(function(h) { return h !== '18:00' && h !== '17:00'; }); // agosto: sospesa la serale
+  if (dow === 6 || festivoFisso(domani)) fer = fer.filter(function(h) { return h < '17:00'; }).concat(['17:30']); // prefestiva al posto della serale
+  return fer;
+}
+VIEWS.parrocchia = function() {
+  var now = new Date(), hm = hhmm(now);
+  var prossima = null;
+  for (var i = 0; i < 8 && !prossima; i++) {
+    var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+    messeDelGiorno(d).forEach(function(h) { if (!prossima && (i > 0 || h > hm)) prossima = { d: d, h: h, i: i }; });
+  }
+  var html = '';
+  if (prossima) {
+    var quando = prossima.i === 0 ? 'oggi' : prossima.i === 1 ? 'domani' : GIORNI_IT[prossima.d.getDay()].toLowerCase();
+    var tipo = (prossima.h === '17:30') ? ' (prefestiva)' : (prossima.d.getDay() === 0 || festivoFisso(prossima.d)) ? ' (festiva)' : '';
+    html += verdict('⛪', 'Prossima Messa: ' + quando + ' alle ' + prossima.h, 'Chiesa parrocchiale di San Giovanni Battista' + tipo + '. Controlla sempre gli avvisi della settimana: per feste e celebrazioni speciali gli orari possono cambiare.', '#9575cd');
+  }
+  html += '<a class="big-link" href="https://www.parrocchiamottavisconti.it/category/informatore-parrocchiale/" target="_blank" rel="noopener"><span class="icon">📰</span><span><b>Avvisi della settimana</b><br><small>Orari, eventi e celebrazioni aggiornati dalla parrocchia</small></span></a>';
+  html += card(sectionTitle('🕯️ Sante Messe') +
+    '<table class="tbl">' +
+    '<tr' + (now.getDay() === 6 ? ' class="hl"' : '') + '><td>Sabato e prefestivi</td><td>17:30</td></tr>' +
+    '<tr' + (now.getDay() === 0 ? ' class="hl"' : '') + '><td>Domenica e festivi</td><td>8:00 · 9:30 · 11:00 · 18:00</td></tr>' +
+    '<tr><td>Luglio e agosto (festivi)</td><td>8:00 · 10:00 · 18:00</td></tr>' +
+    '<tr' + (now.getDay() === 1 ? ' class="hl"' : '') + '><td>Lunedì</td><td>9:00</td></tr>' +
+    '<tr' + (now.getDay() === 2 ? ' class="hl"' : '') + '><td>Martedì</td><td>18:00</td></tr>' +
+    '<tr' + (now.getDay() === 3 ? ' class="hl"' : '') + '><td>Mercoledì</td><td>9:30 · 18:00</td></tr>' +
+    '<tr' + (now.getDay() === 4 ? ' class="hl"' : '') + '><td>Giovedì</td><td>18:00<br><small>1° giovedì del mese: 9:00 e 21:00 (in oratorio da novembre ad aprile, al cimitero da maggio a ottobre)</small></td></tr>' +
+    '<tr' + (now.getDay() === 5 ? ' class="hl"' : '') + '><td>Venerdì</td><td>9:00 · 18:00</td></tr>' +
+    '<tr' + (now.getDay() === 6 ? ' class="hl"' : '') + '><td>Sabato mattina</td><td>9:00</td></tr>' +
+    '</table>' +
+    note('Dall\'inizio dell\'Avvento ambrosiano al 31 gennaio la Messa serale feriale è alle 17:00. Ad agosto la Messa serale feriale è sospesa. Casa di riposo: lunedì alle 16:00. A Besate: sabato 18:00, domenica 10:00.'));
+  html += card(sectionTitle('🙏 Confessioni e adorazione') +
+    row('Confessioni', 'sabato 15:00–17:45') +
+    row('Confessioni 1° venerdì', '10:00–11:30') +
+    row('Adorazione eucaristica', 'giovedì 18:30–19:30') +
+    row('Adorazione 1° venerdì', '9:30–11:30'));
+  html += card(sectionTitle('⚽ Oratorio San Luigi') +
+    '<table class="tbl">' + [[1, '16:00–18:00'], [2, '16:00–18:00'], [3, '16:00–18:00'], [4, 'chiuso'], [5, '16:00–18:00'], [6, '15:30–18:30'], [0, '15:00–18:00']].map(function(x) {
+      return '<tr' + (now.getDay() === x[0] ? ' class="hl"' : '') + '><td>' + GIORNI_IT[x[0]] + '</td><td>' + x[1] + '</td></tr>';
+    }).join('') + '</table>' +
+    note('<a href="https://www.parrocchiamottavisconti.it/osl/" target="_blank" rel="noopener">Sito dell\'oratorio</a>'));
+  html += card(sectionTitle('🤝 Caritas e Centro di Ascolto') +
+    row('Dove', 'sopra il Museo Ada Negri') +
+    row('Quando', 'sabato 15:00–17:00') +
+    row('Telefono', telLink('327 663 6448')));
+  html += card(sectionTitle('📞 Contatti parrocchia') +
+    row('Indirizzo', 'Via Roma 4') +
+    row('Telefono', telLink('02 9000 0351')) +
+    row('Email', '<a href="mailto:info@parrocchiamottavisconti.it">info@parrocchiamottavisconti.it</a>') +
+    row('Parroco', 'Don Gianni Nava') +
+    row('Coadiutore', 'Don Luca Invernizzi') +
+    note('Chiese del paese: parrocchiale di San Giovanni Battista (sec. XV–XVIII, stile barocchetto), San Rocco, San Rocchino e Sant\'Anna.'));
+  html += '<div class="source">Fonte: sito ufficiale della <a href="https://www.parrocchiamottavisconti.it/orario-ss-messe/" target="_blank" rel="noopener">Parrocchia San Giovanni Battista di Motta Visconti</a> e avvisi settimanali, verificati il 3 ottobre 2026.</div>';
+  $('app').innerHTML = html;
+  return Promise.resolve();
+};
+
+// =================== CARBURANTI ===================
+var fuelSel = 'Benzina';
+function titleCase(t) { return String(t).toLowerCase().replace(/(^|[\s'.(])([a-zà-ù])/g, function(m, a, b) { return a + b.toUpperCase(); }); }
+function cleanAddr(a) { return titleCase(String(a).replace(/\s*\b\d{5}\s*$/, '').trim()); }
+function fuelGroup(name) {
+  var n = name.toLowerCase();
+  if (n === 'benzina') return 'Benzina';
+  if (n === 'gasolio') return 'Gasolio';
+  if (n.indexOf('gpl') >= 0) return 'GPL';
+  if (n.indexOf('metano') >= 0) return 'Metano';
+  return null;
+}
+VIEWS.carburanti = function() {
+  return loadJSON('/carburanti.php').then(function(d) {
+    if (!d || !d.success) return failed();
+    window.fuelData = d;
+    renderFuel();
+  });
+};
+function setFuel(f) { fuelSel = f; renderFuel(); }
+function renderFuel() {
+  var d = window.fuelData;
+  var groups = {};
+  d.distributori.forEach(function(s) { s.prezzi.forEach(function(p) { var g = fuelGroup(p.carburante); if (g) groups[g] = true; }); });
+  var tabs = ['Benzina', 'Gasolio', 'GPL', 'Metano'].filter(function(g) { return groups[g]; });
+  if (tabs.indexOf(fuelSel) < 0) fuelSel = tabs[0];
+
+  var rows = [], nessuno = [];
+  d.distributori.forEach(function(s) {
+    var self = null, serv = null, agg = null;
+    s.prezzi.forEach(function(p) {
+      if (fuelGroup(p.carburante) !== fuelSel) return;
+      if (p.self) { if (self === null || p.prezzo < self) self = p.prezzo; } else { if (serv === null || p.prezzo < serv) serv = p.prezzo; }
+      agg = p.aggiornato;
+    });
+    if (self === null && serv === null) { if (!s.prezzi.length) nessuno.push(s); return; }
+    rows.push({ s: s, self: self, serv: serv, best: self !== null ? self : serv, agg: agg });
+  });
+  rows.sort(function(a, b) { return a.best - b.best; });
+
+  var html = '<div class="tabs">' + tabs.map(function(t) { return '<button class="' + (t === fuelSel ? 'active' : '') + '" onclick="setFuel(\'' + t + '\')">' + t + '</button>'; }).join('') + '</div>';
+  if (rows.length) {
+    var mn = rows[0].best, mx = rows[rows.length - 1].best;
+    if (rows.length > 1 && mx > mn) html += verdict('💶', 'Il più economico: ' + esc(titleCase(rows[0].s.comune)), esc(rows[0].s.bandiera) + ', ' + esc(cleanAddr(rows[0].s.indirizzo)) + ' a <b>' + fmt(mn, 3) + ' €/l</b>. Con un pieno da 50 litri risparmi circa <b>' + fmt((mx - mn) * 50, 2) + ' €</b> rispetto al più caro.', GREEN);
+  }
+  html += rows.map(function(r, i) {
+    var s = r.s;
+    var maps = 'https://www.google.com/maps/search/?api=1&query=' + s.lat + ',' + s.lon;
+    return '<div class="fuel-card' + (i === 0 ? ' best' : '') + '">' +
+      '<div class="fuel-head"><div><div class="fuel-name">' + esc(s.bandiera) + ' · ' + esc(titleCase(s.comune)) + '</div><div class="fuel-addr">' + esc(cleanAddr(s.indirizzo)) + '</div></div>' +
+      '<div class="fuel-price">' + (r.self !== null ? fmt(r.self, 3) + '<span> self</span>' : '') + (r.serv !== null ? '<div class="fuel-serv">' + fmt(r.serv, 3) + ' servito</div>' : '') + '</div></div>' +
+      '<div class="fuel-foot"><span>Prezzo comunicato il ' + esc((r.agg || '').slice(0, 16)) + '</span><a href="' + maps + '" target="_blank" rel="noopener">📍 Mappa</a></div></div>';
+  }).join('');
+  if (!rows.length) html += note('Nessun distributore in zona vende ' + fuelSel + '.');
+  var extra = [];
+  if (nessuno.length) extra.push('Senza prezzi comunicati di recente: ' + nessuno.map(function(s) { return esc(s.bandiera + ' ' + cleanAddr(s.indirizzo) + ' (' + titleCase(s.comune) + ')'); }).join('; ') + '.');
+  extra.push('I prezzi possono cambiare durante la giornata.');
+  html += card(extra.map(note).join(''));
+  html += '<div class="source">Fonte: Ministero delle Imprese e del Made in Italy (MIMIT), <a href="https://carburanti.mise.gov.it/" target="_blank" rel="noopener">Osservaprezzi Carburanti</a>, open data ufficiali dei prezzi comunicati dai gestori per legge. Estrazione del ' + esc(d.estrazione || '') + '.</div>';
+  $('app').innerHTML = html;
+}
+
+// =================== FARMACIE ===================
+VIEWS.farmacie = function() {
+  var now = new Date(), h = now.getHours(), dow = now.getDay();
+  var html = '<a class="big-link" href="https://www.farmaciediturno.org/ricercaditurno.asp?cod=15151" target="_blank" rel="noopener"><span class="icon">💊</span><span><b>Farmacie di turno adesso</b><br><small>Le più vicine a Motta Visconti, aperte ora</small></span></a>' +
+    '<a class="big-link" href="https://www.farmaciediturno.org/ricercaditurno.asp?cod=15151&domani=1" target="_blank" rel="noopener"><span class="icon">📅</span><span><b>Farmacie di turno domani</b><br><small>Per organizzarti in anticipo</small></span></a>';
+  html += card(sectionTitle('🏘️ Farmacie di Motta Visconti') +
+    '<div class="pharm"><b>Farmacia Iris</b><br>Piazza della Repubblica, 5 · <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Farmacia Iris, Piazza della Repubblica 5, Motta Visconti') + '" target="_blank" rel="noopener">📍 Mappa</a></div>' +
+    '<div class="pharm"><b>Farmacia Mariani</b><br>Via Roma, 1 · <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Farmacia Mariani, Via Roma 1, Motta Visconti') + '" target="_blank" rel="noopener">📍 Mappa</a></div>' +
+    note('Orari e turni possono cambiare: in caso di dubbio guarda il cartello dei turni esposto fuori dalla farmacia.'));
+  var guardia = (h >= 20 || h < 8 || dow === 0 || dow === 6);
+  html += card(sectionTitle('📞 Numeri utili') +
+    '<a class="phone" href="tel:112"><span>🚨 <b>112</b> Emergenze</span><small>Ambulanza, Carabinieri, Vigili del Fuoco</small></a>' +
+    '<a class="phone" href="tel:116117"><span>🩺 <b>116117</b> Guardia medica</span><small>Continuità assistenziale: notti dalle 20 alle 8, weekend e festivi' + (guardia ? ' · <b style="color:' + GREEN + '">attiva adesso</b>' : '') + '</small></a>' +
+    '<a class="phone" href="tel:0266101029"><span>☠️ <b>02 6610 1029</b> Centro antiveleni</span><small>Ospedale Niguarda di Milano, 24 ore su 24</small></a>' +
+    note('Per un malore non urgente di notte o nel weekend chiama il 116117, non il 112: il 112 serve per le emergenze.'));
+  html += '<div class="source">Fonti: turni e indirizzi delle farmacie da <a href="https://www.farmaciediturno.org/" target="_blank" rel="noopener">farmaciediturno.org</a>; numero 116117 da <a href="https://www.regione.lombardia.it/wps/portal/istituzionale/HP/DettaglioRedazionale/servizi-e-informazioni/cittadini/salute-e-prevenzione/Prevenzione-e-benessere/numero-unico-116-117/numero-unico-116-117" target="_blank" rel="noopener">Regione Lombardia</a>; Centro antiveleni dell\'<a href="https://www.ospedaleniguarda.it/" target="_blank" rel="noopener">Ospedale Niguarda</a>.</div>';
+  $('app').innerHTML = html;
+  return Promise.resolve();
+};
+
+// avvio: apertura diretta di una sezione con #id (es. link utile.html#carburanti)
+(function() {
+  var h = location.hash.replace('#', '');
+  var ok = SECTIONS.some(function(s) { return s.id === h; });
+  state = { view: ok ? h : 'home' };
+  history.replaceState(state, '', location.pathname + (ok ? '#' + h : ''));
+  render();
+})();
+</script>
+
+
+
+
+<div id="pageVisitCounter" style="text-align:center; font-size:0.805rem; color:#888; padding:16px 0 6px; opacity:0.7;"></div>
+<script>
+(function() {
+  var PAGE_SLUG = 'utile';
+  function pvcFmt(n) { var s = String(n), o = ""; while (s.length > 3) { o = "." + s.slice(-3) + o; s = s.slice(0, -3); } return s + o; }
+  // Nuova visita = prima pagina dopo 30 minuti di inattivita' sul sito (come Matomo).
+  function pvcNuova() { try { var k = 'pvcLastHit', now = Date.now(), last = parseInt(localStorage.getItem(k) || '0', 10); localStorage.setItem(k, String(now)); return (!last || now - last > 1800000) ? 1 : 0; } catch (e) { return 0; } }
+  var pvcIsApp = navigator.userAgent.indexOf('MeteoMottaAndroidApp') !== -1;
+  function pvcToken() {
+    if (pvcIsApp) {
+      try { return (typeof AndroidBridge !== 'undefined' && AndroidBridge.getToken) ? AndroidBridge.getToken() : null; } catch (e) { return null; }
+    }
+    try { return localStorage.getItem('webAccountToken'); } catch (e) { return null; }
+  }
+  fetch('/visite.php?action=hit&page=' + PAGE_SLUG + '&nuova=' + pvcNuova())
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.success) return;
+      var token = pvcToken();
+      if (!token) return;
+      fetch('/account.php', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(acc) {
+          if (acc && acc.success && acc.ruolo === 'owner') {
+            var el = document.getElementById('pageVisitCounter');
+            if (el) el.innerText = '\ud83d\udc41 ' + pvcFmt(d.visite_totali) + ' visite totali (' + pvcFmt(d.visite_oggi) + ' oggi)';
+          }
+        })
+        .catch(function() {});
+    })
+    .catch(function() {});
+})();
+</script>
+
+</body>
+</html>

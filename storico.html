@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Storico Misura - Motta Visconti</title>
+    <script src="/aria_scale.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <style>
@@ -763,11 +764,11 @@
             lightning: { NOME: 'Distanza Fulmini', UNITA: 'km', COLORE: '#ffeb3b', ID: 'ecowitt_lightning_strike_distance', FILE: 'storico_fulmini.csv' },
             rain:  { NOME: 'Pioggia',     UNITA: 'mm', COLORE: '#00d4ff', ID: 'ecowitt_rain_rate', FILE: 'storico_pioggia_rate.csv' },
 
-            aqi:   { NOME: 'Indice AQI',  UNITA: 'AQI', COLORE: '#00e400', ID: 'air_quality_indice_universale_della_qualita_dell_aria_uaqi', FILE: 'storico_aria.csv' },
+            aqi:   { NOME: 'Qualità dell\'Aria (UAQI)', UNITA: '/100', COLORE: '#00a651', ID: 'air_quality_indice_universale_della_qualita_dell_aria_uaqi', FILE: 'storico_aria.csv' },
             pm25:  { NOME: 'PM 2.5',      UNITA: 'μg/m³', COLORE: '#ff9800', ID: 'air_quality_pm2_5', FILE: 'storico_aria.csv' },
             pm10:  { NOME: 'PM 10',       UNITA: 'μg/m³', COLORE: '#ffc107', ID: 'air_quality_pm10', FILE: 'storico_aria.csv' },
             o3:    { NOME: 'Ozono (O3)',  UNITA: 'ppb', COLORE: '#00d4ff', ID: 'air_quality_ozono', FILE: 'storico_aria.csv' },
-            no2:   { NOME: 'Anidride Nitrosa', UNITA: 'ppb', COLORE: '#9c27b0', ID: 'air_quality_anidride_nitrosa', FILE: 'storico_aria.csv' },
+            no2:   { NOME: 'Biossido di Azoto (NO2)', UNITA: 'ppb', COLORE: '#9c27b0', ID: 'air_quality_anidride_nitrosa', FILE: 'storico_aria.csv' },
             so2:   { NOME: 'Anidride Solforosa', UNITA: 'ppb', COLORE: '#f44336', ID: 'air_quality_anidride_solforosa', FILE: 'storico_aria.csv' },
 
             p_alberi:    { NOME: 'Polline Alberi', UNITA: 'Lvl', COLORE: '#66bb6a', ID: 'polline_tipi_alberi', FILE: 'storico_pollini.csv' },
@@ -791,6 +792,40 @@
         
         const CONFIG = CONFIG_MAP[tipoMisura];
         document.getElementById('pageTitle').innerText = 'Storico ' + CONFIG.NOME;
+
+        // Qualita' dell'aria: colori e fasce dalla scala condivisa /aria_scale.js
+        const AIR_KEY = { aqi: 'uaqi', pm25: 'pm25', pm10: 'pm10', o3: 'o3', no2: 'no2' }[tipoMisura] || null;
+        function airLevel(v) { return AIR_KEY === 'uaqi' ? ARIA.uaqi(v) : ARIA.pollutant(AIR_KEY, v); }
+        if (AIR_KEY) {
+            let bands;
+            if (AIR_KEY === 'uaqi') {
+                bands = [[0, '80-100'], [1, '60-79'], [2, '40-59'], [3, '20-39'], [4, '0-19']];
+            } else {
+                const P = ARIA.POLLUTANTS[AIR_KEY];
+                const f = P.factor, u = (f === 1 ? ' µg/m³' : ' ppb');
+                const lim = P.limits.map(function(x) { return Math.round(x / f); });
+                bands = [[0, '≤ ' + lim[0]], [1, '≤ ' + lim[1]], [2, '≤ ' + lim[2]], [3, '≤ ' + lim[3]], [4, '> ' + lim[3]]]
+                    .map(function(b) { return [b[0], b[1] + u]; });
+            }
+            const leg = document.createElement('div');
+            leg.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0 14px;font-size:0.7rem;';
+            leg.innerHTML = bands.map(function(b) {
+                const L = ARIA.LEVELS[b[0]];
+                return '<span style="background:' + L.color + ';color:' + L.text + ';padding:3px 8px;border-radius:10px;font-weight:700;">' + L.name + ' ' + b[1] + '</span>';
+            }).join('') + (AIR_KEY === 'uaqi'
+                ? '<div style="width:100%;text-align:center;color:var(--text-faint);margin-top:4px;">Indice di Google Air Quality: più è alto, più l\'aria è pulita.</div>'
+                : '<div style="width:100%;text-align:center;color:var(--text-faint);margin-top:4px;">Fasce basate su linee guida OMS e limiti UE.</div>');
+            document.querySelector('.header').insertAdjacentElement('afterend', leg);
+            if (AIR_KEY === 'uaqi') {
+                // per l'UAQI il valore piu' basso e' il momento peggiore
+                document.querySelector('#cardMin h4').innerText = 'Peggiore (minimo)';
+                document.querySelector('#cardMax h4').innerText = 'Migliore (massimo)';
+                const st = document.createElement('style');
+                st.textContent = '#cardMin{border-top-color:#ff6d00 !important}#cardMin .val-main{color:#ff6d00 !important}' +
+                                 '#cardMax{border-top-color:#00a651 !important}#cardMax .val-main{color:#00a651 !important}';
+                document.head.appendChild(st);
+            }
+        }
         document.title = 'Storico ' + CONFIG.NOME;
 
         Chart.defaults.color = themeColor('--text-muted');
@@ -1122,6 +1157,7 @@
             if (isTemp) ySuggestedMax = maxVal30d + 6;
             else if (isHum) ySuggestedMax = Math.min(maxVal30d + 8, 100);
             else if (isLightningCount) ySuggestedMax = maxVal30d * 1.2;
+            else if (AIR_KEY === 'uaqi') ySuggestedMax = 100;
             else ySuggestedMax = maxVal30d * 1.5;
 
             const datasets = isTemp ? [
@@ -1140,9 +1176,9 @@
                     datalabels: { color: '#ff5252' }
                 }
             ] : [{
-                label: (CONFIG.ID === 'ecowitt_lightning_strike_distance') ? `Totale Fulmini del Giorno` : `Media Giornaliera (${CONFIG.UNITA})`,
+                label: (CONFIG.ID === 'ecowitt_lightning_strike_distance') ? `Totale Fulmini del Giorno` : (AIR_KEY ? `Media Giornaliera (${CONFIG.UNITA}) · colore = fascia di qualità` : `Media Giornaliera (${CONFIG.UNITA})`),
                 data: dailyAverages.map(d => d.val),
-                backgroundColor: CONFIG.COLORE, borderRadius: 4, barPercentage: 0.55, categoryPercentage: 0.6
+                backgroundColor: AIR_KEY ? dailyAverages.map(d => airLevel(d.val).color) : CONFIG.COLORE, borderRadius: 4, barPercentage: 0.55, categoryPercentage: 0.6
             }];
 
             Chart.defaults.color = themeColor('--text-muted'); chart30dInstance = new Chart(ctx, {

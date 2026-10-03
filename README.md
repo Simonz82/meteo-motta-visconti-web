@@ -14,10 +14,11 @@ Un progetto amatoriale che raccoglie e visualizza:
 - 📅 **Previsioni Future** — 16 giorni (oggi incluso) con scorrimento laterale, dettaglio ora per ora e icone notturne con la luna; dall'ottavo giorno in poi indicati come "tendenza"
 - 🏆 **Record Storici** — temperature e pioggia estreme dal 1940 ad oggi
 - ⚡ **Rilevatore Fulmini** — ultimo fulmine, distanza minima della giornata, allerta se sotto i 10 km nell'ultima ora
-- 🌬️ **Qualità dell'Aria** — indice UAQI, PM2.5, PM10, Ozono, Anidride Nitrosa
+- 🌬️ **Qualità dell'Aria** — indice UAQI (0-100, più alto = aria più pulita), PM2.5, PM10, Ozono, Biossido di Azoto, con consigli per le attività all'aperto
 - 🌼 **Livello Polline** — alberi, erbe, ambrosia e altre specie
 - 🌊 **Fiume Ticino** — livello idrometrico a Bereguardo, Vigevano e Pavia
 - ☔ **Allerte Meteo** — bollettino di criticità della Protezione Civile
+- 💡 **Utile da sapere** (`utile.html`) — Comune, numeri utili e guasti, farmacie di turno, medici, defibrillatori, parrocchia, scuole, associazioni, cinema, raccolta rifiuti con festività, carburanti, autobus, scioperi, casa dell'acqua, ufficio postale
 
 ## Fonti dati
 
