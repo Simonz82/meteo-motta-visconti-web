@@ -94,6 +94,14 @@
         .compass-arrow { position: absolute; top: 26%; left: 50%; width: 5px; height: 24%; background: linear-gradient(to top, transparent 0%, transparent 85%, var(--accent-primary) 85%, var(--accent-primary) 100%); transform-origin: bottom center; transform: translateX(-50%) rotate(0deg); transition: transform 1s cubic-bezier(0.4, 2.5, 0.3, 1); border-radius: 2px; z-index: 1;}
         .compass-arrow::after { content: ''; position: absolute; top: -6px; left: -3.5px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 8px solid var(--accent-primary); }
 
+        /* Schermi stretti (<380px): bussola piu' piccola e raffica sotto, niente sovrapposizioni */
+        @media (max-width: 379px) {
+            .compass-container { width: 100px; height: 100px; }
+            .gauge-card .gauge-visual-container.circle-type[style*="max-width: 115px"] { height: 104px !important; max-width: 104px !important; }
+            .gauge-card .gust-box { position: static !important; display: flex; gap: 4px; align-items: baseline; justify-content: center; margin-top: 4px; text-align: center !important; }
+            .gauge-card .gust-box > div:first-child { display: none; }
+        }
+
         /* 3. TWIN CARDS ORIZZONTALI */
         .twin-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 12px; }
         .twin-card { padding: 10px 14px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; text-align: left;}
@@ -1343,7 +1351,7 @@ loadForecast();
 </div>
 </div>
 <!-- SCRITTINA RAFFICA MASSIMA (A capo e allineata a destra) -->
-<div style="position: absolute; bottom: 6px; right: 8px; text-align: right; line-height: 1.2; z-index: 10;">
+<div class="gust-box" style="position: absolute; bottom: 6px; right: 8px; text-align: right; line-height: 1.2; z-index: 10;">
 <div style="font-size: 9px; font-weight: normal; color: var(--text-muted);">
       Max
      </div>
@@ -2090,14 +2098,14 @@ function loadMaggioreChart() {
   }
   #linkApp { animation: linkAppPulse 1.3s ease-in-out infinite; }
 </style>
-<a href="#" id="linkApp" onclick="openAppModal(event)" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3)); color: var(--text-primary); padding: 9px 25px; border-radius: 15px; text-decoration: none; border: 1px solid var(--border-color-3); box-shadow: 0 4px 15px var(--shadow-soft); max-width: 100%; width: 100%; margin: 0; transition: transform 0.2s;">
+<a href="https://play.google.com/store/apps/details?id=it.meteomottavisconti" id="linkApp" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3)); color: var(--text-primary); padding: 9px 25px; border-radius: 15px; text-decoration: none; border: 1px solid var(--border-color-3); box-shadow: 0 4px 15px var(--shadow-soft); max-width: 100%; width: 100%; margin: 0; transition: transform 0.2s;">
 <span style="font-size: 2rem; margin-right: 15px;">
       📱
      </span>
 <div style="text-align: left; flex: 1;">
 <strong id="btnLabelApp" style="color: #4caf50; font-size: 0.825rem; display: block; margin-bottom: 2px;">App Android per abilitare tutte le notifiche e altre personalizzazioni</strong>
 <span id="dataApp" style="font-size: 0.625rem; color: var(--text-secondary-2); text-transform: uppercase; font-weight: 600;">
-       Presto su Google Play Store
+       Scaricala da Google Play Store
       </span>
 </div>
 </a>
@@ -2383,6 +2391,104 @@ function loadMaggioreChart() {
         }
 
         initSyncfusionGauges(); drawBarometer(); drawCompassTicks();
+
+        // --- COMPENSAZIONE "DIMENSIONE CARATTERE" DI SISTEMA ---
+        // Alcuni telefoni (font di sistema ingranditi / textZoom della WebView) gonfiano i testi
+        // degli orologini: numeri e scritte si sovrappongono a lancette e archi. Misuro il fattore
+        // reale confrontando la larghezza resa nel DOM con quella del canvas (che non subisce lo zoom)
+        // e riporto SOLO gli orologini alla dimensione progettata. Il resto del sito resta ingrandito.
+        function compensaZoomTestoOrologini() {
+            try {
+                const campione = '0123456789';
+                const ctx = document.createElement('canvas').getContext('2d');
+                const span = document.createElement('span');
+                span.textContent = campione;
+                span.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap;font-size:100px;line-height:1;';
+                document.body.appendChild(span);
+                const csSpan = getComputedStyle(span);
+                ctx.font = `${csSpan.fontWeight} 100px ${csSpan.fontFamily}`;
+                const domW = span.getBoundingClientRect().width;
+                const fCanvasHtml = domW / ctx.measureText(campione).width;
+                const kHtml = parseFloat(csSpan.fontSize) / 100;
+                span.remove();
+
+                const NS = 'http://www.w3.org/2000/svg';
+                const svg = document.createElementNS(NS, 'svg');
+                svg.setAttribute('width', '1200'); svg.setAttribute('height', '200');
+                svg.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;';
+                const t = document.createElementNS(NS, 'text');
+                t.setAttribute('x', '0'); t.setAttribute('y', '150'); t.setAttribute('font-size', '100'); t.setAttribute('font-weight', 'bold');
+                t.textContent = campione;
+                svg.appendChild(t); document.body.appendChild(svg);
+                const csT = getComputedStyle(t);
+                ctx.font = `${csT.fontWeight} 100px ${csT.fontFamily}`;
+                const svgW = t.getBBox().width;
+                const fCanvasSvg = svgW / ctx.measureText(campione).width;
+                const kSvg = parseFloat(csT.fontSize) / 100;
+                svg.remove();
+
+                // Tre indizi indipendenti, perche' ogni WebView applica lo zoom del testo in modo diverso:
+                // 1) testo nel DOM piu' largo dello stesso testo nel canvas;
+                // 2) dimensione calcolata del campione diversa da quella scritta (100px);
+                // 3) cifre piu' larghe del normale (Roboto ~0.56 em, SF/Segoe ~0.55-0.6 em): copre lo zoom che
+                //    colpisce anche canvas e getComputedStyle, e i font di sistema molto larghi (temi Samsung).
+                const daCifra = c => c > 0.63 ? c / 0.5615 : 1;
+                const fHtml = Math.max(fCanvasHtml, kHtml, daCifra(domW / 1000));
+                const fSvg = Math.max(fCanvasSvg, kSvg, daCifra(svgW / 1000 / 1.04));
+
+                const valido = f => isFinite(f) && f > 1.05 && f < 3;
+                if (!valido(fHtml) && !valido(fSvg)) return;
+
+                // Prima leggo tutti i valori originali, poi scrivo: cosi' nessun elemento viene corretto due volte
+                // (un figlio che eredita la dimensione riceve lo stesso valore gia' corretto del genitore).
+                const daCorreggere = [];
+                document.querySelectorAll('.gauge-grid, .aqi-gauge-wrapper').forEach(root => {
+                    if (root.dataset.zoomComp) return;
+                    root.dataset.zoomComp = '1';
+                    [root, ...root.querySelectorAll('*')].forEach(el => {
+                        const inSvg = el instanceof SVGElement;
+                        if (inSvg && el.tagName.toLowerCase() !== 'text') return;
+                        const f = inSvg ? fSvg : fHtml, k = inSvg ? kSvg : kHtml;
+                        if (!valido(f)) return;
+                        const c = parseFloat(getComputedStyle(el).fontSize);
+                        if (!c) return;
+                        daCorreggere.push([el, (c / (k * f)).toFixed(2) + 'px']);
+                    });
+                });
+                daCorreggere.forEach(([el, px]) => { el.style.fontSize = px; });
+            } catch (e) { console.warn('compensaZoomTestoOrologini', e); }
+        }
+        compensaZoomTestoOrologini();
+
+        // --- OROLOGINI IN PROPORZIONE ALLO SCHERMO ---
+        // Riferimento: telefono da ~412px (Samsung, resa "perfetta"), dove il blocco orologini e' largo 353px.
+        // Su schermi piu' larghi (es. Xiaomi ~470px) le card si allargano ma gli orologini restano fissi:
+        // scalo l'intero blocco con CSS zoom, cosi' l'aspetto e' identico al riferimento, solo piu' grande.
+        // Sotto il riferimento e da 600px in su (4 colonne) resta il comportamento normale.
+        // Per dare piu' respiro, i testi crescono solo di meta' rispetto al disegno (es. orologi +14%, testi +7%).
+        let testiOrologini = null;
+        function scalaOrologini() {
+            const grid = document.querySelector('.gauge-grid');
+            if (!grid) return;
+            grid.style.zoom = '';
+            if (!testiOrologini) {
+                testiOrologini = [];
+                grid.querySelectorAll('*').forEach(el => {
+                    if (el instanceof SVGElement && el.tagName.toLowerCase() !== 'text') return;
+                    if (!el.childNodes.length || ![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return;
+                    const fs = parseFloat(getComputedStyle(el).fontSize);
+                    if (fs) testiOrologini.push([el, fs, el.style.fontSize]);
+                });
+            }
+            let z = 1;
+            if (window.innerWidth < 600) z = Math.min(grid.getBoundingClientRect().width / 353, 1.4);
+            if (z <= 1.02) z = 1;
+            const kTesto = (1 + (z - 1) / 2) / z;
+            testiOrologini.forEach(([el, fs, orig]) => { el.style.fontSize = z === 1 ? orig : (fs * kTesto).toFixed(2) + 'px'; });
+            if (z > 1) grid.style.zoom = z.toFixed(3);
+        }
+        scalaOrologini();
+        window.addEventListener('resize', scalaOrologini);
 
         // --- UTILITY E MODAL ---
         function getLatestValue(dataArray, entityName) {
@@ -3649,13 +3755,14 @@ function loadMaggioreChart() {
                 
             }).catch(err => console.error("Errore script:", err));
 
-        // --- GESTIONE MODALE APP ANDROID (download diretto sospeso, in attesa di Play Store) ---
+        // --- APP ANDROID: pubblicata su Google Play Store (2026-10-08) ---
+        // Tutti i richiami "App Android" (banner, account, notifiche) aprono
+        // direttamente la scheda Play Store invece della vecchia modale.
+        var PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=it.meteomottavisconti';
         function openAppModal(e) {
-            if (e) e.preventDefault();
-            document.getElementById('appModal').style.display = 'flex';
-            // Aggancia la chiusura al tasto Indietro (browser e app): senza questo,
-            // Indietro uscirebbe dalla pagina/app invece di chiudere solo il popup.
-            history.pushState({ modal: 'appDownload' }, '', '#scarica-app');
+            if (e && e.preventDefault) e.preventDefault();
+            var w = window.open(PLAY_STORE_URL, '_blank');
+            if (!w) location.href = PLAY_STORE_URL;
         }
         function closeAppModal(e) {
             if (e) e.stopPropagation();
@@ -3795,7 +3902,7 @@ function closeIosModal(e) {
 <div style="overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 20px 25px 20px;">
 <h3 class="modal-title" style="color: var(--accent-secondary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">📱 App Android</h3>
 <div style="text-align: left; font-size: 0.85rem; color: var(--text-body); line-height: 1.6;">
-<p style="margin-top:0;">L'app potrebbe presto essere disponibile su <strong>Google Play Store</strong>.</p>
+<p style="margin-top:0;">L'app è disponibile su <strong><a href="https://play.google.com/store/apps/details?id=it.meteomottavisconti" target="_blank" rel="noopener noreferrer" style="color: var(--accent-secondary);">Google Play Store</a></strong>.</p>
 <p style="margin-bottom:0;">Quando succederà, chi ha già installato una versione precedente scaricata da questo sito dovrà <strong>disinstallarla</strong> prima di installare quella nuova da Play Store: verrà infatti riconosciuta da Android come un'app diversa, quindi non si potrà aggiornare quella già presente sul telefono.</p>
 </div>
 </div>
@@ -3855,7 +3962,7 @@ function closeIosModal(e) {
     <div style="min-width:0;">
       <div style="font-weight:700; font-size:0.85rem;">App Android</div>
       <div style="font-size:0.7rem; opacity:0.9;">Notifiche personalizzate, temi e altro</div>
-      <div style="font-size:0.75rem; font-weight:700; margin-top:2px;">PRESTO SU GOOGLE PLAY STORE</div>
+      <div style="font-size:0.75rem; font-weight:700; margin-top:2px;">SCARICALA DA GOOGLE PLAY STORE</div>
     </div>
   </div>
   <button onclick="closeWebAppBanner(event)" aria-label="Chiudi" style="background:rgba(255,255,255,0.18); border:none; color:#ffffff; font-size:1.2rem; line-height:1; width:32px; height:32px; border-radius:50%; cursor:pointer; flex-shrink:0;">×</button>
@@ -3940,7 +4047,7 @@ function closeIosModal(e) {
   // Chiave pubblica VAPID generata in Firebase Console -> Project Settings ->
   // Cloud Messaging -> Web configuration -> Web Push certificates. Senza
   // questa chiave getToken() fallisce sempre: va incollata qui una sola volta.
-  var WEB_PUSH_VAPID_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+  var WEB_PUSH_VAPID_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
   function loadScriptOnce(src) {
     return new Promise(function(resolve, reject) {
@@ -4434,8 +4541,8 @@ function closeIosModal(e) {
 (function() {
   var PAGE_SLUG = 'index';
   function pvcFmt(n) { var s = String(n), o = ""; while (s.length > 3) { o = "." + s.slice(-3) + o; s = s.slice(0, -3); } return s + o; }
-  // Nuova visita = prima pagina dopo 30 minuti di inattivita' sul sito (come Matomo).
-  function pvcNuova() { try { var k = 'pvcLastHit', now = Date.now(), last = parseInt(localStorage.getItem(k) || '0', 10); localStorage.setItem(k, String(now)); return (!last || now - last > 1800000) ? 1 : 0; } catch (e) { return 0; } }
+  // Nuova visita = prima apertura di QUESTA pagina dopo 30 minuti (timer separato per pagina, cosi' chi arriva dalla home conta anche qui).
+  function pvcNuova() { try { var k = 'pvcLastHit_index', now = Date.now(), last = parseInt(localStorage.getItem(k) || '0', 10); localStorage.setItem(k, String(now)); return (!last || now - last > 1800000) ? 1 : 0; } catch (e) { return 0; } }
   var pvcIsApp = navigator.userAgent.indexOf('MeteoMottaAndroidApp') !== -1;
   function pvcToken() {
     if (pvcIsApp) {

@@ -2,6 +2,14 @@
 
 Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti vengono registrate qui, in ordine cronologico inverso.
 
+## 2026-10-08
+
+### Modificato
+- App Android pubblicata su Google Play Store: il pulsante "App Android" in home, il banner in basso, la sezione account e l'invito alle notifiche aprono direttamente la scheda Play Store (https://play.google.com/store/apps/details?id=it.meteomottavisconti)
+- Orologini della home (temperatura, umidità, vento, pressione, qualità dell'aria): compensazione automatica della "dimensione carattere" di sistema, così numeri e scritte non si sovrappongono più a lancette e archi sui telefoni con font ingranditi
+- Orologini in proporzione alla larghezza dello schermo sui telefoni più larghi, con testi leggermente più grandi; sugli schermi stretti (sotto 380px) bussola più piccola e raffica sotto il valore
+- Contatore visite: ogni pagina ha il proprio timer di 30 minuti, così chi arriva dalla home viene contato anche nelle altre pagine
+
 ## 2026-10-04
 
 ### Aggiunto
