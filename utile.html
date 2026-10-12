@@ -696,11 +696,13 @@ var SECTIONS = [
   { id: 'raccolta',  icon: '♻️', name: 'Raccolta rifiuti',    hint: 'Cosa esporre stasera' },
   { id: 'carburanti',icon: '⛽', name: 'Carburanti in zona',  hint: 'Prezzi di oggi' },
   { id: 'trasporti', icon: '🚌', name: 'Autobus e treni',     hint: 'Prossime partenze' },
+  { id: 'traffico',  icon: '🚗', name: 'Traffico',            hint: 'Tempi in auto adesso' },
   { id: 'scioperi',  icon: '🚧', name: 'Scioperi trasporti',  hint: 'Treni, bus, aerei' },
   { id: 'acqua',     icon: '💧', name: 'Casa dell\'acqua',     hint: 'Acqua gratis e analisi' },
   { id: 'posta',     icon: '📮', name: 'Ufficio postale',     hint: 'Orari e servizi' },
   { id: 'orto',      icon: '🌱', name: 'Orto e giardino',     hint: 'Serve annaffiare?' },
   { id: 'webcam',    icon: '📹', name: 'Webcam',              hint: 'Viste live nei dintorni' },
+  { id: 'oroscopo',  icon: '🔮', name: 'Oroscopo',            hint: 'Del giorno, da RTL 102.5' },
   { id: 'nebbia',    icon: '💧', name: 'Umidità, nebbia e ghiaccio',   hint: 'Stanotte e domattina', meteo: true, storico: [['💧 Storico umidità', 'storico.html?misura=hum'], ['🌡️ Storico temperatura', 'storico.html?misura=temp']] },
   { id: 'barometro', icon: '🧭', name: 'Barometro',           hint: 'Il tempo che cambia', meteo: true, storico: [['📈 Storico pressione', 'storico.html?misura=press']] },
   { id: 'vento',     icon: '🌬️', name: 'Vento',               hint: 'Scala Beaufort', meteo: true, storico: [['📈 Storico vento', 'storico.html?misura=wind']] },
@@ -1586,6 +1588,103 @@ VIEWS.trasporti = function() {
       var v = (sc.scioperi || []).filter(function(x) { return x.settore !== 'Aereo' && (x.fine || x.inizio) >= oggi && daysUntil(parseISO(x.inizio), new Date()) <= 7; });
       if (v.length && $('trSciopero')) $('trSciopero').innerHTML = '<a class="big-link" href="#scioperi" onclick="go(\'scioperi\'); return false;" style="border-color:' + ORANGE + '"><span class="icon">🚧</span><span><b>Sciopero in vista</b><br><small>' + v.map(function(x) { return parseISO(x.inizio).toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' }) + ': ' + x.settore.toLowerCase(); }).join(' · ') + '</small></span></a>';
     }).catch(function() {});
+  });
+};
+
+// =================== TRAFFICO ===================
+// Tempi in auto da Home Assistant (Waze Travel Time, ogni 5 minuti). "normale" =
+// 10° percentile degli ultimi 7 giorni: i sensori sono nati il 12/10/2026, quindi
+// fino al 19/10 il riferimento si sta ancora formando.
+var TRAFFICO_CALIBRAZIONE_FINO = '2026-10-19';
+var TRAFFICO_MOTTA = '45.2882630,8.9926231';
+var TRAFFICO_DEST = { milano: '45.4368888,9.1681331', pavia: '45.1855460,9.1544509', abbiategrasso: '45.3984501,8.9162972', vigevano: '45.3172376,8.8579667' };
+function statoTraffico(x) {
+  if (!x || x.min == null) return null;
+  var n = x.normale || x.min, d = Math.max(0, x.min - n), r = x.min / n;
+  if (d < 3 || r < 1.15) return { t: 'Scorrevole', c: GREEN, lvl: 0, d: d };
+  if (r < 1.4) return { t: 'Rallentato', c: ORANGE, lvl: 1, d: d };
+  return { t: 'Traffico intenso', c: RED, lvl: 2, d: d };
+}
+function wazeLink(da, a) { return 'https://www.waze.com/it/live-map/directions?from=ll.' + encodeURIComponent(da) + '&to=ll.' + encodeURIComponent(a) + '&navigate=yes'; }
+VIEWS.traffico = function() {
+  return loadJSON('/traffico.php').catch(function() { return null; }).then(function(d) {
+    var html = '';
+    if (!d || !d.success) {
+      $('app').innerHTML = note('Tempi di percorrenza non disponibili in questo momento, riprova tra poco.');
+      return;
+    }
+    var lenti = [], ultimo = 0;
+    d.percorsi.forEach(function(p) {
+      [['andata', 'verso ' + p.nome], ['ritorno', 'da ' + p.nome + ' a Motta']].forEach(function(v) {
+        var s = statoTraffico(p[v[0]]);
+        if (s && s.lvl > 0) lenti.push({ s: s, txt: v[1] });
+        if (p[v[0]] && p[v[0]].aggiornato) ultimo = Math.max(ultimo, new Date(p[v[0]].aggiornato).getTime());
+      });
+    });
+    if (!lenti.length) html += verdict('🟢', 'Strade scorrevoli', 'Nessun rallentamento importante verso Milano, Pavia, Abbiategrasso e Vigevano.', GREEN);
+    else {
+      lenti.sort(function(a, b) { return b.s.d - a.s.d; });
+      var peggio = lenti[0].s;
+      html += verdict(peggio.lvl === 2 ? '🔴' : '🟠', peggio.lvl === 2 ? 'Traffico intenso' : 'Qualche rallentamento',
+        lenti.map(function(l) { return '<b>' + esc(l.txt) + '</b>: +' + Math.round(l.s.d) + ' min'; }).join('<br>'), peggio.c);
+    }
+    d.percorsi.forEach(function(p) {
+      function riga(x, label, da, a) {
+        var s = statoTraffico(x);
+        if (!s) return row(label, '—');
+        return '<div class="row"><span>' + label + '<br><small style="opacity:0.7">' + (x.strada ? 'via ' + esc(x.strada) + ' · ' : '') + fmt(x.km, 0) + ' km</small></span>' +
+          '<strong style="color:' + s.c + ';text-align:right">' + Math.round(x.min) + ' min<br><small>' + s.t + (s.d >= 1 ? ' · +' + Math.round(s.d) + ' min' : '') + '</small></strong></div>' +
+          '<div style="text-align:right;margin:-4px 0 8px"><a href="' + wazeLink(da, a) + '" target="_blank" rel="noopener" style="font-size:0.75rem">Apri in Waze ›</a></div>';
+      }
+      var dest = TRAFFICO_DEST[p.id];
+      html += card(sectionTitle('🚗 ' + esc(p.nome)) +
+        riga(p.andata, 'Da Motta', TRAFFICO_MOTTA, dest) +
+        riga(p.ritorno, 'Verso Motta', dest, TRAFFICO_MOTTA));
+    });
+    html += card(sectionTitle('ℹ️ Come leggere i tempi') +
+      tip('⏱️', 'Tempo in auto adesso, con il traffico reale, dalla piazza di Motta Visconti (Piazza San Rocco) al centro della destinazione e ritorno. Per Milano l\'arrivo è il parcheggio della metropolitana M2 a Famagosta.') +
+      tip('📊', 'Il tempo <b>normale</b> è quello tipico a strade libere, ricavato dagli ultimi 7 giorni: <b>scorrevole</b> fino a +15%, <b>rallentato</b> fino a +40%, oltre è <b>traffico intenso</b>.') +
+      (dateKey(new Date()) < TRAFFICO_CALIBRAZIONE_FINO ? note('Sezione nuova: fino al ' + parseISO(TRAFFICO_CALIBRAZIONE_FINO).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }) + ' il tempo normale si sta ancora calcolando, quindi i rallentamenti potrebbero risultare più piccoli del reale.') : '') +
+      (ultimo ? note('Aggiornato ' + agoText(new Date(ultimo)) + '.') : ''));
+    html += '<div class="source">Fonte: <a href="https://www.waze.com/it/live-map" target="_blank" rel="noopener">Waze</a>, tempi di percorrenza aggiornati ogni 5 minuti.</div>';
+    $('app').innerHTML = html;
+  });
+};
+
+// =================== OROSCOPO ===================
+// Testi dal feed RSS di RTL 102.5 (oroscopo.php). Solo intrattenimento: fonte
+// sempre citata. Il segno scelto resta salvato nel browser.
+var SEGNI_INFO = {
+  Ariete: ['♈', '21 mar – 19 apr'], Toro: ['♉', '20 apr – 20 mag'], Gemelli: ['♊', '21 mag – 20 giu'], Cancro: ['♋', '21 giu – 22 lug'],
+  Leone: ['♌', '23 lug – 22 ago'], Vergine: ['♍', '23 ago – 22 set'], Bilancia: ['♎', '23 set – 22 ott'], Scorpione: ['♏', '23 ott – 21 nov'],
+  Sagittario: ['♐', '22 nov – 21 dic'], Capricorno: ['♑', '22 dic – 19 gen'], Acquario: ['♒', '20 gen – 18 feb'], Pesci: ['♓', '19 feb – 20 mar']
+};
+function segnoSalvato() { try { return localStorage.getItem('oroscopo_segno'); } catch (e) { return null; } }
+function scegliSegno(s) { try { localStorage.setItem('oroscopo_segno', s); } catch (e) {} VIEWS.oroscopo(); window.scrollTo(0, 0); }
+function cardSegno(x, grande) {
+  var i = SEGNI_INFO[x.segno] || ['', ''];
+  return '<div class="info-card"' + (grande ? ' style="border:1px solid ' + BLUE + '"' : '') + '>' +
+    '<div class="sec-title">' + '<span style="font-size:' + (grande ? '1.6rem' : '1.2rem') + ';vertical-align:middle">' + i[0] + '</span> ' + esc(x.segno) +
+    ' <small style="opacity:0.6;font-weight:400">' + i[1] + '</small>' + (grande ? '<span class="pill" style="background:' + BLUE + ';color:#000">il tuo segno</span>' : '') + '</div>' +
+    '<div style="line-height:1.5' + (grande ? ';font-size:1.02rem' : '') + '">' + esc(x.testo) + '</div></div>';
+}
+VIEWS.oroscopo = function() {
+  return loadJSON('/oroscopo.php').catch(function() { return null; }).then(function(d) {
+    if (!d || !d.success || !d.segni.length) { $('app').innerHTML = note('Oroscopo non disponibile in questo momento, riprova più tardi.'); return; }
+    var mio = segnoSalvato(), html = '';
+    var dal = new Date(d.dal), oggi = dateKey(dal) === dateKey(new Date());
+    html += '<div class="note" style="text-align:center;margin-bottom:10px">🔮 ' + (oggi ? 'Oroscopo di oggi, ' + new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Testi pubblicati ' + dal.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })) + ' · solo per divertimento</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:12px">' + d.segni.map(function(x) {
+      var sel = x.segno === mio;
+      return '<button onclick="scegliSegno(\'' + x.segno + '\')" title="' + x.segno + '" style="padding:6px 0;border-radius:10px;border:1px solid ' + (sel ? BLUE : 'rgba(128,128,128,0.35)') + ';background:' + (sel ? 'rgba(41,182,246,0.18)' : 'transparent') + ';color:inherit;cursor:pointer;font-size:1.25rem;line-height:1.1">' +
+        SEGNI_INFO[x.segno][0] + '<br><span style="font-size:0.55rem">' + x.segno + '</span></button>';
+    }).join('') + '</div>';
+    var scelto = d.segni.filter(function(x) { return x.segno === mio; })[0];
+    if (scelto) html += cardSegno(scelto, true);
+    else html += note('Tocca il tuo segno qui sopra: verrà mostrato per primo anche le prossime volte.');
+    html += d.segni.filter(function(x) { return x !== scelto; }).map(function(x) { return cardSegno(x, false); }).join('');
+    html += '<div class="source">Fonte: <a href="https://www.rtl.it/rubriche/oroscopo/" target="_blank" rel="noopener">L\'oroscopo di RTL 102.5</a>, testi di proprietà di RTL 102.5 ripresi dal feed RSS pubblico. Contenuto di intrattenimento, non verificato dalla stazione meteo.</div>';
+    $('app').innerHTML = html;
   });
 };
 

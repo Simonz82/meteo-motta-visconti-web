@@ -18,7 +18,7 @@ Un progetto amatoriale che raccoglie e visualizza:
 - 🌼 **Livello Polline** — alberi, erbe, ambrosia e altre specie
 - 🌊 **Fiume Ticino** — livello idrometrico a Bereguardo, Vigevano e Pavia
 - ☔ **Allerte Meteo** — bollettino di criticità della Protezione Civile
-- 💡 **Utile da sapere** (`utile.html`) — Comune, numeri utili e guasti, farmacie di turno, medici, defibrillatori, parrocchia, scuole, associazioni, cinema, raccolta rifiuti con festività, carburanti, autobus, scioperi, casa dell'acqua, ufficio postale
+- 💡 **Utile da sapere** (`utile.html`) — Comune, numeri utili e guasti, farmacie di turno, medici, defibrillatori, parrocchia, scuole, associazioni, cinema, raccolta rifiuti con festività, carburanti, autobus, traffico in tempo reale (tempi in auto da Waze), scioperi, casa dell'acqua, ufficio postale, oroscopo del giorno (RTL 102.5)
 
 ## Fonti dati
 
