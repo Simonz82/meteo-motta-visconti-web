@@ -860,6 +860,7 @@ function render() {
     $('crumb').innerHTML = crumb;
     document.title = 'Utile da sapere - Motta Visconti';
   }
+  if (window.pvcSezione) window.pvcSezione(sec ? sec.id : null);
   if (!sec) return renderHome();
   loading();
   var fn = VIEWS[sec.id];
@@ -2141,23 +2142,46 @@ VIEWS.farmacie = function() {
     }
     try { return localStorage.getItem('webAccountToken'); } catch (e) { return null; }
   }
-  fetch('/visite.php?action=hit&page=' + PAGE_SLUG + '&nuova=' + pvcNuova())
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (!d.success) return;
-      var token = pvcToken();
-      if (!token) return;
-      fetch('/account.php', { headers: { 'Authorization': 'Bearer ' + token } })
-        .then(function(r) { return r.ok ? r.json() : null; })
-        .then(function(acc) {
-          if (acc && acc.success && acc.ruolo === 'owner') {
-            var el = document.getElementById('pageVisitCounter');
-            if (el) el.innerText = '\ud83d\udc41 ' + pvcFmt(d.visite_totali) + ' visite totali (' + pvcFmt(d.visite_oggi) + ' oggi)';
-          }
-        })
-        .catch(function() {});
-    })
-    .catch(function() {});
+  // Owner: riga della pagina intera + riga della sezione aperta (contatori separati).
+  var pvcRighe = { pagina: '', sezione: '' }, pvcOwner = null;
+  function pvcMostra() {
+    var el = document.getElementById('pageVisitCounter');
+    if (el && pvcOwner) el.innerHTML = [pvcRighe.sezione, pvcRighe.pagina].filter(Boolean).join('<br>');
+  }
+  function pvcCheckOwner() {
+    if (pvcOwner !== null) return Promise.resolve(pvcOwner);
+    var token = pvcToken();
+    if (!token) { pvcOwner = false; return Promise.resolve(false); }
+    return fetch('/account.php', { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(acc) { pvcOwner = !!(acc && acc.success && acc.ruolo === 'owner'); return pvcOwner; })
+      .catch(function() { pvcOwner = false; return false; });
+  }
+  function pvcHit(slug, nuova) {
+    return fetch('/visite.php?action=hit&page=' + slug + '&nuova=' + nuova).then(function(r) { return r.json(); });
+  }
+  function pvcTimer(k) { try { var now = Date.now(), last = parseInt(localStorage.getItem(k) || '0', 10); localStorage.setItem(k, String(now)); return (!last || now - last > 1800000) ? 1 : 0; } catch (e) { return 0; } }
+  pvcHit(PAGE_SLUG, pvcNuova()).then(function(d) {
+    if (!d.success) return;
+    pvcRighe.pagina = '\ud83d\udc41 Tutta la pagina Utile: ' + pvcFmt(d.visite_totali) + ' visite totali (' + pvcFmt(d.visite_oggi) + ' oggi)';
+    pvcCheckOwner().then(pvcMostra);
+  }).catch(function() {});
+  // Sezione aperta: conteggio proprio con timer di 30 minuti per sezione.
+  var pvcUltima = null;
+  window.pvcSezione = function(id) {
+    if (id === pvcUltima) return;
+    pvcUltima = id;
+    pvcRighe.sezione = '';
+    pvcMostra();
+    if (!id) return;
+    var sec = SECTIONS.filter(function(s) { return s.id === id; })[0];
+    pvcHit('utile_' + id, pvcTimer('pvcLastHit_utile_' + id)).then(function(d) {
+      if (!d.success || pvcUltima !== id) return;
+      pvcRighe.sezione = '\ud83d\udc41 ' + (sec ? sec.name : id) + ': ' + pvcFmt(d.visite_totali) + ' visite (' + pvcFmt(d.visite_oggi) + ' oggi)';
+      pvcCheckOwner().then(pvcMostra);
+    }).catch(function() {});
+  };
+  if (window.state && state.view !== 'home') window.pvcSezione(state.view);
 })();
 </script>
 

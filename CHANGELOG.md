@@ -8,6 +8,9 @@ Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti veng
 - "Utile da sapere", nuova sezione **Traffico**: tempi in auto adesso, con il traffico reale, da Motta Visconti verso Milano Famagosta (M2), Pavia, Abbiategrasso e Vigevano e ritorno; per ogni percorso strada consigliata, km, stato (scorrevole, rallentato, traffico intenso) rispetto al tempo normale degli ultimi 7 giorni e link "Apri in Waze". Dati Waze aggiornati ogni 5 minuti
 - "Utile da sapere", nuova sezione **Oroscopo**: oroscopo del giorno per tutti i 12 segni, con il proprio segno da scegliere una volta e mostrato per primo le volte successive. Testi di RTL 102.5 dal loro feed RSS pubblico, fonte citata; contenuto di intrattenimento
 
+### Modificato
+- Contatore visite di "Utile da sapere": oltre al totale della pagina, ogni sezione (Oroscopo, Traffico, Farmacie, Carburanti, ...) ha il proprio conteggio di visite, registrato anche quando ci si sposta da una sezione all'altra senza ricaricare la pagina
+
 ## 2026-10-08
 
 ### Modificato
