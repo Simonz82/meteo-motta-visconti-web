@@ -1647,11 +1647,15 @@ function cardLavori(d) {
 }
 // Ordinanze e avvisi ufficiali su strade e sosta (viabilita_avvisi.php: albo
 // pretorio del Comune, Provincia di Pavia, Citta' Metropolitana, cache 3 ore).
-function cardOrdinanze(d) {
-  var html = sectionTitle('📜 Ordinanze e avvisi su strade e sosta');
-  if (!d || !d.success) return card(html + note('Ordinanze non disponibili in questo momento.'));
-  if (!d.avvisi.length) html += note('Nessuna ordinanza o avviso recente su strade di Motta e dintorni.');
-  html += d.avvisi.map(function(a) {
+function cardOrdinanze(d, delComune) {
+  var html = sectionTitle(delComune ? '📜 Ordinanze del Comune su strade e sosta' : '🛣️ Avvisi di Provincia e Città Metropolitana');
+  if (!d || !d.success) return delComune ? card(html + note('Ordinanze non disponibili in questo momento.')) : '';
+  var lista = d.avvisi.filter(function(a) { return (a.fonte === 'Comune di Motta Visconti') === delComune; });
+  if (!lista.length) {
+    if (!delComune) return '';
+    html += note('Nessuna ordinanza recente su strade e sosta a Motta Visconti.');
+  }
+  html += lista.map(function(a) {
     var comune = a.fonte === 'Comune di Motta Visconti';
     return '<a href="' + esc(a.link) + '" target="_blank" rel="noopener" style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-color-3);text-decoration:none;color:var(--text-primary)">' +
       '<span style="font-size:1.4rem;line-height:1.2">' + (comune ? '🏛️' : '🛣️') + '</span><span style="flex:1;min-width:0">' +
@@ -1659,17 +1663,16 @@ function cardOrdinanze(d) {
       '<b>' + esc(a.titolo) + '</b>' + (a.dettaglio ? '<br><small style="opacity:0.75">' + esc(a.dettaglio) + (comune ? '' : '…') + '</small>' : '') +
       '</span></a>';
   }).join('');
-  html += note('Le ordinanze del Comune restano visibili per 45 giorni dalla pubblicazione, le notizie di Provincia e Città Metropolitana per 30 giorni e solo se riguardano strade della zona.');
+  if (lista.length) html += note(delComune ? 'Ordinanze della Polizia Locale pubblicate all\'albo negli ultimi 45 giorni. Tocca per aprire l\'albo pretorio.' : 'Notizie degli ultimi 30 giorni, solo se riguardano comuni o strade provinciali della zona.');
   return card(html);
 }
 function wazeLink(da, a) { return 'https://www.waze.com/it/live-map/directions?from=ll.' + encodeURIComponent(da) + '&to=ll.' + encodeURIComponent(a) + '&navigate=yes'; }
 VIEWS.traffico = function() {
   return loadJSON('/traffico.php').catch(function() { return null; }).then(function(d) {
-    var html = '';
+    var html = '<div id="trOrdinanze"></div><div id="trLavori"></div>';
     if (!d || !d.success) {
-      $('app').innerHTML = note('Tempi di percorrenza non disponibili in questo momento, riprova tra poco.');
-      return;
-    }
+      html += note('Tempi di percorrenza non disponibili in questo momento, riprova tra poco.');
+    } else {
     var lenti = [], ultimo = 0;
     d.percorsi.forEach(function(p) {
       [['andata', 'verso ' + p.nome], ['ritorno', 'da ' + p.nome + ' a Motta']].forEach(function(v) {
@@ -1698,8 +1701,9 @@ VIEWS.traffico = function() {
         riga(p.andata, 'Da Motta', TRAFFICO_MOTTA, dest) +
         riga(p.ritorno, 'Verso Motta', dest, TRAFFICO_MOTTA));
     });
-    html += '<div id="trLavori"></div><div id="trOrdinanze"></div>';
-    html += card(sectionTitle('ℹ️ Come leggere i tempi') +
+    }
+    html += '<div id="trAvvisi"></div>';
+    if (d && d.success) html += card(sectionTitle('ℹ️ Come leggere i tempi') +
       tip('⏱️', 'Tempo in auto adesso, con il traffico reale, dalla piazza di Motta Visconti (Piazza San Rocco) al centro della destinazione e ritorno. Per Milano l\'arrivo è il parcheggio della metropolitana M2 a Famagosta.') +
       tip('📊', 'Il tempo <b>normale</b> è quello tipico a strade libere, ricavato dagli ultimi 7 giorni: <b>scorrevole</b> fino a +15%, <b>rallentato</b> fino a +40%, oltre è <b>traffico intenso</b>.') +
       (dateKey(new Date()) < TRAFFICO_CALIBRAZIONE_FINO ? note('Sezione nuova: fino al ' + parseISO(TRAFFICO_CALIBRAZIONE_FINO).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }) + ' il tempo normale si sta ancora calcolando, quindi i rallentamenti potrebbero risultare più piccoli del reale.') : '') +
@@ -1710,7 +1714,8 @@ VIEWS.traffico = function() {
       if ($('trLavori')) $('trLavori').innerHTML = cardLavori(t);
     });
     loadJSON('/viabilita_avvisi.php').catch(function() { return null; }).then(function(o) {
-      if ($('trOrdinanze')) $('trOrdinanze').innerHTML = cardOrdinanze(o);
+      if ($('trOrdinanze')) $('trOrdinanze').innerHTML = cardOrdinanze(o, true);
+      if ($('trAvvisi')) $('trAvvisi').innerHTML = cardOrdinanze(o, false);
     });
   });
 };
