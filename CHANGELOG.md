@@ -2,6 +2,11 @@
 
 Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti vengono registrate qui, in ordine cronologico inverso.
 
+## 2026-10-13
+
+### Aggiunto
+- "Utile da sapere", sezione **Traffico**: nuovo riquadro "Chiusure e lavori" con strade chiuse, cantieri, restringimenti di corsia e incidenti entro 15 km da Motta Visconti, divisi tra "Adesso" e "In programma", ordinati dal più vicino, con strada, comune, tratto, orari e link alla mappa. Dati TomTom Traffic aggiornati ogni 30 minuti
+
 ## 2026-10-12
 
 ### Aggiunto

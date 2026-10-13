@@ -696,7 +696,7 @@ var SECTIONS = [
   { id: 'raccolta',  icon: '♻️', name: 'Raccolta rifiuti',    hint: 'Cosa esporre stasera' },
   { id: 'carburanti',icon: '⛽', name: 'Carburanti in zona',  hint: 'Prezzi di oggi' },
   { id: 'trasporti', icon: '🚌', name: 'Autobus e treni',     hint: 'Prossime partenze' },
-  { id: 'traffico',  icon: '🚗', name: 'Traffico',            hint: 'Tempi in auto adesso' },
+  { id: 'traffico',  icon: '🚗', name: 'Traffico',            hint: 'Tempi in auto, chiusure e lavori' },
   { id: 'scioperi',  icon: '🚧', name: 'Scioperi trasporti',  hint: 'Treni, bus, aerei' },
   { id: 'acqua',     icon: '💧', name: 'Casa dell\'acqua',     hint: 'Acqua gratis e analisi' },
   { id: 'posta',     icon: '📮', name: 'Ufficio postale',     hint: 'Orari e servizi' },
@@ -1606,6 +1606,45 @@ function statoTraffico(x) {
   if (r < 1.4) return { t: 'Rallentato', c: ORANGE, lvl: 1, d: d };
   return { t: 'Traffico intenso', c: RED, lvl: 2, d: d };
 }
+// Chiusure, lavori e incidenti entro 15 km (tomtom_incidenti.php, TomTom ogni 30 minuti).
+function quandoEvento(e) {
+  var opt = { day: 'numeric', month: 'short' }, oggi = dateKey(new Date());
+  function giorno(d) { return dateKey(d) === oggi ? 'oggi' : d.toLocaleDateString('it-IT', opt); }
+  function ora(d) { return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }
+  var i = e.inizio ? new Date(e.inizio) : null, f = e.fine ? new Date(e.fine) : null;
+  if (e.adesso) {
+    var t = i ? (dateKey(i) === oggi ? 'Da oggi ' + ora(i) : 'Dal ' + i.toLocaleDateString('it-IT', i.getFullYear() === new Date().getFullYear() ? opt : { day: 'numeric', month: 'short', year: 'numeric' })) : 'In corso';
+    return t + (f ? ', fino a ' + (dateKey(f) === oggi ? 'oggi' : giorno(f)) + ' ore ' + ora(f) : '');
+  }
+  if (!i) return 'In programma';
+  return giorno(i).replace(/^oggi$/, 'Oggi') + ' ' + ora(i) + (f ? ' → ' + (dateKey(f) === dateKey(i) ? '' : giorno(f) + ' ') + ora(f) : '');
+}
+function rigaEvento(e) {
+  var titolo = e.categoria + (e.strada ? ' · ' + e.strada : '');
+  var dove = [e.comune, e.km != null ? 'a ' + fmt(e.km, 0) + ' km' : ''].filter(Boolean).join(' · ');
+  var altro = (e.descrizione || []).filter(function(x) { return x.toLowerCase() !== e.categoria.toLowerCase() && x !== 'Chiuso'; });
+  var tratto = e.da && e.a ? 'da ' + e.da + ' a ' + e.a : (e.via || '');
+  var colore = e.chiusa ? RED : (e.categoria === 'Incidente' || e.categoria === 'Pericolo' ? RED : ORANGE);
+  return '<div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-color-3)">' +
+    '<span style="font-size:1.4rem;line-height:1.2">' + e.icona + '</span><span style="flex:1;min-width:0">' +
+    '<b style="color:' + colore + '">' + esc(titolo) + '</b><br>' +
+    '<small>' + esc(dove) + (altro.length ? ' · ' + esc(altro.join(', ').toLowerCase()) : '') + '</small><br>' +
+    (tratto ? '<small style="opacity:0.75">' + esc(tratto) + '</small><br>' : '') +
+    '<small><b>' + esc(quandoEvento(e)) + '</b></small> · ' +
+    '<a href="https://www.google.com/maps?q=' + e.lat + ',' + e.lon + '" target="_blank" rel="noopener" style="font-size:0.75rem">Mappa ›</a>' +
+    '</span></div>';
+}
+function cardLavori(d) {
+  if (!d || !d.success) return card(sectionTitle('🚧 Chiusure e lavori in zona') + note('Segnalazioni non disponibili in questo momento.'));
+  var ora = d.eventi.filter(function(e) { return e.adesso; });
+  var poi = d.eventi.filter(function(e) { return !e.adesso; }).sort(function(a, b) { return (a.inizio || '') < (b.inizio || '') ? -1 : 1; });
+  var html = sectionTitle('🚧 Chiusure e lavori entro ' + d.raggio_km + ' km');
+  if (!d.eventi.length) html += note('Nessuna chiusura, cantiere o incidente segnalato intorno a Motta.');
+  if (ora.length) html += '<div style="font-weight:600;margin:4px 0 2px">Adesso</div>' + ora.map(rigaEvento).join('');
+  if (poi.length) html += '<div style="font-weight:600;margin:12px 0 2px">In programma</div>' + poi.map(rigaEvento).join('');
+  html += note('Ordinati dal più vicino. Aggiornato ' + agoText(new Date(d.generato)) + '.');
+  return card(html);
+}
 function wazeLink(da, a) { return 'https://www.waze.com/it/live-map/directions?from=ll.' + encodeURIComponent(da) + '&to=ll.' + encodeURIComponent(a) + '&navigate=yes'; }
 VIEWS.traffico = function() {
   return loadJSON('/traffico.php').catch(function() { return null; }).then(function(d) {
@@ -1642,13 +1681,17 @@ VIEWS.traffico = function() {
         riga(p.andata, 'Da Motta', TRAFFICO_MOTTA, dest) +
         riga(p.ritorno, 'Verso Motta', dest, TRAFFICO_MOTTA));
     });
+    html += '<div id="trLavori"></div>';
     html += card(sectionTitle('ℹ️ Come leggere i tempi') +
       tip('⏱️', 'Tempo in auto adesso, con il traffico reale, dalla piazza di Motta Visconti (Piazza San Rocco) al centro della destinazione e ritorno. Per Milano l\'arrivo è il parcheggio della metropolitana M2 a Famagosta.') +
       tip('📊', 'Il tempo <b>normale</b> è quello tipico a strade libere, ricavato dagli ultimi 7 giorni: <b>scorrevole</b> fino a +15%, <b>rallentato</b> fino a +40%, oltre è <b>traffico intenso</b>.') +
       (dateKey(new Date()) < TRAFFICO_CALIBRAZIONE_FINO ? note('Sezione nuova: fino al ' + parseISO(TRAFFICO_CALIBRAZIONE_FINO).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }) + ' il tempo normale si sta ancora calcolando, quindi i rallentamenti potrebbero risultare più piccoli del reale.') : '') +
       (ultimo ? note('Aggiornato ' + agoText(new Date(ultimo)) + '.') : ''));
-    html += '<div class="source">Fonte: <a href="https://www.waze.com/it/live-map" target="_blank" rel="noopener">Waze</a>, tempi di percorrenza aggiornati ogni 5 minuti.</div>';
+    html += '<div class="source">Fonti: <a href="https://www.waze.com/it/live-map" target="_blank" rel="noopener">Waze</a>, tempi di percorrenza aggiornati ogni 5 minuti; <a href="https://www.tomtom.com/traffic-index/" target="_blank" rel="noopener">TomTom Traffic</a>, chiusure, lavori e incidenti aggiornati ogni 30 minuti.</div>';
     $('app').innerHTML = html;
+    loadJSON('/tomtom_incidenti.php').catch(function() { return null; }).then(function(t) {
+      if ($('trLavori')) $('trLavori').innerHTML = cardLavori(t);
+    });
   });
 };
 
