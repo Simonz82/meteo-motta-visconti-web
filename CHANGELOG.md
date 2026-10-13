@@ -6,6 +6,7 @@ Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti veng
 
 ### Aggiunto
 - "Utile da sapere", sezione **Traffico**: nuovo riquadro "Chiusure e lavori" con strade chiuse, cantieri, restringimenti di corsia e incidenti entro 15 km da Motta Visconti, divisi tra "Adesso" e "In programma", ordinati dal più vicino, con strada, comune, tratto, orari e link alla mappa. Dati TomTom Traffic aggiornati ogni 30 minuti
+- Sezione **Traffico**: nuovo riquadro "Ordinanze e avvisi su strade e sosta" con le ordinanze della Polizia Locale dall'albo pretorio del Comune (cantieri, divieti di sosta, modifiche alla circolazione nelle vie del paese) e gli avvisi di viabilità di Provincia di Pavia e Città Metropolitana di Milano, mostrati solo se riguardano comuni o strade provinciali della zona
 
 ## 2026-10-12
 

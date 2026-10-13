@@ -1645,6 +1645,23 @@ function cardLavori(d) {
   html += note('Ordinati dal più vicino. Aggiornato ' + agoText(new Date(d.generato)) + '.');
   return card(html);
 }
+// Ordinanze e avvisi ufficiali su strade e sosta (viabilita_avvisi.php: albo
+// pretorio del Comune, Provincia di Pavia, Citta' Metropolitana, cache 3 ore).
+function cardOrdinanze(d) {
+  var html = sectionTitle('📜 Ordinanze e avvisi su strade e sosta');
+  if (!d || !d.success) return card(html + note('Ordinanze non disponibili in questo momento.'));
+  if (!d.avvisi.length) html += note('Nessuna ordinanza o avviso recente su strade di Motta e dintorni.');
+  html += d.avvisi.map(function(a) {
+    var comune = a.fonte === 'Comune di Motta Visconti';
+    return '<a href="' + esc(a.link) + '" target="_blank" rel="noopener" style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-color-3);text-decoration:none;color:var(--text-primary)">' +
+      '<span style="font-size:1.4rem;line-height:1.2">' + (comune ? '🏛️' : '🛣️') + '</span><span style="flex:1;min-width:0">' +
+      '<small style="opacity:0.75">' + esc(a.fonte) + ' · ' + parseISO(a.data).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) + '</small><br>' +
+      '<b>' + esc(a.titolo) + '</b>' + (a.dettaglio ? '<br><small style="opacity:0.75">' + esc(a.dettaglio) + (comune ? '' : '…') + '</small>' : '') +
+      '</span></a>';
+  }).join('');
+  html += note('Le ordinanze del Comune restano visibili per 45 giorni dalla pubblicazione, le notizie di Provincia e Città Metropolitana per 30 giorni e solo se riguardano strade della zona.');
+  return card(html);
+}
 function wazeLink(da, a) { return 'https://www.waze.com/it/live-map/directions?from=ll.' + encodeURIComponent(da) + '&to=ll.' + encodeURIComponent(a) + '&navigate=yes'; }
 VIEWS.traffico = function() {
   return loadJSON('/traffico.php').catch(function() { return null; }).then(function(d) {
@@ -1681,16 +1698,19 @@ VIEWS.traffico = function() {
         riga(p.andata, 'Da Motta', TRAFFICO_MOTTA, dest) +
         riga(p.ritorno, 'Verso Motta', dest, TRAFFICO_MOTTA));
     });
-    html += '<div id="trLavori"></div>';
+    html += '<div id="trLavori"></div><div id="trOrdinanze"></div>';
     html += card(sectionTitle('ℹ️ Come leggere i tempi') +
       tip('⏱️', 'Tempo in auto adesso, con il traffico reale, dalla piazza di Motta Visconti (Piazza San Rocco) al centro della destinazione e ritorno. Per Milano l\'arrivo è il parcheggio della metropolitana M2 a Famagosta.') +
       tip('📊', 'Il tempo <b>normale</b> è quello tipico a strade libere, ricavato dagli ultimi 7 giorni: <b>scorrevole</b> fino a +15%, <b>rallentato</b> fino a +40%, oltre è <b>traffico intenso</b>.') +
       (dateKey(new Date()) < TRAFFICO_CALIBRAZIONE_FINO ? note('Sezione nuova: fino al ' + parseISO(TRAFFICO_CALIBRAZIONE_FINO).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }) + ' il tempo normale si sta ancora calcolando, quindi i rallentamenti potrebbero risultare più piccoli del reale.') : '') +
       (ultimo ? note('Aggiornato ' + agoText(new Date(ultimo)) + '.') : ''));
-    html += '<div class="source">Fonti: <a href="https://www.waze.com/it/live-map" target="_blank" rel="noopener">Waze</a>, tempi di percorrenza aggiornati ogni 5 minuti; <a href="https://www.tomtom.com/traffic-index/" target="_blank" rel="noopener">TomTom Traffic</a>, chiusure, lavori e incidenti aggiornati ogni 30 minuti.</div>';
+    html += '<div class="source">Fonti: <a href="https://www.waze.com/it/live-map" target="_blank" rel="noopener">Waze</a>, tempi di percorrenza aggiornati ogni 5 minuti; <a href="https://www.tomtom.com/traffic-index/" target="_blank" rel="noopener">TomTom Traffic</a>, chiusure, lavori e incidenti aggiornati ogni 30 minuti; ordinanze dall\'<a href="https://servizionline.hspromilaprod.hypersicapp.net/cmsmottavisconti/portale/albopretorio/albopretorioconsultazione.aspx?P=400" target="_blank" rel="noopener">albo pretorio del Comune</a>, avvisi di <a href="https://www.provincia.pv.it/it/news" target="_blank" rel="noopener">Provincia di Pavia</a> e <a href="https://www.cittametropolitana.mi.it/aree-tematiche/infrastrutture/viabilita-e-mobilita-sostenibile/" target="_blank" rel="noopener">Città Metropolitana di Milano</a>.</div>';
     $('app').innerHTML = html;
     loadJSON('/tomtom_incidenti.php').catch(function() { return null; }).then(function(t) {
       if ($('trLavori')) $('trLavori').innerHTML = cardLavori(t);
+    });
+    loadJSON('/viabilita_avvisi.php').catch(function() { return null; }).then(function(o) {
+      if ($('trOrdinanze')) $('trOrdinanze').innerHTML = cardOrdinanze(o);
     });
   });
 };
