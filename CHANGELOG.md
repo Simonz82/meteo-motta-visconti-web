@@ -2,6 +2,12 @@
 
 Tutte le modifiche rilevanti al sito della Stazione Meteo di Motta Visconti vengono registrate qui, in ordine cronologico inverso.
 
+## 2026-11-07
+
+### Aggiunto
+- **Area riservata**: alcune sezioni (Utile da sapere, Notizie dei paesi, Sagre ed Eventi, Storia e Foto storiche, Record storici) si aprono dopo l'accesso con un account. Nuovo script `area_riservata.js`: schermata di accesso/registrazione (anche con Google), verifica del token lato server prima di mostrare la pagina, funzionamento identico sul sito e nell'app Android
+- `robots.txt` pubblicato
+
 ## 2026-10-13
 
 ### Aggiunto

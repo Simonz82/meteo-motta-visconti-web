@@ -18,6 +18,7 @@
 <meta property="og:image:type" content="image/png">
 <meta name="description" content="Dati meteo in tempo reale e storico della stazione meteorologica di Motta Visconti.">
 <title>Stazione Meteo Motta Visconti</title>
+    <script src="/area_riservata.js?v=20261107"></script>
 
 <!-- Auto-refresh della pagina ogni 5 minuti e 5 secondi (305 secondi) -->
 <meta content="305" http-equiv="refresh"/>
@@ -2028,7 +2029,7 @@ function loadMaggioreChart() {
 <!-- MENU COLLEGAMENTI: METEO, APP E STORIA -->
 <div class="footer-buttons-grid" style="width: 100%; padding-bottom: 10px; padding-top: 15px; border-bottom: 1px solid var(--border-color); margin-bottom: 10px;   ">
 <!-- Pulsante Record Storici -->
-<a href="#" onclick="openRecordsModal(); return false;" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3)); color: var(--text-primary); padding: 9px 25px; border-radius: 15px; text-decoration: none; border: 1px solid var(--border-color-3); box-shadow: 0 4px 15px var(--shadow-soft); max-width: 100%; width: 100%; margin: 0; transition: transform 0.2s; cursor: pointer;">
+<a href="#" onclick="MeteoGate.require('Record storici', openRecordsModal); return false;" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, var(--bg-deep), var(--bg-card-3)); color: var(--text-primary); padding: 9px 25px; border-radius: 15px; text-decoration: none; border: 1px solid var(--border-color-3); box-shadow: 0 4px 15px var(--shadow-soft); max-width: 100%; width: 100%; margin: 0; transition: transform 0.2s; cursor: pointer;">
 <span style="font-size: 2rem; margin-right: 15px;">
       🏆
      </span>

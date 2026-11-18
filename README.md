@@ -19,6 +19,7 @@ Un progetto amatoriale che raccoglie e visualizza:
 - 🌊 **Fiume Ticino** — livello idrometrico a Bereguardo, Vigevano e Pavia
 - ☔ **Allerte Meteo** — bollettino di criticità della Protezione Civile
 - 💡 **Utile da sapere** (`utile.html`) — Comune, numeri utili e guasti, farmacie di turno, medici, defibrillatori, parrocchia, scuole, associazioni, cinema, raccolta rifiuti con festività, carburanti, autobus, traffico in tempo reale (tempi in auto da Waze, chiusure e lavori stradali da TomTom, ordinanze del Comune e avvisi di Provincia e Città Metropolitana), scioperi, casa dell'acqua, ufficio postale, oroscopo del giorno (RTL 102.5)
+- 🔐 **Area riservata** (`area_riservata.js`) — alcune sezioni si aprono dopo l'accesso con un account (email o Google), con verifica del token lato server
 
 ## Fonti dati
 
